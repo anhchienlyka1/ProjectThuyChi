@@ -1,0 +1,95 @@
+<div
+    class="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-green-50 to-orange-50 p-6 flex flex-col">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+            class="absolute top-0 left-0 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute -bottom-32 left-20 w-96 h-96 bg-orange-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="relative z-10 flex-1 flex flex-col max-w-6xl mx-auto w-full">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4 px-4">
+            <kid-button (click)="goBack()" variant="secondary" size="md">
+                <span class="mr-1">←</span> Quay lại
+            </kid-button>
+            <h1
+                class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 drop-shadow-sm filter">
+                Học Đếm Số
+            </h1>
+            <div class="w-32 hidden md:block"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Main Display Area -->
+        <div
+            class="flex-1 bg-white/60 backdrop-blur-md rounded-[3rem] p-6 pk-8 md:p-12 shadow-2xl border-[6px] border-white flex flex-col md:flex-row gap-12 items-center justify-center animate-pop-in transition-all duration-500">
+            <!-- Left: Big Number -->
+            <div class="flex-1 flex flex-col items-center justify-center p-4">
+                <div class="text-[10rem] md:text-[14rem] leading-none font-black drop-shadow-xl transition-all duration-500 transform hover:scale-110 cursor-pointer select-none animate-float"
+                    [style.color]="currentData.color" (click)="triggerMascot()"
+                    style="text-shadow: 6px 6px 0px rgba(0,0,0,0.1);">
+                    {{ currentNumber }}
+                </div>
+                <div
+                    class="text-4xl md:text-5xl font-black text-gray-700 mt-4 tracking-wider uppercase bg-white/80 px-6 py-2 rounded-full shadow-sm">
+                    {{ currentData.label }}
+                </div>
+            </div>
+
+            <!-- Right: Objects to Count -->
+            <div
+                class="flex-1 w-full bg-white/90 rounded-[3rem] p-8 shadow-inner border-4 border-gray-100 min-h-[300px] md:min-h-[400px] flex items-center justify-center relative overflow-hidden group">
+                <!-- Decorative background pattern inside box -->
+                <div
+                    class="absolute inset-0 opacity-10 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]">
+                </div>
+
+                <div class="flex flex-wrap gap-6 justify-center content-center max-w-md relative z-10">
+                    <div *ngFor="let item of currentData.items; let i = index"
+                        class="text-6xl md:text-7xl cursor-pointer hover:scale-125 hover:rotate-12 transition-all duration-300 drop-shadow-md select-none animate-pop-in"
+                        [style.animation-delay]="i * 100 + 'ms'" (click)="triggerMascot()">
+                        {{ item }}
+                    </div>
+                    <div *ngIf="currentNumber === 0"
+                        class="text-center flex flex-col items-center gap-4 animate-pop-in">
+                        <span class="text-6xl opacity-50">🕸️</span>
+                        <div class="text-2xl text-gray-400 font-bold">Trống trơn rồi!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination / Controls -->
+        <div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 pb-20 md:pb-8">
+            <kid-button (click)="prevNumber()" [disabled]="currentNumber === 0" variant="secondary" size="lg">
+                <span class="text-2xl">◀</span>
+            </kid-button>
+
+            <!-- Number Strip -->
+            <div
+                class="flex gap-3 bg-white/90 p-3 rounded-full shadow-lg border-4 border-white overflow-x-auto max-w-[90vw] md:max-w-2xl no-scrollbar">
+                <button *ngFor="let n of numberData" (click)="selectNumber(n.value)"
+                    class="min-w-[3.5rem] h-14 rounded-full font-black text-xl transition-all duration-300 flex items-center justify-center border-b-4 active:border-b-0 active:translate-y-1"
+                    [class.bg-kid-primary]="currentNumber === n.value" [class.text-white]="currentNumber === n.value"
+                    [class.scale-110]="currentNumber === n.value" [class.border-red-600]="currentNumber === n.value"
+                    [class.shadow-lg]="currentNumber === n.value" [class.bg-gray-100]="currentNumber !== n.value"
+                    [class.text-gray-500]="currentNumber !== n.value"
+                    [class.border-gray-300]="currentNumber !== n.value"
+                    [class.hover:bg-gray-200]="currentNumber !== n.value">
+                    {{ n.value }}
+                </button>
+            </div>
+
+            <kid-button (click)="nextNumber()" [disabled]="currentNumber === 10" variant="secondary" size="lg">
+                <span class="text-2xl">▶</span>
+            </kid-button>
+        </div>
+    </div>
+</div>

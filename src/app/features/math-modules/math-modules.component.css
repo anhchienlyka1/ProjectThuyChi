@@ -1,0 +1,703 @@
+/* ===== CONTAINER & BACKGROUND ===== */
+.math-container {
+    /* Loại bỏ min-height để tránh bị cắt trên màn hình nhỏ */
+    background: linear-gradient(135deg,
+            #E0F7FA 0%,
+            #FFF9C4 25%,
+            #F8BBD0 50%,
+            #E1BEE7 75%,
+            #C5CAE9 100%);
+    padding: 1.5rem 2rem 10rem 2rem;
+    /* Tăng bottom padding lên 10rem để đảm bảo luôn có space */
+    position: relative;
+    /* Loại bỏ overflow-y để parent container xử lý scroll */
+    animation: backgroundShift 20s ease-in-out infinite;
+}
+
+@keyframes backgroundShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 1rem;
+    /* Giảm margin */
+    animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.back-btn {
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 4px solid #FF6B9D;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #FF6B9D;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.back-btn:hover {
+    transform: translateX(-10px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.5);
+}
+
+.back-btn:active {
+    transform: translateX(-10px) scale(0.95);
+}
+
+.back-icon {
+    font-size: 1.5rem;
+    animation: bounceLeft 2s ease-in-out infinite;
+}
+
+@keyframes bounceLeft {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-5px);
+    }
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 2.2rem;
+    /* Giảm từ 3rem */
+    font-weight: 900;
+    color: #FF6B9D;
+    text-shadow:
+        4px 4px 0 #FFD93D,
+        8px 8px 0 rgba(0, 0, 0, 0.1);
+    animation: titlePop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes titlePop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.title-icon {
+    font-size: 2.8rem;
+    /* Giảm từ 4rem */
+    animation: rotate360 3s linear infinite;
+}
+
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== MASCOT AREA ===== */
+.mascot-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    /* Giảm xuống chỉ 0.75rem để đẩy cards lên */
+    animation: fadeIn 0.8s ease-out 0.3s backwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mascot-character {
+    font-size: 4rem;
+    /* Giảm từ 6rem */
+    animation: mascotBounce 2s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes mascotBounce {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-5deg);
+    }
+
+    25% {
+        transform: translateY(-20px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(0) rotate(5deg);
+    }
+
+    75% {
+        transform: translateY(-10px) rotate(0deg);
+    }
+}
+
+.mascot-bubble {
+    margin-top: 0.75rem;
+    padding: 1rem 1.5rem;
+    /* Giảm padding */
+    background: white;
+    border: 3px solid #4ECDC4;
+    /* Giảm border */
+    border-radius: 25px;
+    font-size: 1.2rem;
+    /* Giảm từ 1.5rem */
+    font-weight: 700;
+    color: #4ECDC4;
+    box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+    position: relative;
+    animation: bubblePop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-width: 600px;
+    text-align: center;
+}
+
+@keyframes bubblePop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.mascot-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid #4ECDC4;
+}
+
+.mascot-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 16px solid white;
+}
+
+/* ===== LEVELS GRID ===== */
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* Giảm min width */
+    gap: 1.5rem;
+    /* Giảm gap */
+    max-width: 1200px;
+    /* Giảm max-width */
+    margin: 0 auto;
+    padding: 1rem 0 5rem 0;
+    /* Tăng padding bottom lên 5rem để đảm bảo không sát footer */
+}
+
+/* ===== LEVEL CARD ===== */
+.level-card {
+    position: relative;
+    background: white;
+    border: 5px solid var(--card-color);
+    /* Giảm border */
+    border-radius: 30px;
+    /* Giảm border-radius */
+    padding: 1.75rem;
+    /* Giảm padding */
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 0 var(--card-color);
+    overflow: hidden;
+    animation: cardSlideIn calc(0.6s + var(--index, 0) * 0.15s) ease-out backwards;
+}
+
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.level-card:nth-child(1) {
+    --index: 0;
+    animation-delay: 0.4s;
+}
+
+.level-card:nth-child(2) {
+    --index: 1;
+    animation-delay: 0.55s;
+}
+
+.level-card:nth-child(3) {
+    --index: 2;
+    animation-delay: 0.7s;
+}
+
+.level-card:nth-child(4) {
+    --index: 3;
+    animation-delay: 0.85s;
+}
+
+.level-card:hover:not(.locked) {
+    transform: translateY(-20px) scale(1.05) rotate(2deg);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.2),
+        0 0 0 10px rgba(var(--card-rgb, 255, 107, 157), 0.2);
+}
+
+.level-card:active:not(.locked) {
+    transform: translateY(-15px) scale(1.02);
+}
+
+.level-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.level-card.locked:hover {
+    transform: scale(0.98);
+}
+
+/* ===== LOCK OVERLAY ===== */
+.lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.lock-icon {
+    font-size: 5rem;
+    animation: lockShake 2s ease-in-out infinite;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes lockShake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: rotate(-10deg);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: rotate(10deg);
+    }
+}
+
+/* ===== LEVEL BADGE ===== */
+.level-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 55px;
+    /* Giảm từ 70px */
+    height: 55px;
+    background: var(--card-gradient);
+    border: 4px solid white;
+    /* Giảm border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+}
+
+.level-number {
+    font-size: 1.5rem;
+    /* Giảm từ 2rem */
+    font-weight: 900;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== CARD CONTENT ===== */
+.card-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.level-icon {
+    font-size: 4rem;
+    /* Giảm từ 6rem */
+    margin-bottom: 0.75rem;
+    animation: iconFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.15));
+}
+
+@keyframes iconFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.level-title {
+    font-size: 1.75rem;
+    /* Giảm từ 2.2rem */
+    font-weight: 900;
+    color: var(--card-color);
+    margin: 0.75rem 0 0.4rem;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.level-subtitle {
+    font-size: 1.1rem;
+    /* Giảm từ 1.3rem */
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* ===== STARS ===== */
+.stars-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+}
+
+.star {
+    font-size: 1.8rem;
+    /* Giảm từ 2.5rem */
+    transition: all 0.3s ease;
+    animation: starTwinkle 2s ease-in-out infinite;
+}
+
+.star.filled {
+    animation: starPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes starPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* ===== CARD DECORATIONS ===== */
+.card-decoration {
+    position: absolute;
+    background: var(--card-color);
+    opacity: 0.1;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.decoration-1 {
+    width: 150px;
+    height: 150px;
+    top: -50px;
+    left: -50px;
+    animation: decorationFloat1 6s ease-in-out infinite;
+}
+
+.decoration-2 {
+    width: 100px;
+    height: 100px;
+    bottom: -30px;
+    right: -30px;
+    animation: decorationFloat2 7s ease-in-out infinite;
+}
+
+.decoration-3 {
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    right: -20px;
+    animation: decorationFloat3 5s ease-in-out infinite;
+}
+
+@keyframes decorationFloat1 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(20px, -20px) scale(1.2);
+    }
+}
+
+@keyframes decorationFloat2 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-15px, 15px) scale(1.1);
+    }
+}
+
+@keyframes decorationFloat3 {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(10px, -10px) rotate(180deg);
+    }
+}
+
+/* ===== FLOATING NUMBERS BACKGROUND ===== */
+.floating-numbers {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.float-item {
+    position: absolute;
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.3);
+    animation: floatUp var(--duration, 5s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.float-item:nth-child(1) {
+    left: 10%;
+}
+
+.float-item:nth-child(2) {
+    left: 25%;
+}
+
+.float-item:nth-child(3) {
+    left: 50%;
+}
+
+.float-item:nth-child(4) {
+    left: 70%;
+}
+
+.float-item:nth-child(5) {
+    left: 85%;
+}
+
+.float-item:nth-child(6) {
+    left: 40%;
+}
+
+@keyframes floatUp {
+    0% {
+        bottom: -10%;
+        opacity: 0;
+        transform: translateY(0) rotate(0deg);
+    }
+
+    10% {
+        opacity: 0.5;
+    }
+
+    90% {
+        opacity: 0.5;
+    }
+
+    100% {
+        bottom: 110%;
+        opacity: 0;
+        transform: translateY(-50px) rotate(360deg);
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .math-container {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+        text-shadow:
+            2px 2px 0 #FFD93D,
+            4px 4px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .back-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+
+    .mascot-character {
+        font-size: 4rem;
+    }
+
+    .mascot-bubble {
+        font-size: 1.2rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .levels-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .level-card {
+        padding: 2rem;
+        border-radius: 30px;
+        border-width: 5px;
+    }
+
+    .level-icon {
+        font-size: 4rem;
+    }
+
+    .level-title {
+        font-size: 1.8rem;
+    }
+
+    .level-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .star {
+        font-size: 2rem;
+    }
+
+    .float-item {
+        font-size: 2.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
