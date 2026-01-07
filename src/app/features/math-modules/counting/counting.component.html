@@ -67,16 +67,18 @@
         </div>
 
         <!-- Pagination / Controls -->
-        <div class="mt-8 flex flex-col md:flex-row items-center justify-center gap-6 pb-20 md:pb-8">
-            <kid-button (click)="prevNumber()" [disabled]="currentNumber === 0" variant="secondary" size="lg">
-                <span class="text-2xl">◀</span>
-            </kid-button>
+        <div class="mt-8 flex flex-row items-center justify-center gap-3 pb-20 md:pb-8 w-full px-2">
+            <!-- Prev Button (Compact) -->
+            <button (click)="prevNumber()" [disabled]="currentNumber === 0"
+                class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full bg-kid-secondary text-white font-black text-2xl flex items-center justify-center border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4">
+                ◀
+            </button>
 
             <!-- Number Strip -->
             <div
-                class="flex gap-3 bg-white/90 p-3 rounded-full shadow-lg border-4 border-white overflow-x-auto max-w-[90vw] md:max-w-2xl no-scrollbar">
+                class="flex flex-nowrap justify-center gap-1 sm:gap-2 md:gap-3 bg-white/90 p-2 md:p-3 rounded-full shadow-lg border-2 md:border-4 border-white max-w-full overflow-hidden min-w-0">
                 <button *ngFor="let n of numberData" (click)="selectNumber(n.value)"
-                    class="min-w-[3.5rem] h-14 rounded-full font-black text-xl transition-all duration-300 flex items-center justify-center border-b-4 active:border-b-0 active:translate-y-1"
+                    class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full font-black text-sm sm:text-lg md:text-xl transition-all duration-300 flex items-center justify-center border-b-2 md:border-b-4 active:border-b-0 active:translate-y-1"
                     [class.bg-kid-primary]="currentNumber === n.value" [class.text-white]="currentNumber === n.value"
                     [class.scale-110]="currentNumber === n.value" [class.border-red-600]="currentNumber === n.value"
                     [class.shadow-lg]="currentNumber === n.value" [class.bg-gray-100]="currentNumber !== n.value"
@@ -87,9 +89,11 @@
                 </button>
             </div>
 
-            <kid-button (click)="nextNumber()" [disabled]="currentNumber === 10" variant="secondary" size="lg">
-                <span class="text-2xl">▶</span>
-            </kid-button>
+            <!-- Next Button (Compact) -->
+            <button (click)="nextNumber()" [disabled]="currentNumber === 10"
+                class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full bg-kid-primary text-white font-black text-2xl flex items-center justify-center border-b-4 border-red-700 active:border-b-0 active:translate-y-1 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0 disabled:active:border-b-4">
+                ▶
+            </button>
         </div>
     </div>
 </div>
