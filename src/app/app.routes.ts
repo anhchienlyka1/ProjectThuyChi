@@ -16,6 +16,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       },
       {
+        path: 'select-age',
+        title: 'Chọn Độ Tuổi',
+        loadComponent: () => import('./features/age-selection/age-selection.component').then(m => m.AgeSelectionComponent)
+      },
+      {
         path: 'select-subject',
         title: 'Chọn Môn Học',
         loadComponent: () => import('./features/subject-selection/subject-selection.component').then(m => m.SubjectSelectionComponent)
@@ -24,6 +29,36 @@ export const routes: Routes = [
         path: 'math/counting',
         title: 'Học Đếm Số',
         loadComponent: () => import('./features/math-modules/counting/counting.component').then(m => m.CountingComponent)
+      },
+      {
+        path: 'math/comparison',
+        title: 'So Sánh',
+        loadComponent: () => import('./features/math-modules/comparison/comparison.component').then(m => m.ComparisonComponent)
+      },
+      {
+        path: 'math/addition',
+        title: 'Phép Cộng',
+        loadComponent: () => import('./features/math-modules/addition/addition.component').then(m => m.AdditionComponent)
+      },
+      {
+        path: 'math/subtraction',
+        title: 'Phép Trừ',
+        loadComponent: () => import('./features/math-modules/subtraction/subtraction.component').then(m => m.SubtractionComponent)
+      },
+      {
+        path: 'math/fill-in-blank',
+        title: 'Điền Số',
+        loadComponent: () => import('./features/math-modules/fill-in-blank/fill-in-blank.component').then(m => m.FillInBlankComponent)
+      },
+      {
+        path: 'math/shapes',
+        title: 'Hình Học',
+        loadComponent: () => import('./features/math-modules/shapes/shapes.component').then(m => m.ShapesComponent)
+      },
+      {
+        path: 'math/logic',
+        title: 'Tư Duy Logic',
+        loadComponent: () => import('./features/math-modules/logic/logic.component').then(m => m.LogicComponent)
       },
       {
         path: 'math',

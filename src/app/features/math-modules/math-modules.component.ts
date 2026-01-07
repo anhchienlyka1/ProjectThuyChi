@@ -4,18 +4,8 @@ import { Router } from '@angular/router';
 import { MascotService } from '../../core/services/mascot.service';
 import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.component';
 
-interface MathLevel {
-    id: string;
-    levelNumber: number;
-    title: string;
-    subtitle: string;
-    icon: string;
-    color: string;
-    gradient: string;
-    route: string;
-    isLocked: boolean;
-    stars: number; // Số sao đã đạt được (0-3)
-}
+import { MathLevelService } from '../../core/services/math-level.service';
+import { MathLevel } from '../../core/models/math-level.model';
 
 @Component({
     selector: 'app-math-modules',
@@ -26,58 +16,10 @@ interface MathLevel {
 })
 export class MathModulesComponent implements OnInit {
     private router = inject(Router);
+    private mathLevelService = inject(MathLevelService);
     mascot = inject(MascotService);
 
-    levels: MathLevel[] = [
-        {
-            id: 'counting',
-            levelNumber: 1,
-            title: 'Đếm Số',
-            subtitle: 'Nhận biết số 0-10',
-            icon: '🔢',
-            color: '#FF6B9D',
-            gradient: 'linear-gradient(135deg, #FF6B9D 0%, #FFA8C5 100%)',
-            route: '/math/counting',
-            isLocked: false,
-            stars: 3
-        },
-        {
-            id: 'comparison',
-            levelNumber: 2,
-            title: 'So Sánh',
-            subtitle: 'Lớn - Bé - Bằng',
-            icon: '⚖️',
-            color: '#4ECDC4',
-            gradient: 'linear-gradient(135deg, #4ECDC4 0%, #7FE9DE 100%)',
-            route: '/math/comparison',
-            isLocked: false,
-            stars: 2
-        },
-        {
-            id: 'addition',
-            levelNumber: 3,
-            title: 'Phép Cộng',
-            subtitle: 'Cộng trong phạm vi 10',
-            icon: '➕',
-            color: '#FFD93D',
-            gradient: 'linear-gradient(135deg, #FFD93D 0%, #FFE76F 100%)',
-            route: '/math/addition',
-            isLocked: false,
-            stars: 1
-        },
-        {
-            id: 'shapes',
-            levelNumber: 4,
-            title: 'Hình Học',
-            subtitle: 'Vuông - Tròn - Tam giác',
-            icon: '🔷',
-            color: '#A78BFA',
-            gradient: 'linear-gradient(135deg, #A78BFA 0%, #C4B5FD 100%)',
-            route: '/math/shapes',
-            isLocked: true,
-            stars: 0
-        }
-    ];
+    levels$ = this.mathLevelService.getLevels();
 
     ngOnInit() {
         this.mascot.setEmotion('happy', 'Chào con! Hãy chọn bài học yêu thích nhé! 🌟', 4000);

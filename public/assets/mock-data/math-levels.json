@@ -1,0 +1,86 @@
+[
+    {
+        "id": "counting",
+        "levelNumber": 1,
+        "title": "Đếm Số",
+        "subtitle": "Nhận biết số 0-10",
+        "icon": "🔢",
+        "color": "#FF6B9D",
+        "gradient": "linear-gradient(135deg, #FF6B9D 0%, #FFA8C5 100%)",
+        "route": "/math/counting",
+        "isLocked": false,
+        "stars": 3
+    },
+    {
+        "id": "comparison",
+        "levelNumber": 2,
+        "title": "So Sánh",
+        "subtitle": "Lớn - Bé - Bằng",
+        "icon": "⚖️",
+        "color": "#4ECDC4",
+        "gradient": "linear-gradient(135deg, #4ECDC4 0%, #7FE9DE 100%)",
+        "route": "/math/comparison",
+        "isLocked": false,
+        "stars": 2
+    },
+    {
+        "id": "addition",
+        "levelNumber": 3,
+        "title": "Phép Cộng",
+        "subtitle": "Cộng trong phạm vi 10",
+        "icon": "➕",
+        "color": "#FFD93D",
+        "gradient": "linear-gradient(135deg, #FFD93D 0%, #FFE76F 100%)",
+        "route": "/math/addition",
+        "isLocked": false,
+        "stars": 1
+    },
+    {
+        "id": "subtraction",
+        "levelNumber": 4,
+        "title": "Phép Trừ",
+        "subtitle": "Trừ trong phạm vi 10",
+        "icon": "➖",
+        "color": "#FF9F43",
+        "gradient": "linear-gradient(135deg, #FF9F43 0%, #FFC078 100%)",
+        "route": "/math/subtraction",
+        "isLocked": false,
+        "stars": 0
+    },
+    {
+        "id": "fill-in-blank",
+        "levelNumber": 5,
+        "title": "Điền Số",
+        "subtitle": "Tìm số còn thiếu",
+        "icon": "❓",
+        "color": "#54A0FF",
+        "gradient": "linear-gradient(135deg, #54A0FF 0%, #82CCDD 100%)",
+        "route": "/math/fill-in-blank",
+        "isLocked": false,
+        "stars": 0
+    },
+    {
+        "id": "shapes",
+        "levelNumber": 6,
+        "title": "Hình Học",
+        "subtitle": "Nhận biết hình khối",
+        "icon": "🔷",
+        "color": "#A78BFA",
+        "gradient": "linear-gradient(135deg, #A78BFA 0%, #C4B5FD 100%)",
+        "route": "/math/shapes",
+        "isLocked": false,
+        "stars": 0
+    },
+    {
+        "id": "logic",
+        "levelNumber": 7,
+        "title": "Logic",
+        "subtitle": "Tư duy logic",
+        "icon": "🧠",
+        "color": "#F368E0",
+        "gradient": "linear-gradient(135deg, #F368E0 0%, #FF9FF3 100%)",
+        "route": "/math/logic",
+        "isLocked": false,
+        "stars": 0
+    }
+]

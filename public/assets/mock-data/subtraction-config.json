@@ -1,0 +1,39 @@
+{
+    "title": "Phép Trừ",
+    "instruction": "Bé hãy tính hiệu của hai số nhé!",
+    "items": [
+        "🍎",
+        "🦆",
+        "🦋",
+        "⭐",
+        "🍄",
+        "🐙",
+        "🐸",
+        "🦁",
+        "🐠",
+        "🍪"
+    ],
+    "totalQuestions": 10,
+    "pointsPerQuestion": 10,
+    "difficulty": {
+        "minNumber": 1,
+        "maxNumber": 10
+    },
+    "feedback": {
+        "correct": [
+            "Chính xác! Bé giỏi quá! 🎉",
+            "Đúng rồi! 🌟",
+            "Xuất sắc! 🌈",
+            "10 điểm! 💯"
+        ],
+        "wrong": [
+            "Ôi sai rồi. Thử lại nhé! 💪",
+            "Không sao đâu, cố lên! 🍀",
+            "Tính lại nào bé ơi! 🤔"
+        ]
+    },
+    "mascotPrompts": {
+        "start": "Chào con! Hôm nay mình học trừ nhé!",
+        "question": "Câu hỏi số {index}: {a} trừ {b} bằng bao nhiêu?"
+    }
+}

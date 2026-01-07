@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { LucideAngularModule, Home, User, Settings, Menu, Search, Plus, Trash2, Edit, X, Check, ArrowRight, ArrowLeft, Star, Heart, Minus, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Home, User, Settings, Menu, Search, Plus, Trash2, Edit, X, Check, ArrowRight, ArrowLeft, Star, Heart, Minus, ChevronRight, Volume2 } from 'lucide-angular';
 
 /**
  * Define the icons you want to use in the application here.
@@ -21,7 +21,8 @@ const icons = {
   Star,
   Heart,
   Minus,
-  ChevronRight
+  ChevronRight,
+  Volume2
 };
 
 @NgModule({

@@ -23,10 +23,10 @@ export class MascotService {
     this.emotion.set(emotion);
     if (text) this.message.set(text);
 
-    // Play sound based on emotion
-    if (emotion === 'happy') this.audio.playSFX('assets/sounds/mascot-giggle.mp3');
-    if (emotion === 'sad') this.audio.playSFX('assets/sounds/mascot-sad.mp3');
-    if (emotion === 'celebrating') this.audio.playSFX('assets/sounds/party-horn.mp3');
+    // Play sound based on emotion - TODO: Uncomment when assets are provided
+    // if (emotion === 'happy') this.audio.playSFX('assets/sounds/mascot-giggle.mp3');
+    // if (emotion === 'sad') this.audio.playSFX('assets/sounds/mascot-sad.mp3');
+    // if (emotion === 'celebrating') this.audio.playSFX('assets/sounds/party-horn.mp3');
 
     if (this.idleTimeout) clearTimeout(this.idleTimeout);
 

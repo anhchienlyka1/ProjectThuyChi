@@ -1,0 +1,38 @@
+{
+    "title": "So Sánh",
+    "instruction": "Chọn bên có số lượng nhiều hơn, ít hơn hoặc bằng nhau nhé!",
+    "items": [
+        "\uD83C\uDF4E",
+        "\uD83E\uDD86",
+        "\uD83E\uDD8B",
+        "\u2B50",
+        "\uD83C\uDF44",
+        "\uD83D\uDC19",
+        "\uD83D\uDC38",
+        "\uD83E\uDD81",
+        "\uD83D\uDC20"
+    ],
+    "totalQuestions": 10,
+    "pointsPerQuestion": 10,
+    "difficulty": {
+        "minNumber": 1,
+        "maxNumber": 10
+    },
+    "feedback": {
+        "correct": [
+            "Hoan hô! Bé giỏi quá! \uD83C\uDF89",
+            "Chính xác! \uD83C\uDF1F",
+            "Tuyệt vời! \uD83C\uDF08",
+            "Bé thông minh quá! \uD83D\uDCAB"
+        ],
+        "wrong": [
+            "Tiếc quá! Sai mất rồi. \uD83E\uDD7A",
+            "Thử lại nào bé ơi! \uD83D\uDCAA",
+            "Cố lên nhé! \uD83C\uDF40"
+        ]
+    },
+    "mascotPrompts": {
+        "start": "Chào con! Hãy cùng chơi so sánh nhé!",
+        "question": "Câu hỏi số {index}: Bên nào nhiều hơn hay bằng nhau?"
+    }
+}

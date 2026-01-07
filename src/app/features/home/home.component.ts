@@ -39,7 +39,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <p class="subtitle">Hôm nay bé muốn học gì nào?</p>
 
             <!-- Main CTA Button -->
-            <button routerLink="/select-subject" class="cta-button">
+            <button routerLink="/select-age" class="cta-button">
                 <span class="button-content">
                     <span class="icon-start">✨</span>
                     <span class="button-text">Bắt đầu học</span>
@@ -257,20 +257,24 @@ import { GamificationStore } from '../../core/store/gamification.store';
       align-items: center;
       gap: 8px;
       padding: 12px 24px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      color: #a855f7;
-      background: transparent;
-      border: none;
+      color: #9333ea;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid white;
       border-radius: 9999px;
       cursor: pointer;
       transition: all 0.3s ease;
       animation: fadeIn 0.8s ease-out 0.6s backwards;
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.1);
+      backdrop-filter: blur(4px);
     }
 
     .parents-link:hover {
       color: #7c3aed;
-      background: rgba(255, 255, 255, 0.5);
+      background: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(147, 51, 234, 0.2);
     }
 
     @media (max-width: 768px) {

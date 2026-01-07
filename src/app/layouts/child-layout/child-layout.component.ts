@@ -5,13 +5,15 @@ import { ThemeService } from '../../core/services/theme.service';
 import { GamificationStore } from '../../core/store/gamification.store';
 import { SessionTimerService } from '../../core/services/session-timer.service';
 import { KidAvatarComponent } from '../../shared/ui-kit/kid-avatar/kid-avatar.component';
+import { MascotComponent } from '../../shared/ui-kit/mascot/mascot.component';
 
 @Component({
   selector: 'app-child-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, KidAvatarComponent],
+  imports: [CommonModule, RouterOutlet, KidAvatarComponent, MascotComponent],
   template: `
     <div class="min-h-screen font-sans relative overflow-auto">
+      <app-mascot></app-mascot>
 
       <!-- Header - Only show on non-home routes -->
       <header class="relative z-20 px-4 py-3 flex justify-between items-center bg-white/30 backdrop-blur-md border-b border-white/20 shadow-sm"

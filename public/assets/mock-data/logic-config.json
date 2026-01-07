@@ -1,0 +1,102 @@
+{
+    "title": "Logic",
+    "instruction": "Bé hãy tìm quy luật và chọn hình tiếp theo nhé!",
+    "totalQuestions": 5,
+    "pointsPerQuestion": 20,
+    "questions": [
+        {
+            "id": 1,
+            "question": "Hình nào tiếp theo: 🔴 🔵 🔴 🔵 ...",
+            "sequence": [
+                "🔴",
+                "🔵",
+                "🔴",
+                "🔵",
+                "❓"
+            ],
+            "correctAnswer": "🔴",
+            "options": [
+                "🔴",
+                "🔵",
+                "🟢"
+            ]
+        },
+        {
+            "id": 2,
+            "question": "Hình nào tiếp theo: 🐶 🐱 🐶 🐱 ...",
+            "sequence": [
+                "🐶",
+                "🐱",
+                "🐶",
+                "🐱",
+                "❓"
+            ],
+            "correctAnswer": "🐶",
+            "options": [
+                "🐶",
+                "🐱",
+                "🐭"
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Tìm hình khác loại?",
+            "isOddOneOut": true,
+            "options": [
+                "🍎",
+                "🍌",
+                "🍇",
+                "🚗"
+            ],
+            "correctAnswer": "🚗"
+        },
+        {
+            "id": 4,
+            "question": "Hình nào tiếp theo: 🔼 🔽 🔼 🔽 ...",
+            "sequence": [
+                "🔼",
+                "🔽",
+                "🔼",
+                "🔽",
+                "❓"
+            ],
+            "correctAnswer": "🔼",
+            "options": [
+                "🔼",
+                "🔽",
+                "◀️"
+            ]
+        },
+        {
+            "id": 5,
+            "question": "1, 2, 3, 4, ... số tiếp theo là?",
+            "sequence": [
+                "1️⃣",
+                "2️⃣",
+                "3️⃣",
+                "4️⃣",
+                "❓"
+            ],
+            "correctAnswer": "5️⃣",
+            "options": [
+                "5️⃣",
+                "6️⃣",
+                "1️⃣"
+            ]
+        }
+    ],
+    "feedback": {
+        "correct": [
+            "Đúng rồi! Bé thông minh quá! 🧠",
+            "Chính xác! 🌟"
+        ],
+        "wrong": [
+            "Chưa đúng rồi. Suy nghĩ thêm nhé! 🤔",
+            "Cố lên! 🍀"
+        ]
+    },
+    "mascotPrompts": {
+        "start": "Chào con! Cùng rèn luyện tư duy logic nào!",
+        "question": "Câu hỏi số {index}: {question}"
+    }
+}

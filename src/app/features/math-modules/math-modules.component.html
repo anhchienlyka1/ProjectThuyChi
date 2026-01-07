@@ -37,7 +37,7 @@
     <div class="relative z-10 max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
-            <kid-button (click)="goBack()" variant="secondary" size="md">
+            <kid-button (click)="goBack()" variant="neutral" size="md">
                 ← Quay lại
             </kid-button>
         </div>
@@ -53,63 +53,70 @@
             </p>
         </div>
 
-        <!-- Levels Grid (4 Vertical Cards) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <!-- Levels List (Horizontal Scroll) -->
+        <div class="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-4 md:px-0 scrollbar-hide -mx-4 md:mx-0 mask-image-scroll"
+            style="scrollbar-width: none; -ms-overflow-style: none;">
+
             <!-- Level Card -->
-            <div *ngFor="let level of levels" (click)="selectLevel(level)" [class.opacity-90]="level.isLocked"
-                [class.cursor-pointer]="!level.isLocked" [class.cursor-not-allowed]="level.isLocked"
-                class="group relative h-full bg-white rounded-[2rem] p-6 border-b-8 border-r-4 border-gray-200 hover:border-b-[12px] hover:translate-y-[-4px] active:border-b-4 active:translate-y-[2px] transition-all duration-300 flex flex-col items-center text-center shadow-lg hover:shadow-xl overflow-hidden touch-manipulation">
+            <div *ngFor="let level of levels$ | async" (click)="selectLevel(level)"
+                class="snap-center shrink-0 w-[85vw] md:w-80 lg:w-96 first:ml-4 last:mr-4 md:first:ml-0 md:last:mr-0">
+                <div [class.opacity-90]="level.isLocked" [class.cursor-pointer]="!level.isLocked"
+                    [class.cursor-not-allowed]="level.isLocked"
+                    class="group relative h-full bg-white rounded-[2rem] p-6 border-b-8 border-r-4 border-gray-200 hover:border-b-[12px] hover:translate-y-[-4px] active:border-b-4 active:translate-y-[2px] transition-all duration-300 flex flex-col items-center text-center shadow-lg hover:shadow-xl overflow-hidden touch-manipulation min-h-[400px] justify-between">
 
-                <!-- Lock Overlay -->
-                <div *ngIf="level.isLocked"
-                    class="absolute inset-0 bg-gray-100/60 z-20 flex flex-col items-center justify-center backdrop-blur-[2px]">
-                    <div class="bg-gray-200/80 p-4 rounded-full mb-3 shadow-inner">
-                        <span class="text-4xl">🔒</span>
+                    <!-- Lock Overlay -->
+                    <div *ngIf="level.isLocked"
+                        class="absolute inset-0 bg-gray-100/60 z-20 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                        <div class="bg-gray-200/80 p-4 rounded-full mb-3 shadow-inner">
+                            <span class="text-4xl">🔒</span>
+                        </div>
+                        <span
+                            class="font-bold text-gray-500 uppercase tracking-wider text-sm bg-white/80 px-4 py-1 rounded-full">Chưa
+                            mở khóa</span>
                     </div>
-                    <span
-                        class="font-bold text-gray-500 uppercase tracking-wider text-sm bg-white/80 px-4 py-1 rounded-full">Chưa
-                        mở khóa</span>
-                </div>
 
-                <!-- Icon Circle -->
-                <div [style.background]="'linear-gradient(135deg, ' + level.color + '20 0%, ' + level.color + '40 100%)'"
-                    class="w-24 h-24 rounded-full flex items-center justify-center mb-6 relative group-hover:scale-110 transition-transform duration-500">
-                    <span
-                        class="text-5xl drop-shadow-md select-none transform transition-transform group-hover:rotate-12">{{
-                        level.icon }}</span>
+                    <!-- Icon Circle -->
+                    <div [style.background]="'linear-gradient(135deg, ' + level.color + '20 0%, ' + level.color + '40 100%)'"
+                        class="w-32 h-32 rounded-full flex items-center justify-center mb-6 relative group-hover:scale-110 transition-transform duration-500">
+                        <span
+                            class="text-6xl drop-shadow-md select-none transform transition-transform group-hover:rotate-12">{{
+                            level.icon }}</span>
 
-                    <!-- Levitating background decoration -->
+                        <!-- Levitating background decoration -->
+                        <div [style.background]="level.color"
+                            class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500">
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="w-full">
+                        <h3
+                            class="text-3xl font-black text-gray-800 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-all">
+                            {{ level.title }}
+                        </h3>
+
+                        <p class="text-gray-500 font-medium text-base leading-relaxed px-2 mb-4">
+                            {{ level.subtitle }}
+                        </p>
+                    </div>
+
+                    <!-- Stars -->
+                    <div class="flex gap-2 mt-auto justify-center bg-gray-50 px-6 py-3 rounded-full w-full">
+                        <ng-container *ngFor="let star of [1,2,3]">
+                            <span class="text-3xl transition-all duration-300 transform"
+                                [class.scale-125]="star <= level.stars"
+                                [style.color]="star <= level.stars ? '#FFD700' : '#E5E7EB'"
+                                [style.filter]="star <= level.stars ? 'drop-shadow(0 2px 0 #D4AF37)' : 'none'">
+                                ★
+                            </span>
+                        </ng-container>
+                    </div>
+
+                    <!-- Badge Number -->
                     <div [style.background]="level.color"
-                        class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500">
+                        class="absolute top-4 right-4 w-12 h-12 rounded-full flex items-center justify-center text-white font-black shadow-md border-2 border-white transform rotate-12 group-hover:rotate-0 transition-transform">
+                        <span class="text-xl drop-shadow-sm">{{ level.levelNumber }}</span>
                     </div>
-                </div>
-
-                <!-- Content -->
-                <h3
-                    class="text-2xl font-black text-gray-800 mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-all">
-                    {{ level.title }}
-                </h3>
-
-                <p class="text-gray-500 font-medium mb-auto text-sm leading-relaxed px-2">
-                    {{ level.subtitle }}
-                </p>
-
-                <!-- Stars -->
-                <div class="flex gap-1 mt-6 justify-center bg-gray-50 px-4 py-2 rounded-full">
-                    <ng-container *ngFor="let star of [1,2,3]">
-                        <span class="text-2xl transition-all duration-300 transform"
-                            [class.scale-125]="star <= level.stars"
-                            [style.color]="star <= level.stars ? '#FFD700' : '#E5E7EB'"
-                            [style.filter]="star <= level.stars ? 'drop-shadow(0 2px 0 #D4AF37)' : 'none'">
-                            ★
-                        </span>
-                    </ng-container>
-                </div>
-
-                <!-- Badge Number -->
-                <div [style.background]="level.color"
-                    class="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-black shadow-md border-2 border-white transform rotate-12 group-hover:rotate-0 transition-transform">
-                    <span class="text-lg drop-shadow-sm">{{ level.levelNumber }}</span>
                 </div>
             </div>
         </div>

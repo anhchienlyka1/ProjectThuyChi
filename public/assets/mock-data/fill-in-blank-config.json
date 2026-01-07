@@ -1,0 +1,25 @@
+{
+    "title": "Điền Số",
+    "instruction": "Bé hãy tìm số còn thiếu trong dãy số hoặc phép tính nhé!",
+    "totalQuestions": 10,
+    "pointsPerQuestion": 10,
+    "difficulty": {
+        "minNumber": 0,
+        "maxNumber": 10
+    },
+    "feedback": {
+        "correct": [
+            "Hoan hô! Đúng rồi! 🎉",
+            "Bé thông minh quá! 🌟",
+            "Tuyệt vời! 🌈"
+        ],
+        "wrong": [
+            "Sai rồi, thử lại nhé! 💪",
+            "Cố lên bé ơi! 🍀"
+        ]
+    },
+    "mascotPrompts": {
+        "start": "Chào con! Cùng tìm số bí ẩn nào!",
+        "question": "Câu hỏi số {index}: Số nào còn thiếu nhỉ?"
+    }
+}

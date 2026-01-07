@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '../icons/icons.module';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'neutral';
 export type ButtonSize = 'md' | 'lg';
 
 @Component({
@@ -74,6 +74,12 @@ export class KidButtonComponent {
                 break;
             case 'ghost':
                 colorClass = 'bg-transparent border-transparent text-white hover:bg-white/20 border-b-0 active:translate-y-0 active:scale-95';
+                break;
+            case 'danger':
+                colorClass = 'bg-red-500 border-red-700 text-white hover:brightness-110 shadow-lg shadow-red-500/30';
+                break;
+            case 'neutral':
+                colorClass = 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm shadow-slate-200/50';
                 break;
         }
 

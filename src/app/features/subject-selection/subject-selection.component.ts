@@ -1,28 +1,24 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../core/services/mascot.service';
-
-interface SubjectCard {
-  id: string;
-  title: string;
-  icon: string;
-  color: string;
-  gradient: string;
-  route: string;
-}
+import { SubjectService } from '../../core/services/subject.service';
+import { SubjectCard } from '../../core/models/subject.model';
 
 @Component({
   selector: 'app-subject-selection',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, KidButtonComponent],
   template: `
     <div class="selection-container">
 
       <!-- Back Button -->
-      <button class="back-button" (click)="goBack()">
-        <span class="back-icon">←</span>
-      </button>
+      <div class="back-button-wrapper">
+        <kid-button (click)="goBack()" variant="neutral" size="md">
+          ← Quay lại
+        </kid-button>
+      </div>
 
       <!-- Decorative Floating Icons -->
       <div class="floating-decorations">
@@ -48,7 +44,7 @@ interface SubjectCard {
 
       <!-- Subject Cards Grid -->
       <div class="cards-grid">
-        <div *ngFor="let subject of subjects"
+        <div *ngFor="let subject of subjects$ | async"
              class="subject-card"
              [style.background]="subject.gradient"
              (click)="selectSubject(subject)"
@@ -82,38 +78,14 @@ interface SubjectCard {
       position: relative;
     }
 
-    .back-button {
+    .back-button-wrapper {
       position: absolute;
       top: 30px;
       left: 30px;
-      width: 56px;
-      height: 56px;
-      background: white;
-      border: none;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
       z-index: 10;
     }
-
-    .back-button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .back-button:active {
-      transform: scale(0.95);
-    }
-
-    .back-icon {
-      font-size: 1.75rem;
-      color: #8b5cf6;
-      font-weight: bold;
-    }
+    
+    /* Removed old .back-button styles */
 
     .floating-decorations {
       position: absolute;
@@ -325,42 +297,10 @@ interface SubjectCard {
 })
 export class SubjectSelectionComponent {
   private router = inject(Router);
+  private subjectService = inject(SubjectService);
   mascot = inject(MascotService);
 
-  subjects: SubjectCard[] = [
-    {
-      id: 'math',
-      title: 'Toán Học',
-      icon: '🧮',
-      color: '#3b82f6',
-      gradient: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-      route: '/math'
-    },
-    {
-      id: 'vietnamese',
-      title: 'Tiếng Việt',
-      icon: '📘',
-      color: '#ec4899',
-      gradient: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
-      route: '/vietnamese'
-    },
-    {
-      id: 'english',
-      title: 'Tiếng Anh',
-      icon: '🦁',
-      color: '#f59e0b',
-      gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-      route: '/english'
-    },
-    {
-      id: 'games',
-      title: 'Trò Chơi',
-      icon: '🎮',
-      color: '#10b981',
-      gradient: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
-      route: '/games'
-    }
-  ];
+  subjects$ = this.subjectService.getSubjects();
 
   selectSubject(subject: SubjectCard) {
     this.mascot.setEmotion('happy', `Tuyệt vời! Cùng học ${subject.title} nhé!`, 2000);
@@ -385,6 +325,6 @@ export class SubjectSelectionComponent {
   }
 
   goBack() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/select-age']);
   }
 }

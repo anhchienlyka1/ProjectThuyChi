@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../../core/services/mascot.service';
+import { AudioService } from '../../../core/services/audio.service';
 
-interface NumberData {
-    value: number;
-    label: string;
-    image: string; // Emoji đại diện
-    color: string;
-    items: string[]; // Icon của vật thể để đếm
-}
+import { OnInit } from '@angular/core';
+import { CountingService } from '../../../core/services/counting.service';
+import { NumberData } from '../../../core/models/number-data.model';
+import { delay } from 'rxjs';
 
 @Component({
     selector: 'app-counting',
@@ -32,28 +30,32 @@ interface NumberData {
     .animate-pop-in { animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
   `]
 })
-export class CountingComponent {
+export class CountingComponent implements OnInit {
     private router = inject(Router);
     private mascot = inject(MascotService);
+    private countingService = inject(CountingService);
+    private audioService = inject(AudioService);
 
     currentNumber: number = 1;
+    numberData: NumberData[] = [];
 
-    numberData: NumberData[] = [
-        { value: 0, label: 'Số Không', image: '⭕', color: '#9CA3AF', items: [] },
-        { value: 1, label: 'Số Một', image: '🍎', color: '#EF4444', items: ['🍎'] },
-        { value: 2, label: 'Số Hai', image: '🦆', color: '#F59E0B', items: ['🦆', '🦆'] },
-        { value: 3, label: 'Số Ba', image: '🦋', color: '#10B981', items: ['🦋', '🦋', '🦋'] },
-        { value: 4, label: 'Số Bốn', image: '🍀', color: '#3B82F6', items: ['🍀', '🍀', '🍀', '🍀'] },
-        { value: 5, label: 'Số Năm', image: '⭐', color: '#8B5CF6', items: ['⭐', '⭐', '⭐', '⭐', '⭐'] },
-        { value: 6, label: 'Số Sáu', image: '🐌', color: '#EC4899', items: ['🐌', '🐌', '🐌', '🐌', '🐌', '🐌'] },
-        { value: 7, label: 'Số Bảy', image: '🍭', color: '#F472B6', items: ['🍭', '🍭', '🍭', '🍭', '🍭', '🍭', '🍭'] },
-        { value: 8, label: 'Số Tám', image: '🐙', color: '#6366F1', items: ['🐙', '🐙', '🐙', '🐙', '🐙', '🐙', '🐙', '🐙'] },
-        { value: 9, label: 'Số Chín', image: '🍄', color: '#EF4444', items: ['🍄', '🍄', '🍄', '🍄', '🍄', '🍄', '🍄', '🍄', '🍄'] },
-        { value: 10, label: 'Số Mười', image: '🌞', color: '#F59E0B', items: ['🌞', '🌞', '🌞', '🌞', '🌞', '🌞', '🌞', '🌞', '🌞', '🌞'] }
-    ];
+    ngOnInit() {
+        this.countingService.getNumbers().subscribe(data => {
+            this.numberData = data;
+
+            // Speak welcome message combined with the first number to ensure smooth playback
+            const welcomeText = `Chào mừng các con đến với bài học đếm số. ${this.currentData?.label || ''}`;
+            this.audioService.speak(welcomeText);
+            delay(5000);
+        });
+    }
+    ngOnDestroy() {
+        this.audioService.stop();
+    }
 
     get currentData(): NumberData {
-        return this.numberData.find(d => d.value === this.currentNumber) || this.numberData[0];
+        const found = this.numberData.find(d => d.value === this.currentNumber);
+        return found || this.numberData[0] || { value: 1, label: '...', image: '', color: '#000', items: [] };
     }
 
     goBack() {
@@ -64,6 +66,7 @@ export class CountingComponent {
         if (this.currentNumber < 10) {
             this.currentNumber++;
             this.triggerMascot();
+            this.readNumber();
         }
     }
 
@@ -71,12 +74,14 @@ export class CountingComponent {
         if (this.currentNumber > 0) {
             this.currentNumber--;
             this.triggerMascot();
+            this.readNumber();
         }
     }
 
     selectNumber(num: number) {
         this.currentNumber = num;
         this.triggerMascot();
+        this.readNumber();
     }
 
     triggerMascot() {
@@ -87,5 +92,11 @@ export class CountingComponent {
         ];
         const randomMsg = messages[Math.floor(Math.random() * messages.length)];
         this.mascot.setEmotion('happy', randomMsg, 3000);
+    }
+
+    readNumber() {
+        // "Số một", "Số hai"
+        const text = `${this.currentData?.label || this.currentNumber}`;
+        this.audioService.speak(text);
     }
 }

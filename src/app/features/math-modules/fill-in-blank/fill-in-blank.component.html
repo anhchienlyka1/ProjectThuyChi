@@ -1,0 +1,109 @@
+<div
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 p-4 md:p-8 flex flex-col relative overflow-hidden">
+
+    <!-- Game Finished Overlay -->
+    <div *ngIf="isFinished"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+        <div
+            class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-cyan-400 relative overflow-hidden">
+            <h2
+                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600 mb-8">
+                Hoàn Thành!
+            </h2>
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="flex flex-col items-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200">
+                    <span class="text-4xl mb-2">⭐</span>
+                    <span class="text-3xl font-black text-yellow-600">{{score}}</span>
+                </div>
+                <div class="flex flex-col items-center p-4 bg-green-50 rounded-2xl border-2 border-green-200">
+                    <span class="text-4xl mb-2">✅</span>
+                    <span class="text-3xl font-black text-green-600">{{correctCount}}</span>
+                </div>
+                <div class="flex flex-col items-center p-4 bg-red-50 rounded-2xl border-2 border-red-200">
+                    <span class="text-4xl mb-2">❌</span>
+                    <span class="text-3xl font-black text-red-600">{{wrongCount}}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <kid-button (click)="startGame()" variant="primary" size="lg" class="w-full justify-center">
+                    🔄 Chơi Lại
+                </kid-button>
+                <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
+                    🏠 Về Menu
+                </kid-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div *ngIf="showFeedback"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[3rem] p-12 shadow-2xl transform animate-bounce-in text-center border-8"
+            [ngClass]="isCorrect ? 'border-green-400' : 'border-red-400'">
+            <div class="text-9xl mb-6">
+                {{ isCorrect ? '🎉' : '🤔' }}
+            </div>
+            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
+                [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
+                {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
+            </h2>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4 relative z-10">
+        <kid-button (click)="goBack()" variant="neutral" size="md">
+            ← Quay lại
+        </kid-button>
+        <div
+            class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-cyan-400 flex items-center gap-2 animate-bounce">
+            <span class="text-2xl">⭐</span>
+            <span class="text-2xl font-black text-cyan-500">{{score}}</span>
+        </div>
+    </div>
+
+    <div class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full relative z-10 pb-8">
+        <h1
+            class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 mb-2 drop-shadow-sm">
+            Điền Số Vào Chỗ Trống
+        </h1>
+        <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-cyan-100 mb-8 shadow-sm">
+            <span class="text-cyan-700 font-bold text-lg">Câu hỏi {{currentQuestionIndex}} / {{totalQuestions}}</span>
+        </div>
+
+        <!-- Question Area -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-12 w-full min-h-[200px] px-4">
+
+            <ng-container *ngFor="let part of displayParts; let i = index">
+                <!-- Variables/Numbers/Question Marks -->
+                <div *ngIf="part !== '+' && part !== '-' && part !== '='" [class.animate-pulse-scale]="part === '?'"
+                    class="bg-white rounded-3xl p-6 shadow-xl border-b-8 min-w-[100px] md:min-w-[140px] h-[140px] flex flex-col items-center justify-center transition-all duration-300 transform hover:scale-105"
+                    [ngClass]="part === '?' ? 'border-yellow-300 bg-yellow-50' : 'border-cyan-200'">
+
+                    <div class="text-6xl md:text-8xl font-black"
+                        [ngClass]="part === '?' ? 'text-yellow-500' : 'text-cyan-600'">
+                        {{part}}
+                    </div>
+                </div>
+
+                <!-- Operators -->
+                <div *ngIf="part === '+' || part === '-' || part === '='"
+                    class="text-4xl md:text-6xl font-black text-gray-400 mx-2">
+                    {{part}}
+                </div>
+            </ng-container>
+
+        </div>
+
+        <!-- Options -->
+        <div class="grid grid-cols-3 gap-6 w-full max-w-2xl px-4">
+            <button *ngFor="let opt of options" (click)="checkAnswer(opt)"
+                class="group relative bg-white hover:bg-cyan-50 rounded-[2rem] py-6 shadow-lg border-b-8 border-gray-200 active:border-b-0 active:translate-y-2 transition-all flex flex-col items-center justify-center transform hover:scale-105">
+                <span
+                    class="text-5xl md:text-6xl font-black text-gray-800 group-hover:text-cyan-600 transition-colors">{{opt}}</span>
+            </button>
+        </div>
+    </div>
+</div>

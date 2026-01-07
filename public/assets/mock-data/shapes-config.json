@@ -1,0 +1,132 @@
+{
+    "title": "Hình Học",
+    "instruction": "Bé hãy chọn hình đúng theo câu hỏi nhé!",
+    "totalQuestions": 5,
+    "pointsPerQuestion": 20,
+    "questions": [
+        {
+            "id": 1,
+            "question": "Hình nào là hình TRÒN?",
+            "correctAnswer": "circle",
+            "options": [
+                {
+                    "id": "square",
+                    "icon": "🟥",
+                    "color": "text-red-500"
+                },
+                {
+                    "id": "circle",
+                    "icon": "🔴",
+                    "color": "text-blue-500"
+                },
+                {
+                    "id": "triangle",
+                    "icon": "🔺",
+                    "color": "text-yellow-500"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "Hình nào là hình VUÔNG?",
+            "correctAnswer": "square",
+            "options": [
+                {
+                    "id": "circle",
+                    "icon": "🔵",
+                    "color": "text-blue-500"
+                },
+                {
+                    "id": "square",
+                    "icon": "🟦",
+                    "color": "text-blue-500"
+                },
+                {
+                    "id": "star",
+                    "icon": "⭐",
+                    "color": "text-yellow-500"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Hình nào là hình TAM GIÁC?",
+            "correctAnswer": "triangle",
+            "options": [
+                {
+                    "id": "triangle",
+                    "icon": "🔺",
+                    "color": "text-red-500"
+                },
+                {
+                    "id": "square",
+                    "icon": "⬜",
+                    "color": "text-gray-200"
+                },
+                {
+                    "id": "circle",
+                    "icon": "🟢",
+                    "color": "text-green-500"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "Hình nào màu XANH LÁ?",
+            "correctAnswer": "green_square",
+            "options": [
+                {
+                    "id": "red_circle",
+                    "icon": "🔴",
+                    "color": "text-red-500"
+                },
+                {
+                    "id": "green_square",
+                    "icon": "🟩",
+                    "color": "text-green-500"
+                },
+                {
+                    "id": "blue_triangle",
+                    "icon": "🔹",
+                    "color": "text-blue-500"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "Hình nào là NGÔI SAO?",
+            "correctAnswer": "star",
+            "options": [
+                {
+                    "id": "heart",
+                    "icon": "❤️",
+                    "color": "text-red-500"
+                },
+                {
+                    "id": "star",
+                    "icon": "⭐",
+                    "color": "text-yellow-500"
+                },
+                {
+                    "id": "moon",
+                    "icon": "🌙",
+                    "color": "text-yellow-200"
+                }
+            ]
+        }
+    ],
+    "feedback": {
+        "correct": [
+            "Đúng rồi! Bé giỏi quá! 🎉",
+            "Chính xác! 🌟"
+        ],
+        "wrong": [
+            "Ôi sai rồi. Thử lại nhé! 💪",
+            "Cố lên! 🍀"
+        ]
+    },
+    "mascotPrompts": {
+        "start": "Chào con! Thế giới hình học thật thú vị!",
+        "question": "Câu hỏi số {index}: {question}"
+    }
+}
