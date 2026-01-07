@@ -1,86 +1,126 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+import { retry } from 'rxjs/operators';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AudioService {
-    private synth = window.speechSynthesis;
-    // Track if audio is currently playing
-    isPlaying = signal<boolean>(false);
+  private http = inject(HttpClient);
+  private apiKey = 'k0ZwlmmrVirZfn6nRxx6ouyl9oxRpEcI'; // API Key provided by user
+  private apiUrl = '/fpt-api/hmi/tts/v5';
 
-    voices: SpeechSynthesisVoice[] = [];
+  // Track if audio is currently playing
+  isPlaying = signal<boolean>(false);
+  private currentAudio: HTMLAudioElement | null = null;
+  private currentSubscription: Subscription | null = null;
 
-    constructor() {
-        if (this.synth) {
-            // Chrome loads voices asynchronously
-            if (this.synth.onvoiceschanged !== undefined) {
-                this.synth.onvoiceschanged = () => this.loadVoices();
-            }
-            this.loadVoices();
+  /**
+   * Reads the provided text using FPT AI Text-to-Speech
+   * @param text The text to read
+   * @param voice Voice ID (default: 'banmai' - Female Northern)
+   * Options: 'banmai', 'leminh', 'myan', 'thuphuong', 'ngocminh', ...
+   */
+  speak(text: string, voice: string = 'banmai'): void {
+    if (!text) return;
+
+    // Cancel any ongoing speech
+    this.stop();
+
+    const headers = new HttpHeaders({
+      'api-key': this.apiKey,
+      'voice': voice,
+      'speed': '0', // -3 to 3 (0 is normal)
+      'format': 'mp3'
+    });
+
+    this.isPlaying.set(true);
+
+    console.log('FPT TTS Request:', { url: this.apiUrl, text, headers: headers.keys() });
+
+    // FPT AI expects the text in the body
+    this.currentSubscription = this.http.post<any>(this.apiUrl, text, { headers }).subscribe({
+      next: (response) => {
+        console.log('FPT TTS Response:', response);
+        if (response && response.async) {
+          this.playUrl(response.async);
+        } else {
+          console.error('FPT AI TTS Error: Invalid response format', response);
+          this.isPlaying.set(false);
         }
+      },
+      error: (err) => {
+        console.error('FPT AI TTS Request Failed:', err);
+        this.isPlaying.set(false);
+      }
+    });
+  }
+
+  private playUrl(url: string) {
+    // Rewrite URL to use proxy
+    // Original: https://file01.fpt.ai/text2speech-v5/...
+    // Proxy: /text2speech-v5/...
+    const proxyUrl = url.replace('https://file01.fpt.ai', '');
+
+    console.log('Attempting to download and play audio from (Proxy):', proxyUrl);
+
+    // Download the audio file as a Blob first to ensure it exists and is valid
+    this.http.get(proxyUrl, { responseType: 'blob' }).pipe(
+      retry({ count: 2, delay: 500 }) // Retry up to 2 times with a 500ms delay
+    ).subscribe({
+      next: (blob: Blob) => {
+        console.log('Audio blob downloaded successfully, size:', blob.size);
+        const audioUrl = URL.createObjectURL(blob);
+        this.currentAudio = new Audio(audioUrl);
+
+        this.currentAudio.onended = () => {
+          this.isPlaying.set(false);
+          URL.revokeObjectURL(audioUrl); // Clean up
+          this.currentAudio = null;
+        };
+
+        this.currentAudio.onerror = (e) => {
+          console.error('Audio playback error (Blob):', e);
+          this.isPlaying.set(false);
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        this.currentAudio.play().catch(err => {
+          console.warn('Playback interrupted or blocked:', err);
+          this.isPlaying.set(false);
+        });
+      },
+      error: (err) => {
+        console.error('Failed to download audio file:', err.status, err.statusText);
+        console.error('URL was:', proxyUrl);
+        this.isPlaying.set(false);
+      }
+    });
+  }
+
+  /**
+   * Stops any current speech
+   */
+  stop(): void {
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+      this.currentSubscription = null;
     }
-
-    private loadVoices() {
-        if (!this.synth) return;
-        this.voices = this.synth.getVoices();
-        console.log('Voices loaded:', this.voices.length);
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio.currentTime = 0;
+      this.currentAudio = null;
     }
+    this.isPlaying.set(false);
+  }
 
-    /**
-     * Reads the provided text using Text-to-Speech
-     * @param text The text to read
-     * @param lang Language code (default: 'vi-VN')
-     */
-    speak(text: string, lang: string = 'vi-VN'): void {
-        if (!this.synth) {
-            console.warn('Web Speech API not supported in this browser.');
-            return;
-        }
-
-        // Cancel any ongoing speech
-        this.stop();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-
-        // Try to find a specific high-quality voice
-        // Prioritize "Google" voices as they are usually neural/higher quality online
-        if (this.voices.length === 0) this.loadVoices();
-
-        const vnVoice = this.voices.find(v => v.lang === lang && v.name.includes('Google'))
-            || this.voices.find(v => v.lang === lang);
-
-        if (vnVoice) {
-            utterance.voice = vnVoice;
-            console.log('Using voice:', vnVoice.name);
-        }
-
-        utterance.rate = 0.8; // Slower for better clarity
-        utterance.pitch = 1.0; // Natural pitch (high pitch might distort tones)
-
-        utterance.onstart = () => this.isPlaying.set(true);
-        utterance.onend = () => this.isPlaying.set(false);
-        utterance.onerror = () => this.isPlaying.set(false);
-
-        this.synth.speak(utterance);
-    }
-
-    /**
-     * Stops any current speech
-     */
-    stop(): void {
-        if (this.synth) {
-            this.synth.cancel();
-            this.isPlaying.set(false);
-        }
-    }
-
-    /**
-     * Plays a sound effect from a URL
-     * @param path Path to the audio file
-     */
-    playSound(path: string): void {
-        const audio = new Audio(path);
-        audio.play().catch(err => console.error('Error playing sound:', err));
-    }
+  /**
+   * Plays a sound effect from a URL
+   * @param path Path to the audio file
+   */
+  playSound(path: string): void {
+    const audio = new Audio(path);
+    audio.play().catch(err => console.error('Error playing sound:', err));
+  }
 }

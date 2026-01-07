@@ -1,0 +1,17 @@
+{
+    "/fpt-api": {
+        "target": "https://api.fpt.ai",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "pathRewrite": {
+            "^/fpt-api": ""
+        }
+    },
+    "/text2speech-v5": {
+        "target": "https://file01.fpt.ai",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}
