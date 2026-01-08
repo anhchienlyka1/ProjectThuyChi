@@ -90,7 +90,7 @@ export class CountingComponent implements OnInit {
       `Con hãy đếm xem có bao nhiêu ${this.currentData.items[0] || 'hình'} nhé!`
     ];
     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    this.mascot.setEmotion('happy', randomMsg, 3000);
+    this.mascot.setEmotion('happy', randomMsg, true, 3000);
   }
 
   readNumber() {

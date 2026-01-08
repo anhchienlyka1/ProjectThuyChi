@@ -22,7 +22,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <!-- Mascot/Avatar Section -->
             <div class="mascot-container" (click)="pokeMascot()">
                 <div class="mascot-box">
-                    <img src="/assets/images/mascot-girl.png"
+                    <img src="/assets/images/avatar.png"
                          alt="Mascot - Bé Thủy Chi"
                          class="mascot-img">
                 </div>
@@ -314,6 +314,6 @@ export class HomeComponent implements OnInit {
   }
 
   pokeMascot() {
-    this.mascot.setEmotion('happy', 'Hihi, nhột quá!', 2000);
+    this.mascot.setEmotion('happy', 'Hihi, nhột quá!', true, 2000);
   }
 }

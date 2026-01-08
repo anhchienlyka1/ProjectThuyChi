@@ -1,0 +1,93 @@
+{
+    "title": "Học Xem Giờ",
+    "questions": [
+        {
+            "id": 1,
+            "time": "07:00",
+            "hour": 7,
+            "minute": 0,
+            "question": "Đồng hồ chỉ mấy giờ?",
+            "options": [
+                "7:00",
+                "8:00",
+                "6:00",
+                "12:00"
+            ],
+            "correctAnswer": "7:00"
+        },
+        {
+            "id": 2,
+            "time": "10:30",
+            "hour": 10,
+            "minute": 30,
+            "question": "Đồng hồ chỉ mấy giờ?",
+            "options": [
+                "10:00",
+                "10:30",
+                "11:30",
+                "9:30"
+            ],
+            "correctAnswer": "10:30"
+        },
+        {
+            "id": 3,
+            "time": "03:00",
+            "hour": 3,
+            "minute": 0,
+            "question": "Đồng hồ chỉ mấy giờ?",
+            "options": [
+                "2:00",
+                "3:00",
+                "4:00",
+                "3:30"
+            ],
+            "correctAnswer": "3:00"
+        },
+        {
+            "id": 4,
+            "time": "06:15",
+            "hour": 6,
+            "minute": 15,
+            "question": "Đồng hồ chỉ mấy giờ?",
+            "options": [
+                "6:00",
+                "6:15",
+                "6:30",
+                "6:45"
+            ],
+            "correctAnswer": "6:15"
+        },
+        {
+            "id": 5,
+            "time": "12:00",
+            "hour": 12,
+            "minute": 0,
+            "question": "Đồng hồ chỉ mấy giờ?",
+            "options": [
+                "11:00",
+                "12:00",
+                "1:00",
+                "6:00"
+            ],
+            "correctAnswer": "12:00"
+        }
+    ],
+    "mascotPrompts": {
+        "start": "Chào con! Hôm nay chúng ta sẽ học xem giờ nhé! ⏰",
+        "question": "Câu {index}: {question}"
+    },
+    "feedback": {
+        "correct": [
+            "Đúng rồi!",
+            "Giỏi quá!",
+            "Con xem giờ rất siêu!",
+            "Chính xác!"
+        ],
+        "wrong": [
+            "Thử lại nào!",
+            "Chưa đúng rồi!",
+            "Quan sát kỹ kim giờ và kim phút nhé!",
+            "Cố lên con!"
+        ]
+    }
+}

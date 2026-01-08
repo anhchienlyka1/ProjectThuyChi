@@ -82,5 +82,29 @@
         "route": "/math/logic",
         "isLocked": false,
         "stars": 0
+    },
+    {
+        "id": "time",
+        "levelNumber": 8,
+        "title": "Xem Giờ",
+        "subtitle": "Học xem đồng hồ",
+        "icon": "⏰",
+        "color": "#FF7675",
+        "gradient": "linear-gradient(135deg, #FF7675 0%, #FFA29E 100%)",
+        "route": "/math/time",
+        "isLocked": false,
+        "stars": 0
+    },
+    {
+        "id": "sorting",
+        "levelNumber": 9,
+        "title": "Sắp Xếp",
+        "subtitle": "Thứ tự Lớn - Bé",
+        "icon": "🔢",
+        "color": "#0984E3",
+        "gradient": "linear-gradient(135deg, #0984E3 0%, #74B9FF 100%)",
+        "route": "/math/sorting",
+        "isLocked": false,
+        "stars": 0
     }
 ]

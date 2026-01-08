@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IconsModule } from '../icons/icons.module';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'neutral';
-export type ButtonSize = 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({
     selector: 'kid-button',
@@ -43,6 +43,7 @@ export class KidButtonComponent {
             // Should keep size classes but override colors and behavior
             let sizeClass = '';
             switch (this.size) {
+                case 'sm': sizeClass = 'h-10 px-4 text-base min-w-[90px]'; break;
                 case 'md': sizeClass = 'h-14 px-8 text-lg min-w-[140px]'; break;
                 case 'lg': sizeClass = 'h-18 px-10 text-2xl min-w-[200px] py-4'; break;
             }
@@ -55,6 +56,7 @@ export class KidButtonComponent {
         // Size
         let sizeClass = '';
         switch (this.size) {
+            case 'sm': sizeClass = 'h-10 px-4 text-base min-w-[90px]'; break;
             case 'md': sizeClass = 'h-14 px-8 text-lg min-w-[140px]'; break;
             case 'lg': sizeClass = 'h-18 px-10 text-2xl min-w-[200px] py-4'; break;
         }
@@ -87,6 +89,11 @@ export class KidButtonComponent {
     }
 
     get iconSize(): number {
-        return this.size === 'lg' ? 32 : 24;
+        switch (this.size) {
+            case 'sm': return 18;
+            case 'md': return 24;
+            case 'lg': return 32;
+            default: return 24;
+        }
     }
 }

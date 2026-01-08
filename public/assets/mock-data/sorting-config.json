@@ -1,0 +1,102 @@
+{
+    "title": "Sắp Xếp Số",
+    "questions": [
+        {
+            "id": 1,
+            "question": "Sắp xếp các số theo thứ tự từ bé đến lớn",
+            "order": "asc",
+            "items": [
+                5,
+                2,
+                8,
+                1
+            ],
+            "correctSequence": [
+                1,
+                2,
+                5,
+                8
+            ]
+        },
+        {
+            "id": 2,
+            "question": "Sắp xếp các số theo thứ tự từ lớn đến bé",
+            "order": "desc",
+            "items": [
+                3,
+                7,
+                4,
+                9
+            ],
+            "correctSequence": [
+                9,
+                7,
+                4,
+                3
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Số nào bé nhất?",
+            "type": "find-min",
+            "items": [
+                12,
+                5,
+                20,
+                8
+            ],
+            "correctSequence": [
+                5
+            ]
+        },
+        {
+            "id": 4,
+            "question": "Sắp xếp các số theo thứ tự từ bé đến lớn",
+            "order": "asc",
+            "items": [
+                15,
+                10,
+                25,
+                20
+            ],
+            "correctSequence": [
+                10,
+                15,
+                20,
+                25
+            ]
+        },
+        {
+            "id": 5,
+            "question": "Số nào lớn nhất?",
+            "type": "find-max",
+            "items": [
+                30,
+                15,
+                45,
+                10
+            ],
+            "correctSequence": [
+                45
+            ]
+        }
+    ],
+    "mascotPrompts": {
+        "start": "Chào con! Hãy cùng sắp xếp các số nhé! 🔢",
+        "question": "Câu {index}: {question}"
+    },
+    "feedback": {
+        "correct": [
+            "Hoan hô!",
+            "Chính xác!",
+            "Thông minh quá!",
+            "Tuyệt vời!"
+        ],
+        "wrong": [
+            "Sai rồi, thử lại nhé!",
+            "Chưa đúng thứ tự đâu!",
+            "Cố lên nào!",
+            "Kiểm tra lại nhé!"
+        ]
+    }
+}

@@ -171,9 +171,7 @@ import { SubjectCard } from '../../core/models/subject.model';
       animation: fadeIn 0.8s ease-out 0.4s backwards;
     }
 
-    .cards-grid .subject-card:last-child {
-      grid-column: 2;
-    }
+
 
     .subject-card {
       position: relative;
@@ -276,9 +274,7 @@ import { SubjectCard } from '../../core/models/subject.model';
         gap: 20px;
       }
 
-      .cards-grid .subject-card:last-child {
-        grid-column: 1;
-      }
+
 
       .subject-card {
         min-height: 180px;

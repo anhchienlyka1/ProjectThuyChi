@@ -61,6 +61,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/math-modules/logic/logic.component').then(m => m.LogicComponent)
       },
       {
+        path: 'math/time',
+        title: 'Xem Giờ',
+        loadComponent: () => import('./features/math-modules/time/time.component').then(m => m.TimeComponent)
+      },
+      {
+        path: 'math/sorting',
+        title: 'Sắp Xếp',
+        loadComponent: () => import('./features/math-modules/sorting/sorting.component').then(m => m.SortingComponent)
+      },
+      {
         path: 'math',
         title: 'Toán Học',
         loadComponent: () => import('./features/math-modules/math-modules.component').then(m => m.MathModulesComponent)
@@ -78,6 +88,16 @@ export const routes: Routes = [
       {
         path: 'games',
         title: 'Trò Chơi',
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+      },
+      {
+        path: 'exam-practice',
+        title: 'Bé Luyện Thi',
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+      },
+      {
+        path: 'fairy-tales',
+        title: 'Truyện Cổ Tích',
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       }
     ]

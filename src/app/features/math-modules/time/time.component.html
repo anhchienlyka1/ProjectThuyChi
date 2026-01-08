@@ -1,0 +1,119 @@
+<div
+    class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-2 md:p-4 flex flex-col relative overflow-hidden">
+
+    <!-- Game Finished Overlay -->
+    <div *ngIf="isFinished"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+        <div
+            class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-pink-400 relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://www.svgrepo.com/show/308930/confetti.svg')] bg-cover">
+            </div>
+
+            <h2
+                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-8">
+                Hoàn Thành!
+            </h2>
+
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="flex flex-col items-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200">
+                    <span class="text-4xl mb-2">⭐</span>
+                    <span class="text-3xl font-black text-yellow-600">{{score}}</span>
+                    <span class="text-sm font-bold text-yellow-800 uppercase">Điểm</span>
+                </div>
+                <div class="flex flex-col items-center p-4 bg-green-50 rounded-2xl border-2 border-green-200">
+                    <span class="text-4xl mb-2">✅</span>
+                    <span class="text-3xl font-black text-green-600">{{correctCount}}</span>
+                    <span class="text-sm font-bold text-green-800 uppercase">Đúng</span>
+                </div>
+                <div class="flex flex-col items-center p-4 bg-red-50 rounded-2xl border-2 border-red-200">
+                    <span class="text-4xl mb-2">❌</span>
+                    <span class="text-3xl font-black text-red-600">{{wrongCount}}</span>
+                    <span class="text-sm font-bold text-red-800 uppercase">Sai</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <kid-button (click)="startGame()" variant="primary" size="lg" class="w-full justify-center">
+                    🔄 Chơi Lại
+                </kid-button>
+                <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
+                    🏠 Về Menu
+                </kid-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div *ngIf="showFeedback"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[3rem] p-12 shadow-2xl transform animate-bounce-in text-center border-8"
+            [ngClass]="isCorrect ? 'border-green-400' : 'border-red-400'">
+            <div class="text-9xl mb-6">
+                {{ isCorrect ? '🎉' : '🤔' }}
+            </div>
+            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
+                [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
+                {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
+            </h2>
+            <p class="text-2xl text-gray-500 font-bold">
+                {{ isCorrect ? 'Bé quá siêu!' : 'Cố gắng lại nhé!' }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-2 relative z-10 px-2">
+        <kid-button (click)="goBack()" variant="neutral" size="sm">
+            ← Quay lại
+        </kid-button>
+        <div
+            class="bg-white px-4 py-1 rounded-full shadow-lg border-2 border-pink-400 flex items-center gap-2 animate-bounce">
+            <span class="text-xl">⭐</span>
+            <span class="text-xl font-black text-pink-500">{{score}}</span>
+        </div>
+    </div>
+
+    <div class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full relative z-10 pb-4">
+
+        <h1
+            class="text-2xl md:text-3xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2 drop-shadow-sm">
+            Học Xem Giờ
+        </h1>
+        <div class="flex items-center gap-4 mb-4">
+            <div class="bg-white/80 backdrop-blur px-4 py-1 rounded-full border border-pink-100 shadow-sm">
+                <span class="text-pink-700 font-bold text-base">Câu hỏi {{currentQuestionIndex}} /
+                    {{totalQuestions}}</span>
+            </div>
+        </div>
+
+        <h2 class="text-xl md:text-2xl font-bold text-indigo-800 mb-4 text-center animate-float">
+            {{currentQuestion?.question}}
+        </h2>
+
+        <!-- Clock Display Area -->
+        <div class="mb-6 p-4 bg-white rounded-full shadow-xl border-[6px] border-pink-200 animate-pop-in">
+            <div class="clock-face">
+                <div class="clock-center"></div>
+                <!-- Hour hand -->
+                <div class="hand hour-hand" [style.transform]="getHourRotation()"></div>
+                <!-- Minute hand -->
+                <div class="hand minute-hand" [style.transform]="getMinuteRotation()"></div>
+                <!-- Numbers -->
+                <div *ngFor="let num of clockNumbers" class="clock-number" [ngStyle]="getNumberStyle(num)">
+                    {{num}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="grid grid-cols-2 gap-4 w-full max-w-xl">
+            <button *ngFor="let option of currentOptions" (click)="checkAnswer(option)"
+                class="group relative bg-white hover:bg-pink-50 rounded-[1.5rem] py-3 shadow-md border-b-4 border-gray-200 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center justify-center transform hover:scale-105">
+                <span
+                    class="text-3xl font-black text-gray-800 group-hover:text-pink-600 transition-colors">{{option}}</span>
+            </button>
+        </div>
+
+    </div>
+</div>
