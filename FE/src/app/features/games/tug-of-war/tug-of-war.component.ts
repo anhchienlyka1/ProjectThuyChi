@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
 
 interface Question {
@@ -18,7 +18,7 @@ interface PlayerState {
 @Component({
     selector: 'app-tug-of-war',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent],
+    imports: [CommonModule, RouterModule, KidButtonComponent],
     templateUrl: './tug-of-war.component.html',
     styleUrls: ['./tug-of-war.component.css']
 })

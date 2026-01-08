@@ -71,11 +71,12 @@ import { SubjectCard } from '../../core/models/subject.model';
     .selection-container {
       min-height: 100vh;
       background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%);
-      padding: 40px 20px;
+      padding: 40px 20px 120px 20px; /* Extra bottom padding to prevent scroll jumping on hover */
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
+      transform: translateZ(0); /* Hardware acceleration */
     }
 
     .back-button-wrapper {
@@ -84,7 +85,7 @@ import { SubjectCard } from '../../core/models/subject.model';
       left: 30px;
       z-index: 10;
     }
-    
+
     /* Removed old .back-button styles */
 
     .floating-decorations {
@@ -187,10 +188,11 @@ import { SubjectCard } from '../../core/models/subject.model';
       justify-content: center;
       min-height: 220px;
       border: 4px solid rgba(255, 255, 255, 0.5);
+      will-change: transform;
     }
 
     .subject-card:hover {
-      transform: translateY(-12px) scale(1.05);
+      transform: translateY(-10px) scale(1.02);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
       border-color: rgba(255, 255, 255, 0.8);
     }

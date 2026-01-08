@@ -1,7 +1,16 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+html {
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  /* Always show vertical scrollbar and reserve space */
+}
+
 body {
+  min-height: 100vh;
+  height: auto;
   font-family: 'Nunito', sans-serif;
   overflow-x: hidden;
   /* Prevent horizontal scroll from animations */

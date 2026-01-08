@@ -1,0 +1,65 @@
+<div class="game-container">
+    <!-- Header -->
+    <div class="game-header">
+        <button class="back-button" routerLink="/games">
+            ← Trở lại
+        </button>
+        <div class="progress-badge">
+            🏆 {{ treasuresFound }}/{{ TOTAL_TREASURES }} Kho Báu
+        </div>
+    </div>
+
+    <!-- Game Grid -->
+    <div class="game-board">
+        <div class="grid-container">
+            <div *ngFor="let cell of cells" class="cell" [class.locked]="cell.status === 'locked'"
+                [class.unlocked]="cell.status === 'unlocked'" [class.treasure]="cell.status === 'treasure'"
+                [class.failed]="cell.status === 'failed'" (click)="onCellClick(cell)">
+                <div class="cell-content">
+                    <span *ngIf="cell.status === 'locked'" class="icon">❓</span>
+                    <span *ngIf="cell.status === 'unlocked'" class="icon">✓</span>
+                    <span *ngIf="cell.status === 'treasure'" class="icon treasure-icon">💎</span>
+                    <span *ngIf="cell.status === 'failed'" class="icon">❌</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div *ngIf="showQuestion && selectedCell?.question" class="question-overlay" (click)="closeQuestion()">
+        <div class="question-modal" (click)="$event.stopPropagation()">
+            <h2 class="question-text">{{ selectedCell?.question?.text }}</h2>
+            <div class="options-grid">
+                <button *ngFor="let option of selectedCell?.question?.options" class="option-btn"
+                    (click)="handleAnswer(option)">
+                    {{ option }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div *ngIf="gameStatus === 'won'" class="win-overlay">
+        <div class="win-modal">
+            <h1 class="win-title">🎉 Chiến Thắng! 🎉</h1>
+            <p class="win-message">Bé đã tìm được tất cả {{ TOTAL_TREASURES }} kho báu!</p>
+            <div class="win-actions">
+                <kid-button variant="primary" (click)="restartGame()">Chơi Lại</kid-button>
+                <kid-button variant="neutral" routerLink="/games">Thoát</kid-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lose Screen -->
+    <div *ngIf="gameStatus === 'lost'" class="lose-overlay">
+        <div class="lose-modal">
+            <h1 class="lose-title">😢 Chưa Thành Công!</h1>
+            <p class="lose-message">Bé đã tìm được {{ treasuresFound }}/{{ TOTAL_TREASURES }} kho báu.</p>
+            <p class="lose-hint">Hãy thử lại nhé! 💪</p>
+            <div class="lose-actions">
+                <kid-button variant="primary" (click)="restartGame()">Chơi Lại</kid-button>
+                <kid-button variant="neutral" routerLink="/games">Thoát</kid-button>
+            </div>
+        </div>
+    </div>
+</div>

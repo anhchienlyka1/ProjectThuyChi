@@ -12,10 +12,16 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
       <h1 class="title">Bé Và Ba Mẹ Cùng Chơi Nhé!</h1>
       <div class="games-grid">
         <div class="game-card">
-          <div class="game-icon">🪢</div>
-          <h2 class="game-name">Kéo Co Trí Tuệ</h2>
+          <div class="game-icon">⚡</div>
+          <h2 class="game-name">Đường đua Trí Tuệ</h2>
           <p class="game-desc">Ba mẹ và bé cùng thi xem ai giải toán nhanh hơn để chiến thắng nhé!</p>
           <kid-button variant="primary" routerLink="tug-of-war">Chơi Ngay</kid-button>
+        </div>
+        <div class="game-card">
+          <div class="game-icon">🎯</div>
+          <h2 class="game-name">Săn Kho Báu</h2>
+          <p class="game-desc">Giải toán để tìm kho báu trên bản đồ bí ẩn!</p>
+          <kid-button variant="primary" routerLink="treasure-hunt">Chơi Ngay</kid-button>
         </div>
         <!-- Placeholder for more games -->
          <div class="game-card coming-soon">
@@ -24,7 +30,7 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
           <p class="game-desc">Nhiều trò chơi thú vị khác đang chờ đón!</p>
         </div>
       </div>
-      
+
       <div class="back-button-container">
           <kid-button variant="neutral" routerLink="/home">Quay Về</kid-button>
       </div>
@@ -92,6 +98,12 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
       margin-bottom: 1.5rem;
       line-height: 1.5;
       font-weight: 600;
+      flex: 1;
+      /* Push button to bottom */
+    }
+    kid-button {
+      margin-top: auto;
+      /* Align button at bottom */
     }
     .coming-soon {
         opacity: 0.7;

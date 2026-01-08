@@ -1,16 +1,21 @@
 <div class="game-container">
-    <!-- Header: Timer -->
-    <div class="game-header">
-        <div class="timer-badge">
-            ⏱️ {{ formattedTime }}
-        </div>
-        <div class="progress-badge">
-            Đường Đua Tốc Độ
-        </div>
-    </div>
-
     <!-- Race Track Visual Area (Top) -->
     <div class="race-game-visual">
+        <!-- Back Button -->
+        <button class="back-button" routerLink="/games">
+            ← Trở lại
+        </button>
+
+        <!-- Header: Timer & Title - Moved inside race track -->
+        <div class="game-header">
+            <div class="timer-badge">
+                ⏱️ {{ formattedTime }}
+            </div>
+            <div class="progress-badge">
+                Đường Đua Trí Tuệ
+            </div>
+        </div>
+
         <div class="track-container">
             <!-- Background -->
             <div class="track-bg"></div>
@@ -39,7 +44,7 @@
     <div class="game-board">
         <!-- Split Screen: Left Player (Tortoise) -->
         <div class="player-zone left-player" [class.winner-glow]="winner === 'left'">
-            <div class="player-avatar">� Rùa (Bé)</div>
+            <div class="player-avatar">🐢 Rùa (Bé)</div>
 
             <div *ngIf="gameStatus === 'playing' && currentQuestionLeft; else waitingState" class="question-panel">
                 <div class="question-text">{{ currentQuestionLeft.text }}</div>
@@ -54,7 +59,7 @@
 
         <!-- Split Screen: Right Player (Hare) -->
         <div class="player-zone right-player" [class.winner-glow]="winner === 'right'">
-            <div class="player-avatar">🐇 Thỏ (Ba Mẹ)</div>
+            <div class="player-avatar">🐰 Thỏ (Ba Mẹ)</div>
 
             <div *ngIf="gameStatus === 'playing' && currentQuestionRight; else waitingState" class="question-panel">
                 <div class="question-text">{{ currentQuestionRight.text }}</div>

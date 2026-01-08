@@ -92,8 +92,13 @@ export const routes: Routes = [
       },
       {
         path: 'games/tug-of-war',
-        title: 'Kéo Co Trí Tuệ',
+        title: 'Đường đua Trí Tuệ',
         loadComponent: () => import('./features/games/tug-of-war/tug-of-war.component').then(m => m.TugOfWarComponent)
+      },
+      {
+        path: 'games/treasure-hunt',
+        title: 'Săn Kho Báu Toán Học',
+        loadComponent: () => import('./features/games/treasure-hunt/treasure-hunt.component').then(m => m.TreasureHuntComponent)
       },
       {
         path: 'exam-practice',

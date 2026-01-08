@@ -1,323 +1,723 @@
 .game-container {
-    height: 100vh;
-    width: 100vw;
-    background: #fdf2f8;
-    /* Pink-50 */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-    font-family: 'Nunito', sans-serif;
+  height: 100vh;
+  width: 100vw;
+  background: #fdf2f8;
+  /* Pink-50 */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  /* Allow scroll on small screens */
+  position: relative;
+  font-family: 'Nunito', sans-serif;
 }
 
 .game-header {
-    height: 80px;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    color: #be185d;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    z-index: 10;
-    border-bottom: 1px solid #fbcfe8;
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 20;
+  /* Above race track */
 }
 
 .timer-badge,
 .progress-badge {
-    background: #fce7f3;
-    color: #9d174d;
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    font-weight: 900;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: rgba(252, 231, 243, 0.95);
+  /* Semi-transparent */
+  backdrop-filter: blur(8px);
+  color: #9d174d;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.back-button {
+  position: fixed;
+  /* Fixed để luôn hiển thị ở vị trí cố định */
+  top: 1rem;
+  left: 1rem;
+  /* Đổi sang bên trái */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  color: #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 100;
+  /* Tăng z-index để luôn ở trên */
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .game-board {
-    flex: 1;
-    display: flex;
-    position: relative;
+  flex: 1;
+  display: flex;
+  position: relative;
 }
 
 .player-zone {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 2rem;
-    transition: background 0.3s;
-    position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  transition: background 0.3s;
+  position: relative;
 }
 
 .left-player {
-    background: #eff6ff;
-    /* Blue-50 */
-    border-right: 2px solid rgba(0, 0, 0, 0.05);
+  background: #eff6ff;
+  /* Blue-50 */
+  border-right: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .right-player {
-    background: #faf5ff;
-    /* Purple-50 */
-    border-left: 2px solid rgba(0, 0, 0, 0.05);
+  background: #faf5ff;
+  /* Purple-50 */
+  border-left: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .player-avatar {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #475569;
-    font-weight: 800;
-    background: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 50px;
-    align-self: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #475569;
+  font-weight: 800;
+  background: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  align-self: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .question-panel {
-    background: white;
-    padding: 1.5rem;
-    /* Reduced padding from 2rem */
-    border-radius: 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 4px solid white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    /* Fill available space */
+  background: white;
+  padding: 0.75rem;
+  /* Giảm từ 1rem xuống 0.75rem */
+  border-radius: 18px;
+  /* Giảm từ 20px */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid white;
+  /* Giảm từ 3px */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  /* Fill available space */
 }
 
 .left-player .question-panel {
-    border-color: #dbeafe;
+  border-color: #dbeafe;
 }
 
 .right-player .question-panel {
-    border-color: #f3e8ff;
+  border-color: #f3e8ff;
 }
 
 .question-text {
-    font-size: 3rem;
-    /* Balanced: 2.5 -> 3rem */
-    font-weight: 900;
-    color: #334155;
-    margin-bottom: 1.5rem;
+  font-size: 3rem;
+  /* Balanced: 2.5 -> 3rem */
+  font-weight: 900;
+  color: #334155;
+  margin-bottom: 1.5rem;
 }
 
 .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .option-btn {
-    background: white;
-    border: 2px solid #e2e8f0;
-    padding: 1.2rem;
-    font-size: 2rem;
-    /* Restore to 2rem */
-    font-weight: 800;
-    border-radius: 18px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s;
-    color: #475569;
-    box-shadow: 0 4px 0 #cbd5e1;
+  background: white;
+  border: 2px solid #e2e8f0;
+  padding: 1.2rem;
+  font-size: 2rem;
+  /* Restore to 2rem */
+  font-weight: 800;
+  border-radius: 18px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  color: #475569;
+  box-shadow: 0 4px 0 #cbd5e1;
 }
 
 .option-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 0 #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #cbd5e1;
 }
 
 .option-btn:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 #cbd5e1;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #cbd5e1;
 }
 
 /* Specific colors for sides */
 .left-player .option-btn:hover {
-    background: #dbeafe;
-    border-color: #93c5fd;
-    color: #1e40af;
-    box-shadow: 0 6px 0 #93c5fd;
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+  box-shadow: 0 6px 0 #93c5fd;
 }
 
 .right-player .option-btn:hover {
-    background: #f3e8ff;
-    border-color: #d8b4fe;
-    color: #7e22ce;
-    box-shadow: 0 6px 0 #d8b4fe;
+  background: #f3e8ff;
+  border-color: #d8b4fe;
+  color: #7e22ce;
+  box-shadow: 0 6px 0 #d8b4fe;
 }
 
 /* Race Game Visual Area */
 .race-game-visual {
-    position: relative;
-    width: 100%;
-    height: 340px;
-    /* Balanced height: not too big, not too small */
-    background: #87CEEB;
-    /* Sky blue */
-    border-bottom: 4px solid #3b82f6;
-    z-index: 5;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 450px;
+  min-height: 450px;
+  max-height: 450px;
+  /* Tăng từ 400px lên 450px */
+  flex-shrink: 0;
+  /* Đảm bảo không bị co lại */
+  background: #87CEEB;
+  /* Sky blue */
+  border-bottom: 4px solid #3b82f6;
+  z-index: 5;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .track-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .track-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/assets/images/games/tug-of-war/race_track_bg.png');
-    background-size: cover;
-    /* Ensure it covers nicely, or 'contain' and repeat-x if seamless */
-    background-position: center bottom;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom,
+      #7ec850 0%,
+      #6fb83f 50%,
+      #5da830 100%);
+  /* Gradient màu xanh cỏ tươi mát */
 }
 
 .finish-line {
-    position: absolute;
-    right: 5%;
-    top: 15%;
-    bottom: 15%;
-    font-size: 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-left: 4px dashed white;
-    padding-left: 10px;
-    z-index: 5;
-    opacity: 0.8;
+  position: absolute;
+  right: 5%;
+  top: 15%;
+  bottom: 15%;
+  font-size: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 4px dashed white;
+  padding-left: 10px;
+  z-index: 5;
+  opacity: 0.8;
 }
 
 .racer-lane {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 140px;
-    /* Increased lane height for bigger characters */
-    display: flex;
-    align-items: center;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  /* Increased lane height for bigger characters */
+  display: flex;
+  align-items: center;
 }
 
 .lane-1 {
-    top: 0;
-    /* Align to very top */
+  top: 30px;
+  /* Hạ xuống 1 chút để không sát mép trên */
 }
 
 .lane-2 {
-    bottom: 0;
-    /* Align to very bottom */
+  bottom: 0;
+  /* Align to very bottom */
 }
 
 .racer-character {
-    position: absolute;
-    /* left is controlled by [style.left] */
-    transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    /* Removed fixed width/height restrictions to let image scale naturally */
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  position: absolute;
+  /* left is controlled by [style.left] */
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Removed fixed width/height restrictions to let image scale naturally */
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .racer-character img {
-    height: 110px;
-    /* Big and clear (increased from 50px) */
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+  height: 110px;
+  /* Big and clear (increased from 50px) */
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
 }
 
 
 
 /* End Overlay */
 .end-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    animation: fadeIn 0.3s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  animation: fadeIn 0.3s;
 }
 
 .result-card {
-    background: white;
-    padding: 3rem;
-    border-radius: 30px;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    border: 5px solid #FFD54F;
-    animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: white;
+  padding: 3rem;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  border: 5px solid #FFD54F;
+  animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .result-card h1 {
-    font-size: 3rem;
-    color: #5C6BC0;
-    margin-bottom: 1rem;
+  font-size: 3rem;
+  color: #5C6BC0;
+  margin-bottom: 1rem;
 }
 
 .winner-announcement {
-    font-size: 2.5rem;
-    color: #FF6B6B;
-    margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: #FF6B6B;
+  margin-bottom: 2rem;
 }
 
 .actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 @keyframes popIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes zoomIn {
-    from {
-        opacity: 0;
-        transform: scale(0.5);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .winner-glow {
-    box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.5);
+  box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.5);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - TABLET & MOBILE LANDSCAPE
+   ============================================ */
+
+/* Tablet (768px - 1280px) - Bao gồm iPad Air */
+@media (max-width: 1280px) {
+  .race-game-visual {
+    height: 320px;
+    min-height: 320px;
+    max-height: 320px;
+  }
+
+  .racer-lane {
+    height: 140px;
+  }
+
+  .racer-character img {
+    height: 100px;
+  }
+
+  .question-text {
+    font-size: 2.5rem;
+  }
+
+  .option-btn {
+    font-size: 1.8rem;
+    padding: 1rem;
+  }
+
+  .timer-badge,
+  .progress-badge {
+    font-size: 1rem;
+    padding: 0.4rem 1.2rem;
+  }
+
+  .result-card h1 {
+    font-size: 2.5rem;
+  }
+
+  .winner-announcement {
+    font-size: 2rem;
+  }
+}
+
+/* CRITICAL: Landscape mode with limited height (iPhone, small tablets) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .race-game-visual {
+    height: 120px !important;
+    min-height: 120px !important;
+    max-height: 120px !important;
+  }
+
+  .game-header {
+    top: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .timer-badge,
+  .progress-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .racer-lane {
+    height: 55px;
+  }
+
+  .racer-character img {
+    height: 45px;
+  }
+
+  .finish-line {
+    font-size: 1.2rem;
+  }
+
+  .game-board {
+    overflow-y: visible;
+    min-height: 0;
+  }
+
+  .player-zone {
+    padding: 0.3rem;
+    /* Giảm từ 0.4rem */
+  }
+
+  .player-avatar {
+    font-size: 0.75rem;
+    /* Giảm từ 0.8rem */
+    margin-bottom: 0.3rem;
+    /* Giảm từ 0.4rem */
+    padding: 0.2rem 0.5rem;
+  }
+
+  .question-panel {
+    padding: 0.4rem;
+    /* Giảm từ 0.5rem */
+    border-width: 2px;
+    /* Giảm border */
+  }
+
+  .question-text {
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    /* Giảm từ 0.5rem */
+  }
+
+  .options-grid {
+    gap: 0.3rem;
+    /* Giảm từ 0.4rem */
+  }
+
+  .option-btn {
+    font-size: 1rem;
+    padding: 0.4rem 0.5rem;
+    /* Giảm padding dọc từ 0.5rem */
+    border-radius: 8px;
+    box-shadow: 0 2px 0 #cbd5e1;
+  }
+
+  .option-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #cbd5e1;
+  }
+
+  .option-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #cbd5e1;
+  }
+
+  .back-button {
+    top: 0.5rem;
+    /* Giảm từ 1rem */
+    left: 0.5rem;
+    /* Đổi sang bên trái */
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* Mobile Landscape (480px - 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+  .race-game-visual {
+    height: 140px;
+    min-height: 140px;
+    max-height: 140px;
+  }
+
+  .game-header {
+    top: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .timer-badge,
+  .progress-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .racer-lane {
+    height: 65px;
+  }
+
+  .racer-character img {
+    height: 50px;
+  }
+
+  .finish-line {
+    font-size: 1.5rem;
+  }
+
+  .game-board {
+    overflow-y: auto;
+    /* Allow scroll if needed */
+  }
+
+  .player-zone {
+    padding: 0.5rem;
+  }
+
+  .player-avatar {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .question-panel {
+    padding: 0.75rem;
+  }
+
+  .question-text {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .options-grid {
+    gap: 0.5rem;
+  }
+
+  .option-btn {
+    font-size: 1.2rem;
+    padding: 0.6rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 0 #cbd5e1;
+  }
+
+  .option-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #cbd5e1;
+  }
+
+  .option-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #cbd5e1;
+  }
+
+  .result-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .result-card h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .winner-announcement {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Small Mobile Landscape (< 480px) */
+@media (max-width: 480px) and (orientation: landscape) {
+  .race-game-visual {
+    height: 120px;
+    min-height: 120px;
+    max-height: 120px;
+  }
+
+  .game-header {
+    top: 0.25rem;
+    gap: 0.25rem;
+  }
+
+  .timer-badge,
+  .progress-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .racer-lane {
+    height: 55px;
+  }
+
+  .racer-character img {
+    height: 45px;
+  }
+
+  .finish-line {
+    font-size: 1.2rem;
+  }
+
+  .game-board {
+    overflow-y: auto;
+  }
+
+  .player-zone {
+    padding: 0.4rem;
+  }
+
+  .player-avatar {
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .question-panel {
+    padding: 0.5rem;
+  }
+
+  .question-text {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .options-grid {
+    gap: 0.4rem;
+  }
+
+  .option-btn {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 #cbd5e1;
+  }
+
+  .option-btn:hover {
+    box-shadow: 0 3px 0 #cbd5e1;
+  }
+
+  .option-btn:active {
+    box-shadow: 0 1px 0 #cbd5e1;
+  }
+
+  .result-card {
+    padding: 1rem;
+    border-radius: 12px;
+    border-width: 3px;
+  }
+
+  .result-card h1 {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .winner-announcement {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Portrait Mode Warning (Optional - encourage landscape) */
+@media (max-width: 767px) and (orientation: portrait) {
+  .game-container::before {
+    content: "🔄 Xoay ngang để trải nghiệm tốt nhất";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    z-index: 1000;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+  }
 }
