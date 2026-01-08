@@ -1,59 +1,64 @@
-# ProjectThuyChi
+# Project Thuy Chi
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+Dự án ứng dụng học tập dành cho trẻ em.
 
-## Development server
+## Cấu trúc thư mục
 
-To start a local development server, run:
-
-```bash
-ng serve
+```
+ProjectThuyChi/
+├── FE/                 # Frontend Angular Application
+│   ├── src/           # Source code
+│   ├── public/        # Static assets
+│   ├── node_modules/  # Dependencies
+│   └── ...            # Configuration files
+├── docs/              # Documentation
+└── README.md          # This file
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Hướng dẫn chạy Frontend
 
-## Code scaffolding
+### Yêu cầu
+- Node.js (phiên bản 18 trở lên)
+- npm
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Cài đặt và chạy
 
+1. Di chuyển vào thư mục FE:
 ```bash
-ng generate component component-name
+cd FE
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+2. Cài đặt dependencies (nếu chưa cài):
 ```bash
-ng generate --help
+npm install
 ```
 
-## Building
-
-To build the project run:
-
+3. Chạy development server:
 ```bash
-ng build
+npm run dev
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+4. Mở trình duyệt và truy cập: `http://localhost:4200/`
 
-## Running unit tests
+### Các lệnh khác
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- Build production: `npm run build`
+- Run tests: `npm test`
 
-```bash
-ng test
-```
+## Công nghệ sử dụng
 
-## Running end-to-end tests
+- **Framework**: Angular 19
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
 
-For end-to-end (e2e) testing, run:
+## Tính năng chính
 
-```bash
-ng e2e
-```
+- Học toán cho trẻ em (3-7 tuổi)
+- Các module: Đếm số, So sánh, Cộng, Trừ, Điền vào chỗ trống, Hình học, Logic
+- Sắp xếp số và học thời gian
+- Giao diện thân thiện với trẻ em
+- Mascot hỗ trợ học tập
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Liên hệ
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Để biết thêm thông tin, vui lòng xem tài liệu trong thư mục `docs/`.

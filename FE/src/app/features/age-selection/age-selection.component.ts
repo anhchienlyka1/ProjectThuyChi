@@ -39,6 +39,7 @@ import { AgeOption } from '../../core/models/age.model';
       <div class="age-grid">
         <div *ngFor="let age of ages$ | async"
              class="age-card"
+             [class.disabled]="isAgeDisabled(age.value)"
              [style.background]="age.gradient"
              (click)="selectAge(age)"
              (mouseenter)="onAgeHover(age)"
@@ -185,10 +186,16 @@ import { AgeOption } from '../../core/models/age.model';
       background-color: rgba(255,255,255,0.1); /* fallback */
     }
 
-    .age-card:hover {
+    .age-card:not(.disabled):hover {
       transform: translateY(-15px) scale(1.05);
       box-shadow: 0 25px 35px rgba(0,0,0,0.15);
       border-color: white;
+    }
+
+    .age-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.8);
     }
 
     .age-number {
@@ -214,7 +221,7 @@ import { AgeOption } from '../../core/models/age.model';
       transition: transform 0.5s;
     }
 
-    .age-card:hover .card-shine {
+    .age-card:not(.disabled):hover .card-shine {
       transform: translateX(100%);
     }
 
@@ -409,7 +416,19 @@ export class AgeSelectionComponent {
 
 
 
+  allowedAges = [3, 6];
+
+  isAgeDisabled(age: number, validAges: number[] = this.allowedAges): boolean {
+    return !validAges.includes(age);
+  }
+
   selectAge(age: AgeOption) {
+    if (this.isAgeDisabled(age.value)) {
+      return;
+    }
+
+    this.ageService.selectedAge = age.value;
+
     this.mascot.setEmotion('happy', `Bé ${age.value} tuổi rồi. Lớn quá nhỉ!`, 2000);
     setTimeout(() => {
       // Navigate to select subject after selecting age
@@ -418,6 +437,9 @@ export class AgeSelectionComponent {
   }
 
   onAgeHover(age: AgeOption) {
+    if (this.isAgeDisabled(age.value)) {
+      return;
+    }
     this.mascot.setEmotion('thinking', `Bé là ${age.value} tuổi đúng không?`, 1500);
   }
 

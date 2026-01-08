@@ -78,7 +78,7 @@ export const routes: Routes = [
       {
         path: 'vietnamese',
         title: 'Tiếng Việt',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('./features/vietnamese-modules/vietnamese-modules.component').then(m => m.VietnameseModulesComponent)
       },
       {
         path: 'english',
