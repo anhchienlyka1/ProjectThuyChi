@@ -1,0 +1,324 @@
+.game-container {
+    height: 100vh;
+    width: 100vw;
+    background: #fdf2f8;
+    /* Pink-50 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Nunito', sans-serif;
+}
+
+.game-header {
+    height: 80px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    color: #be185d;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    border-bottom: 1px solid #fbcfe8;
+}
+
+.timer-badge,
+.progress-badge {
+    background: #fce7f3;
+    color: #9d174d;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 900;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.game-board {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+.player-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    transition: background 0.3s;
+    position: relative;
+}
+
+.left-player {
+    background: #eff6ff;
+    /* Blue-50 */
+    border-right: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.right-player {
+    background: #faf5ff;
+    /* Purple-50 */
+    border-left: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.player-avatar {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #475569;
+    font-weight: 800;
+    background: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    align-self: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.question-panel {
+    background: white;
+    padding: 1.5rem;
+    /* Reduced padding from 2rem */
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 4px solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    /* Fill available space */
+}
+
+.left-player .question-panel {
+    border-color: #dbeafe;
+}
+
+.right-player .question-panel {
+    border-color: #f3e8ff;
+}
+
+.question-text {
+    font-size: 3rem;
+    /* Balanced: 2.5 -> 3rem */
+    font-weight: 900;
+    color: #334155;
+    margin-bottom: 1.5rem;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.option-btn {
+    background: white;
+    border: 2px solid #e2e8f0;
+    padding: 1.2rem;
+    font-size: 2rem;
+    /* Restore to 2rem */
+    font-weight: 800;
+    border-radius: 18px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    color: #475569;
+    box-shadow: 0 4px 0 #cbd5e1;
+}
+
+.option-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #cbd5e1;
+}
+
+.option-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #cbd5e1;
+}
+
+/* Specific colors for sides */
+.left-player .option-btn:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1e40af;
+    box-shadow: 0 6px 0 #93c5fd;
+}
+
+.right-player .option-btn:hover {
+    background: #f3e8ff;
+    border-color: #d8b4fe;
+    color: #7e22ce;
+    box-shadow: 0 6px 0 #d8b4fe;
+}
+
+/* Race Game Visual Area */
+.race-game-visual {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    /* Balanced height: not too big, not too small */
+    background: #87CEEB;
+    /* Sky blue */
+    border-bottom: 4px solid #3b82f6;
+    z-index: 5;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.track-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.track-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/assets/images/games/tug-of-war/race_track_bg.png');
+    background-size: cover;
+    /* Ensure it covers nicely, or 'contain' and repeat-x if seamless */
+    background-position: center bottom;
+}
+
+.finish-line {
+    position: absolute;
+    right: 5%;
+    top: 15%;
+    bottom: 15%;
+    font-size: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 4px dashed white;
+    padding-left: 10px;
+    z-index: 5;
+    opacity: 0.8;
+}
+
+.racer-lane {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    /* Increased lane height */
+    display: flex;
+    align-items: center;
+}
+
+.lane-1 {
+    top: 40px;
+    /* Reduced from 50px */
+}
+
+.lane-2 {
+    bottom: 40px;
+    /* Reduced from 50px */
+}
+
+.racer-character {
+    position: absolute;
+    /* left is controlled by [style.left] */
+    transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 80px;
+    height: 80px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.racer-character img {
+    height: 50px;
+    /* Reduced from 70px to eliminate overlap potential */
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+}
+
+
+
+/* End Overlay */
+.end-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s;
+}
+
+.result-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 5px solid #FFD54F;
+    animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-card h1 {
+    font-size: 3rem;
+    color: #5C6BC0;
+    margin-bottom: 1rem;
+}
+
+.winner-announcement {
+    font-size: 2.5rem;
+    color: #FF6B6B;
+    margin-bottom: 2rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.winner-glow {
+    box-shadow: inset 0 0 50px rgba(255, 215, 0, 0.5);
+}

@@ -88,7 +88,12 @@ export const routes: Routes = [
       {
         path: 'games',
         title: 'Trò Chơi',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('./features/games/games-selection/games-selection.component').then(m => m.GamesSelectionComponent)
+      },
+      {
+        path: 'games/tug-of-war',
+        title: 'Kéo Co Trí Tuệ',
+        loadComponent: () => import('./features/games/tug-of-war/tug-of-war.component').then(m => m.TugOfWarComponent)
       },
       {
         path: 'exam-practice',

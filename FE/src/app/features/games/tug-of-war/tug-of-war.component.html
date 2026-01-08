@@ -1,0 +1,89 @@
+<div class="game-container">
+    <!-- Header: Timer -->
+    <div class="game-header">
+        <div class="timer-badge">
+            ⏱️ {{ formattedTime }}
+        </div>
+        <div class="progress-badge">
+            Đường Đua Tốc Độ
+        </div>
+    </div>
+
+    <!-- Race Track Visual Area (Top) -->
+    <div class="race-game-visual">
+        <div class="track-container">
+            <!-- Background -->
+            <div class="track-bg"></div>
+
+            <!-- Finish Line -->
+            <div class="finish-line">🏁</div>
+
+            <!-- Racers -->
+            <!-- Lane 1: Tortoise (Left Player) -->
+            <div class="racer-lane lane-1">
+                <div class="racer-character tortoise" [style.left.%]="(progressLeft / WIN_SCORE) * 90">
+                    <img src="assets/images/games/tug-of-war/rua.png" alt="Rùa">
+                </div>
+            </div>
+
+            <!-- Lane 2: Hare (Right Player) -->
+            <div class="racer-lane lane-2">
+                <div class="racer-character hare" [style.left.%]="(progressRight / WIN_SCORE) * 90">
+                    <img src="assets/images/games/tug-of-war/tho.png" alt="Thỏ">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Area -->
+    <div class="game-board">
+        <!-- Split Screen: Left Player (Tortoise) -->
+        <div class="player-zone left-player" [class.winner-glow]="winner === 'left'">
+            <div class="player-avatar">� Rùa (Bé)</div>
+
+            <div *ngIf="gameStatus === 'playing' && currentQuestionLeft; else waitingState" class="question-panel">
+                <div class="question-text">{{ currentQuestionLeft.text }}</div>
+                <div class="options-grid">
+                    <button *ngFor="let opt of currentQuestionLeft.options" (click)="handleAnswer('left', opt)"
+                        class="option-btn">
+                        {{ opt }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Split Screen: Right Player (Hare) -->
+        <div class="player-zone right-player" [class.winner-glow]="winner === 'right'">
+            <div class="player-avatar">🐇 Thỏ (Ba Mẹ)</div>
+
+            <div *ngIf="gameStatus === 'playing' && currentQuestionRight; else waitingState" class="question-panel">
+                <div class="question-text">{{ currentQuestionRight.text }}</div>
+                <div class="options-grid">
+                    <button *ngFor="let opt of currentQuestionRight.options" (click)="handleAnswer('right', opt)"
+                        class="option-btn">
+                        {{ opt }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Game Overlay -->
+    <div *ngIf="gameStatus === 'finished'" class="end-overlay">
+        <div class="result-card">
+            <h1>Kết Thúc!</h1>
+            <div class="winner-announcement" *ngIf="winner === 'left'">🎊 Bé (Rùa) Thắng! 🎊</div>
+            <div class="winner-announcement" *ngIf="winner === 'right'">🏆 Ba Mẹ (Thỏ) Thắng! 🏆</div>
+            <div class="winner-announcement" *ngIf="winner === 'draw'">🤝 Hòa Nhau! 🤝</div>
+
+            <div class="actions">
+                <kid-button variant="primary" (click)="startGame()">Chơi Lại</kid-button>
+                <kid-button variant="neutral" routerLink="/games">Thoát</kid-button>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #waitingState>
+        <div class="waiting-msg">Chuẩn bị...</div>
+    </ng-template>
+</div>
