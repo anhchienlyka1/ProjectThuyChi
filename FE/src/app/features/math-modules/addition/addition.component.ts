@@ -85,9 +85,9 @@ export class AdditionComponent implements OnInit {
     generateNewRound() {
         this.currentQuestionIndex++;
 
-        // Logic: Sum <= difficulty.maxNumber
-        const minSum = this.config.difficulty?.minNumber || 2;
-        const maxSum = this.config.difficulty?.maxNumber || 10;
+        // Logic: Sum >= 20 and <= 100
+        const minSum = 20;
+        const maxSum = 100;
 
         const targetSum = Math.floor(Math.random() * (maxSum - minSum + 1)) + minSum;
         this.firstNumber = Math.floor(Math.random() * (targetSum - 1)) + 1;
@@ -119,11 +119,11 @@ export class AdditionComponent implements OnInit {
         const opts = new Set<number>();
         opts.add(this.correctAnswer);
 
-        while (opts.size < 3) {
+        while (opts.size < 4) {
             // Generate close wrong answers
-            const offset = Math.floor(Math.random() * 5) - 2; // -2 to +2
+            const offset = Math.floor(Math.random() * 11) - 5; // -5 to +5
             const val = this.correctAnswer + offset;
-            if (val > 0 && val <= 20 && val !== this.correctAnswer) {
+            if (val > 0 && val <= 100 && val !== this.correctAnswer) {
                 opts.add(val);
             }
         }

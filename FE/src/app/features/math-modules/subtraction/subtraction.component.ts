@@ -85,18 +85,25 @@ export class SubtractionComponent implements OnInit {
         this.currentQuestionIndex++;
 
         // Logic: firstNumber - secondNumber = correctAnswer
-        // firstNumber between min and max
-        const minNum = this.config.difficulty?.minNumber || 2;
-        const maxNum = this.config.difficulty?.maxNumber || 10;
+        // Ensure correctAnswer is within 0-20
+        const minNum = this.config.difficulty?.minNumber || 1;
+        const maxNum = this.config.difficulty?.maxNumber || 20;
 
-        this.firstNumber = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-        // secondNumber must be <= firstNumber
-        this.secondNumber = Math.floor(Math.random() * (this.firstNumber)); // 0 to firstNumber-1, or make it 1 to firstNumber? 0 is easy.
+        // Generate correctAnswer first (0 to 20)
+        this.correctAnswer = Math.floor(Math.random() * 21); // 0 to 20
 
-        // Ensure not too trivial if desired, but 0 is fine for kids.
-        // Let's make sure result is not negative (already ensured by logic above)
+        // Generate secondNumber (can be 0 to maxNum)
+        const maxSecondNumber = Math.min(maxNum, maxNum - this.correctAnswer);
+        this.secondNumber = Math.floor(Math.random() * (maxSecondNumber + 1));
 
-        this.correctAnswer = this.firstNumber - this.secondNumber;
+        // Calculate firstNumber to ensure it's within range
+        this.firstNumber = this.correctAnswer + this.secondNumber;
+
+        // Ensure firstNumber doesn't exceed maxNum
+        if (this.firstNumber > maxNum) {
+            this.firstNumber = maxNum;
+            this.correctAnswer = this.firstNumber - this.secondNumber;
+        }
 
         this.currentItem = this.items[Math.floor(Math.random() * this.items.length)];
         this.generateOptions();
@@ -120,8 +127,8 @@ export class SubtractionComponent implements OnInit {
         const opts = new Set<number>();
         opts.add(this.correctAnswer);
 
-        while (opts.size < 3) {
-            const offset = Math.floor(Math.random() * 5) - 2;
+        while (opts.size < 4) {
+            const offset = Math.floor(Math.random() * 9) - 4; // -4 to +4
             const val = this.correctAnswer + offset;
             if (val >= 0 && val <= 20 && val !== this.correctAnswer) {
                 opts.add(val);

@@ -57,6 +57,13 @@
         <kid-button (click)="goBack()" variant="neutral" size="md">
             ← Quay lại
         </kid-button>
+
+        <!-- Title -->
+        <h1
+            class="text-2xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 drop-shadow-sm flex-1 mx-4">
+            Điền Số Vào Chỗ Trống
+        </h1>
+
         <div
             class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-cyan-400 flex items-center gap-2 animate-bounce">
             <span class="text-2xl">⭐</span>
@@ -65,11 +72,7 @@
     </div>
 
     <div class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full relative z-10 pb-8">
-        <h1
-            class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 mb-2 drop-shadow-sm">
-            Điền Số Vào Chỗ Trống
-        </h1>
-        <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-cyan-100 mb-8 shadow-sm">
+        <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-cyan-100 mb-8 shadow-sm mt-8">
             <span class="text-cyan-700 font-bold text-lg">Câu hỏi {{currentQuestionIndex}} / {{totalQuestions}}</span>
         </div>
 
@@ -98,7 +101,7 @@
         </div>
 
         <!-- Options -->
-        <div class="grid grid-cols-3 gap-6 w-full max-w-2xl px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-4xl px-4">
             <button *ngFor="let opt of options" (click)="checkAnswer(opt)"
                 class="group relative bg-white hover:bg-cyan-50 rounded-[2rem] py-6 shadow-lg border-b-8 border-gray-200 active:border-b-0 active:translate-y-2 transition-all flex flex-col items-center justify-center transform hover:scale-105">
                 <span

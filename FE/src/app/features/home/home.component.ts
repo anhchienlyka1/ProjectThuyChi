@@ -39,7 +39,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <p class="subtitle">Hôm nay bé muốn học gì nào?</p>
 
             <!-- Main CTA Button -->
-            <button routerLink="/select-age" class="cta-button">
+            <button routerLink="/select-subject" class="cta-button">
                 <span class="button-content">
                     <span class="icon-start">✨</span>
                     <span class="button-text">Bắt đầu học</span>

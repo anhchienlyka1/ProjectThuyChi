@@ -37,13 +37,20 @@ export class ComparisonComponent implements OnInit {
   private comparisonService = inject(ComparisonService);
   private audioService = inject(AudioService);
 
-  leftNumber: number = 0;
-  rightNumber: number = 0;
-  score: number = 0;
+  // Left expression
+  leftNum1: number = 0;
+  leftNum2: number = 0;
+  leftOperator: '+' | '-' = '+';
+  leftResult: number = 0;
 
+  // Right expression
+  rightNum1: number = 0;
+  rightNum2: number = 0;
+  rightOperator: '+' | '-' = '+';
+  rightResult: number = 0;
+
+  score: number = 0;
   config: any = {}; // Store full config
-  items: string[] = ['🍎']; // Default to avoid errors before load
-  currentItem = '🍎';
 
   showFeedback = false;
   isCorrect = false;
@@ -58,7 +65,6 @@ export class ComparisonComponent implements OnInit {
   ngOnInit() {
     this.comparisonService.getConfig().subscribe(config => {
       this.config = config;
-      this.items = config.items;
       this.totalQuestions = config.totalQuestions;
       // Trigger start message
       this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
@@ -80,31 +86,55 @@ export class ComparisonComponent implements OnInit {
 
     const min = this.config.difficulty?.minNumber || 1;
     const max = this.config.difficulty?.maxNumber || 10;
+    const maxResult = 30; // Maximum result allowed
 
-    this.leftNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    this.rightNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    // Generate left expression with result <= 30
+    do {
+      this.leftNum1 = Math.floor(Math.random() * (max - min + 1)) + min;
+      this.leftNum2 = Math.floor(Math.random() * (max - min + 1)) + min;
+      this.leftOperator = Math.random() > 0.5 ? '+' : '-';
 
-    // Avoid duplicates if possible to make it interesting, but random is fine.
-    // Ensure we don't get stuck in a loop if we wanted specific probability.
+      // Ensure subtraction doesn't result in negative numbers
+      if (this.leftOperator === '-' && this.leftNum1 < this.leftNum2) {
+        [this.leftNum1, this.leftNum2] = [this.leftNum2, this.leftNum1];
+      }
 
-    this.currentItem = this.items[Math.floor(Math.random() * this.items.length)];
+      this.leftResult = this.leftOperator === '+'
+        ? this.leftNum1 + this.leftNum2
+        : this.leftNum1 - this.leftNum2;
+    } while (this.leftResult > maxResult);
+
+    // Generate right expression with result <= 30
+    do {
+      this.rightNum1 = Math.floor(Math.random() * (max - min + 1)) + min;
+      this.rightNum2 = Math.floor(Math.random() * (max - min + 1)) + min;
+      this.rightOperator = Math.random() > 0.5 ? '+' : '-';
+
+      // Ensure subtraction doesn't result in negative numbers
+      if (this.rightOperator === '-' && this.rightNum1 < this.rightNum2) {
+        [this.rightNum1, this.rightNum2] = [this.rightNum2, this.rightNum1];
+      }
+
+      this.rightResult = this.rightOperator === '+'
+        ? this.rightNum1 + this.rightNum2
+        : this.rightNum1 - this.rightNum2;
+    } while (this.rightResult > maxResult);
 
     const prompt = this.config.mascotPrompts?.question.replace('{index}', this.currentQuestionIndex.toString())
-      || `Câu hỏi số ${this.currentQuestionIndex}: Bên nào nhiều hơn?`;
+      || `Câu hỏi số ${this.currentQuestionIndex}: So sánh hai phép tính!`;
     this.mascot.setEmotion('thinking', prompt, 3000);
     this.readQuestion();
   }
 
   readQuestion() {
-    // "Số [left] và số [right], bên nào nhiều hơn?"
-    const text = `Các con hãy chọn dấu thích hợp nhé!`;
+    const text = `Các con hãy so sánh hai phép tính và chọn dấu thích hợp nhé!`;
     this.audioService.speak(text);
   }
 
   checkAnswer(operator: '>' | '<' | '=') {
-    const correct = (operator === '>' && this.leftNumber > this.rightNumber) ||
-      (operator === '<' && this.leftNumber < this.rightNumber) ||
-      (operator === '=' && this.leftNumber === this.rightNumber);
+    const correct = (operator === '>' && this.leftResult > this.rightResult) ||
+      (operator === '<' && this.leftResult < this.rightResult) ||
+      (operator === '=' && this.leftResult === this.rightResult);
 
     this.isCorrect = correct;
     this.showFeedback = true;
@@ -142,9 +172,5 @@ export class ComparisonComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/math']);
-  }
-
-  getArray(n: number) {
-    return Array(n).fill(0);
   }
 }

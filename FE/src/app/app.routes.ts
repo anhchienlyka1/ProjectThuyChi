@@ -17,18 +17,13 @@ export const routes: Routes = [
       },
       {
         path: 'select-age',
-        title: 'Chọn Độ Tuổi',
-        loadComponent: () => import('./features/age-selection/age-selection.component').then(m => m.AgeSelectionComponent)
+        redirectTo: 'select-subject',
+        pathMatch: 'full'
       },
       {
         path: 'select-subject',
         title: 'Chọn Môn Học',
         loadComponent: () => import('./features/subject-selection/subject-selection.component').then(m => m.SubjectSelectionComponent)
-      },
-      {
-        path: 'math/counting',
-        title: 'Học Đếm Số',
-        loadComponent: () => import('./features/math-modules/counting/counting.component').then(m => m.CountingComponent)
       },
       {
         path: 'math/comparison',
@@ -50,21 +45,9 @@ export const routes: Routes = [
         title: 'Điền Số',
         loadComponent: () => import('./features/math-modules/fill-in-blank/fill-in-blank.component').then(m => m.FillInBlankComponent)
       },
-      {
-        path: 'math/shapes',
-        title: 'Hình Học',
-        loadComponent: () => import('./features/math-modules/shapes/shapes.component').then(m => m.ShapesComponent)
-      },
-      {
-        path: 'math/logic',
-        title: 'Tư Duy Logic',
-        loadComponent: () => import('./features/math-modules/logic/logic.component').then(m => m.LogicComponent)
-      },
-      {
-        path: 'math/time',
-        title: 'Xem Giờ',
-        loadComponent: () => import('./features/math-modules/time/time.component').then(m => m.TimeComponent)
-      },
+
+
+
       {
         path: 'math/sorting',
         title: 'Sắp Xếp',
@@ -74,6 +57,21 @@ export const routes: Routes = [
         path: 'math',
         title: 'Toán Học',
         loadComponent: () => import('./features/math-modules/math-modules.component').then(m => m.MathModulesComponent)
+      },
+      {
+        path: 'vietnamese/alphabet',
+        title: 'Bảng Chữ Cái',
+        loadComponent: () => import('./features/vietnamese-modules/alphabet/alphabet.component').then(m => m.AlphabetComponent)
+      },
+      {
+        path: 'vietnamese/simple-words',
+        title: 'Ghép Từ Đơn',
+        loadComponent: () => import('./features/vietnamese-modules/simple-words/simple-words.component').then(m => m.SimpleWordsComponent)
+      },
+      {
+        path: 'vietnamese/spelling',
+        title: 'Tập Đánh Vần',
+        loadComponent: () => import('./features/vietnamese-modules/spelling/spelling.component').then(m => m.SpellingComponent)
       },
       {
         path: 'vietnamese',

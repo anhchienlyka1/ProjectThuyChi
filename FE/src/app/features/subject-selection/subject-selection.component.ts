@@ -71,18 +71,18 @@ import { SubjectCard } from '../../core/models/subject.model';
     .selection-container {
       min-height: 100vh;
       background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%);
-      padding: 40px 20px 120px 20px; /* Extra bottom padding to prevent scroll jumping on hover */
+      padding: 30px 20px 60px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
-      transform: translateZ(0); /* Hardware acceleration */
+      transform: translateZ(0);
     }
 
     .back-button-wrapper {
       position: absolute;
-      top: 30px;
-      left: 30px;
+      top: 20px;
+      left: 20px;
       z-index: 10;
     }
 
@@ -134,24 +134,24 @@ import { SubjectCard } from '../../core/models/subject.model';
 
     .header {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 30px;
       width: 100%;
-      max-width: 900px;
+      max-width: 1200px;
     }
 
     .page-title {
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 900;
       background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin: 0 0 12px 0;
+      margin: 0 0 8px 0;
       animation: fadeIn 0.6s ease-out;
     }
 
     .page-subtitle {
-      font-size: 1.25rem;
+      font-size: 1.125rem;
       color: #a855f7;
       font-weight: 600;
       margin: 0;
@@ -166,8 +166,8 @@ import { SubjectCard } from '../../core/models/subject.model';
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      max-width: 900px;
+      gap: 20px;
+      max-width: 1200px;
       width: 100%;
       animation: fadeIn 0.8s ease-out 0.4s backwards;
     }
@@ -176,44 +176,44 @@ import { SubjectCard } from '../../core/models/subject.model';
 
     .subject-card {
       position: relative;
-      padding: 40px 30px;
-      border-radius: 24px;
+      padding: 30px 20px;
+      border-radius: 20px;
       cursor: pointer;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 220px;
+      min-height: 180px;
       border: 4px solid rgba(255, 255, 255, 0.5);
       will-change: transform;
     }
 
     .subject-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
       border-color: rgba(255, 255, 255, 0.8);
     }
 
     .subject-card:active {
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-6px) scale(1.02);
     }
 
     .card-icon {
-      font-size: 5rem;
-      margin-bottom: 16px;
+      font-size: 4rem;
+      margin-bottom: 12px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
       transition: transform 0.3s ease;
     }
 
     .subject-card:hover .card-icon {
-      transform: scale(1.2) rotate(5deg);
+      transform: scale(1.15) rotate(5deg);
     }
 
     .card-title {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       font-weight: 900;
       color: white;
       margin: 0;
@@ -235,24 +235,24 @@ import { SubjectCard } from '../../core/models/subject.model';
     }
 
     .mascot-message {
-      margin-top: 40px;
+      margin-top: 30px;
       display: flex;
       align-items: center;
       gap: 12px;
       background: white;
-      padding: 16px 28px;
+      padding: 14px 24px;
       border-radius: 9999px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       animation: slideUp 0.5s ease-out 0.8s backwards;
     }
 
     .mascot-icon {
-      font-size: 2rem;
+      font-size: 1.75rem;
     }
 
     .mascot-message p {
       margin: 0;
-      font-size: 1.125rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #6b7280;
     }
@@ -323,6 +323,6 @@ export class SubjectSelectionComponent {
   }
 
   goBack() {
-    this.router.navigate(['/select-age']);
+    this.router.navigate(['/home']);
   }
 }

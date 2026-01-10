@@ -67,6 +67,13 @@
         <kid-button (click)="goBack()" variant="neutral" size="md">
             ← Quay lại
         </kid-button>
+
+        <!-- Title -->
+        <h1
+            class="text-2xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 drop-shadow-sm flex-1 mx-4">
+            Sắp Xếp Số
+        </h1>
+
         <div
             class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-orange-400 flex items-center gap-2 animate-bounce">
             <span class="text-2xl">⭐</span>
@@ -76,11 +83,7 @@
 
     <div class="flex-grow flex flex-col items-center justify-center max-w-4xl mx-auto w-full relative z-10 pb-8">
 
-        <h1
-            class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600 mb-2 drop-shadow-sm">
-            Sắp Xếp Số
-        </h1>
-        <div class="flex items-center gap-4 mb-6 md:mb-8">
+        <div class="flex items-center gap-4 mb-6 md:mb-8 mt-8">
             <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-orange-100 shadow-sm">
                 <span class="text-orange-700 font-bold text-lg">Câu hỏi {{currentQuestionIndex}} /
                     {{totalQuestions}}</span>

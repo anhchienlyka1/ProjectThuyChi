@@ -16,7 +16,6 @@ export interface MascotPrompts {
 export interface ComparisonConfig {
     title: string;
     instruction: string;
-    items: string[];
     totalQuestions: number;
     pointsPerQuestion: number;
     difficulty: GameDifficulty;

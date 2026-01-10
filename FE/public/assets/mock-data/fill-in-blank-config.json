@@ -1,7 +1,7 @@
 {
     "title": "Điền Số",
     "instruction": "Bé hãy tìm số còn thiếu trong dãy số hoặc phép tính nhé!",
-    "totalQuestions": 10,
+    "totalQuestions": 20,
     "pointsPerQuestion": 10,
     "difficulty": {
         "minNumber": 0,

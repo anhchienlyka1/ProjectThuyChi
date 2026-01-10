@@ -13,11 +13,11 @@
         "🐠",
         "🍪"
     ],
-    "totalQuestions": 10,
+    "totalQuestions": 20,
     "pointsPerQuestion": 10,
     "difficulty": {
         "minNumber": 1,
-        "maxNumber": 10
+        "maxNumber": 20
     },
     "feedback": {
         "correct": [

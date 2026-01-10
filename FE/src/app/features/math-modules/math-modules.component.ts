@@ -6,8 +6,7 @@ import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.co
 
 import { MathLevelService } from '../../core/services/math-level.service';
 import { MathLevel } from '../../core/models/math-level.model';
-import { AgeService } from '../../core/services/age.service';
-import { map } from 'rxjs/operators';
+
 
 @Component({
     selector: 'app-math-modules',
@@ -19,24 +18,9 @@ import { map } from 'rxjs/operators';
 export class MathModulesComponent implements OnInit {
     private router = inject(Router);
     private mathLevelService = inject(MathLevelService);
-    private ageService = inject(AgeService);
     mascot = inject(MascotService);
 
-    levels$ = this.mathLevelService.getLevels().pipe(
-        map(levels => {
-            const age = this.ageService.selectedAge;
-            const age3Levels = ['counting', 'comparison', 'shapes'];
-
-            if (age === 3) {
-                return levels.filter(level => age3Levels.includes(level.id));
-            } else if (age === 6) {
-                // Return 'remaining' levels (those not in age3Levels)
-                return levels.filter(level => !age3Levels.includes(level.id));
-            }
-            // Fallback for other ages, show all or handle as needed
-            return levels;
-        })
-    );
+    levels$ = this.mathLevelService.getLevels();
 
     ngOnInit() {
         this.mascot.setEmotion('happy', 'Chào con! Hãy chọn bài học yêu thích nhé! 🌟', 4000);

@@ -72,15 +72,9 @@ export class FillInBlankComponent implements OnInit {
     generateNewRound() {
         this.currentQuestionIndex++;
 
-        // Randomly choose between sequence (0) or equation (1)
-        const type = Math.random() > 0.5 ? 'sequence' : 'equation';
-        this.questionType = type;
-
-        if (type === 'sequence') {
-            this.generateSequence();
-        } else {
-            this.generateEquation();
-        }
+        // Always use equation type and hide the result
+        this.questionType = 'equation';
+        this.generateEquation();
 
         this.generateOptions();
 
@@ -111,55 +105,77 @@ export class FillInBlankComponent implements OnInit {
     }
 
     generateEquation() {
-        // A +/- B = C
-        const isAddition = Math.random() > 0.5;
-        const operator = isAddition ? '+' : '-';
+        // num1 op1 num2 op2 num3 = result
+        let num1, num2, num3, result;
+        let op1: string, op2: string;
 
-        let a, b, c;
+        // Loop to ensure we get a valid positive equation for kids
+        do {
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+            num3 = Math.floor(Math.random() * 10) + 1;
 
-        if (isAddition) { // A + B = C
-            c = Math.floor(Math.random() * 9) + 2; // Sum 2 to 10
-            a = Math.floor(Math.random() * (c - 1)) + 1;
-            b = c - a;
-        } else { // A - B = C
-            a = Math.floor(Math.random() * 9) + 2; // Minuend 2 to 10
-            b = Math.floor(Math.random() * (a - 1)) + 1;
-            c = a - b;
-        }
+            op1 = Math.random() > 0.5 ? '+' : '-';
+            op2 = Math.random() > 0.5 ? '+' : '-';
 
-        // Randomly hide A, B, or C (but hiding operator is too hard/confusing for now, just hide numbers)
-        // 0: Hide A, 1: Hide B, 2: Hide C
-        const hidePos = Math.floor(Math.random() * 3);
+            // Calculate intermediate and final result
+            let intermediate = (op1 === '+') ? num1 + num2 : num1 - num2;
+            result = (op2 === '+') ? intermediate + num3 : intermediate - num3;
+
+        } while (result < 0 || result > 10 || (num1 - num2 < 0 && op1 === '-'));
+
+        // Randomly hide one of the 4 numbers (num1, num2, num3, or result)
+        const hidePos = Math.floor(Math.random() * 4);
 
         this.displayParts = [];
 
-        // A
-        this.displayParts.push(hidePos === 0 ? '?' : a.toString());
-        if (hidePos === 0) this.correctAnswer = a;
+        // num1
+        if (hidePos === 0) {
+            this.displayParts.push('?');
+            this.correctAnswer = num1;
+        } else {
+            this.displayParts.push(num1.toString());
+        }
 
-        // Operator
-        this.displayParts.push(operator);
+        this.displayParts.push(op1);
 
-        // B
-        this.displayParts.push(hidePos === 1 ? '?' : b.toString());
-        if (hidePos === 1) this.correctAnswer = b;
+        // num2
+        if (hidePos === 1) {
+            this.displayParts.push('?');
+            this.correctAnswer = num2;
+        } else {
+            this.displayParts.push(num2.toString());
+        }
 
-        // Equal
+        this.displayParts.push(op2);
+
+        // num3
+        if (hidePos === 2) {
+            this.displayParts.push('?');
+            this.correctAnswer = num3;
+        } else {
+            this.displayParts.push(num3.toString());
+        }
+
         this.displayParts.push('=');
 
-        // C
-        this.displayParts.push(hidePos === 2 ? '?' : c.toString());
-        if (hidePos === 2) this.correctAnswer = c;
+        // result
+        if (hidePos === 3) {
+            this.displayParts.push('?');
+            this.correctAnswer = result;
+        } else {
+            this.displayParts.push(result.toString());
+        }
     }
 
     generateOptions() {
         const opts = new Set<number>();
         opts.add(this.correctAnswer);
 
-        while (opts.size < 3) {
-            const offset = Math.floor(Math.random() * 5) - 2;
+        while (opts.size < 4) {
+            const offset = Math.floor(Math.random() * 7) - 3; // -3 to +3
             const val = this.correctAnswer + offset;
-            if (val >= 0 && val <= 20 && val !== this.correctAnswer) {
+            if (val >= 0 && val <= 15 && val !== this.correctAnswer) {
                 opts.add(val);
             }
         }

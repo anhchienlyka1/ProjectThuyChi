@@ -1,5 +1,5 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 p-8"
-    style="padding-bottom: 8rem;">
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 p-6"
+    style="padding-bottom: 4rem;">
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <!-- Colorful Blobs -->
@@ -36,33 +36,33 @@
 
     <div class="relative z-10 max-w-7xl mx-auto">
         <!-- Header -->
-        <div class="mb-8">
+        <div class="mb-4">
             <kid-button (click)="goBack()" variant="neutral" size="md">
                 ← Quay lại
             </kid-button>
         </div>
 
         <!-- Title Section -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-6">
             <h1
-                class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-3">
+                class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
                 🧮 Thế giới toán học 🧮
             </h1>
-            <p class="text-2xl text-gray-700 font-bold">
+            <p class="text-xl text-gray-700 font-bold">
                 Khám phá thế giới toán học thú vị cùng bé!
             </p>
         </div>
 
         <!-- Levels List (Horizontal Scroll) -->
-        <div class="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-4 md:px-0 scrollbar-hide -mx-4 md:mx-0 mask-image-scroll"
+        <div class="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-4 scrollbar-hide mask-image-scroll"
             style="scrollbar-width: none; -ms-overflow-style: none;">
 
             <!-- Level Card -->
             <div *ngFor="let level of levels$ | async" (click)="selectLevel(level)"
-                class="snap-center shrink-0 w-[85vw] md:w-80 lg:w-96 first:ml-4 last:mr-4 md:first:ml-0 md:last:mr-0">
+                class="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[420px] lg:w-[450px]">
                 <div [class.opacity-90]="level.isLocked" [class.cursor-pointer]="!level.isLocked"
                     [class.cursor-not-allowed]="level.isLocked"
-                    class="group relative h-full bg-white rounded-[2rem] p-6 border-b-8 border-r-4 border-gray-200 hover:border-b-[12px] hover:translate-y-[-4px] active:border-b-4 active:translate-y-[2px] transition-all duration-300 flex flex-col items-center text-center shadow-lg hover:shadow-xl overflow-hidden touch-manipulation min-h-[400px] justify-between">
+                    class="group relative h-full bg-white rounded-[2rem] p-6 border-b-8 border-r-4 border-gray-200 hover:border-b-[12px] hover:translate-y-[-4px] active:border-b-4 active:translate-y-[2px] transition-all duration-300 flex flex-col items-center text-center shadow-lg hover:shadow-xl overflow-hidden touch-manipulation min-h-[340px] justify-between">
 
                     <!-- Lock Overlay -->
                     <div *ngIf="level.isLocked"
