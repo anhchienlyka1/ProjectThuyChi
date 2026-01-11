@@ -1,18 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../../core/services/mascot.service';
-
-interface SpellingLevel {
-  id: number;
-  word: string;
-  image: string;
-  parts: { text: string; missing: boolean }[]; // e.g., for "Cá": [{text: "C", missing: false}, {text: "á", missing: true}]
-  options: string[]; // e.g., ["a", "á", "à"]
-  hint: string;
-}
+import { SpellingService, SpellingLevel } from '../../../core/services/spelling.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
 
 @Component({
   selector: 'app-spelling',
@@ -22,91 +15,15 @@ interface SpellingLevel {
   styleUrl: './spelling.component.css'
 })
 export class SpellingComponent implements OnInit {
-  levels: SpellingLevel[] = [
-    {
-      id: 1,
-      word: 'CÁ',
-      image: '🐟',
-      parts: [{ text: 'C', missing: false }, { text: 'Á', missing: true }],
-      options: ['A', 'Á', 'À'],
-      hint: 'Dấu sắc trên chữ a!'
-    },
-    {
-      id: 2,
-      word: 'BÀ',
-      image: '👵',
-      parts: [{ text: 'B', missing: false }, { text: 'À', missing: true }],
-      options: ['BA', 'BÀ', 'BÁ'],
-      hint: 'Ai là mẹ của mẹ?'
-    },
-    {
-      id: 3,
-      word: 'BÓNG',
-      image: '⚽',
-      parts: [{ text: 'B', missing: false }, { text: 'ÓNG', missing: true }],
-      options: ['ONG', 'ÔNG', 'ÓNG'],
-      hint: 'Vần ong hay ông?'
-    },
-    {
-      id: 4,
-      word: 'GÀ',
-      image: '🐔',
-      parts: [{ text: 'G', missing: false }, { text: 'À', missing: true }],
-      options: ['A', 'À', 'Á'],
-      hint: 'Con gà cục tác...'
-    },
-    {
-      id: 5,
-      word: 'MÈO',
-      image: '🐱',
-      parts: [{ text: 'M', missing: false }, { text: 'ÈO', missing: true }],
-      options: ['EO', 'ÈO', 'ÉO'],
-      hint: 'Meo meo...'
-    },
-    {
-      id: 6,
-      word: 'LÁ',
-      image: '🍃',
-      parts: [{ text: 'L', missing: false }, { text: 'Á', missing: true }],
-      options: ['A', 'Á', 'À'],
-      hint: 'Dấu sắc trên chữ a'
-    },
-    {
-      id: 7,
-      word: 'NHO',
-      image: '🍇',
-      parts: [{ text: 'NH', missing: false }, { text: 'O', missing: true }],
-      options: ['O', 'Ô', 'Ơ'],
-      hint: 'Quả tròn ngọt lịm'
-    },
-    {
-      id: 8,
-      word: 'GHẾ',
-      image: '🪑',
-      parts: [{ text: 'GH', missing: false }, { text: 'Ế', missing: true }],
-      options: ['Ê', 'Ế', 'Ề'],
-      hint: 'Vật để ngồi'
-    },
-    {
-      id: 9,
-      word: 'VỞ',
-      image: '📓',
-      parts: [{ text: 'V', missing: false }, { text: 'Ở', missing: true }],
-      options: ['Ơ', 'Ở', 'Ỡ'],
-      hint: 'Để viết bài'
-    },
-    {
-      id: 10,
-      word: 'TÔ',
-      image: '🍜',
-      parts: [{ text: 'T', missing: false }, { text: 'Ô', missing: true }],
-      options: ['O', 'Ô', 'Ơ'],
-      hint: 'Đựng phở, bún'
-    }
-  ];
+  private spellingService = inject(SpellingService);
+  private location = inject(Location);
+  private router = inject(Router);
+  private mascot = inject(MascotService);
+  private dailyProgress = inject(DailyProgressService);
 
+  levels: SpellingLevel[] = [];
   currentLevelIndex = 0;
-  currentLevel: SpellingLevel = this.levels[0];
+  currentLevel!: SpellingLevel;
 
   // Game State
   userSelection: string | null = null;
@@ -117,11 +34,26 @@ export class SpellingComponent implements OnInit {
   showFeedback: boolean = false;
   isFinished: boolean = false;
 
-  constructor(private location: Location, private router: Router, private mascot: MascotService) { }
-
   ngOnInit(): void {
     this.mascot.setEmotion('happy', 'Chào con! Hãy chọn vần đúng nhé! 🗣️', 3000);
-    this.loadLevel();
+    this.loadLevelsFromAPI();
+  }
+
+  loadLevelsFromAPI() {
+    this.spellingService.getLevels().subscribe({
+      next: (data) => {
+        this.levels = data;
+        if (this.levels.length > 0) {
+          this.loadLevel();
+        } else {
+          console.warn('No spelling levels found in database');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load spelling levels:', err);
+        // Fallback to empty or show error message
+      }
+    });
   }
 
   loadLevel() {
@@ -150,15 +82,15 @@ export class SpellingComponent implements OnInit {
 
     // Check exact match (logic could be more complex if multiple missing, but simplified for now)
     // Actually, sometimes options might represent the full combined syllable or just a letter.
-    // In config above: 
+    // In config above:
     // "CÁ" -> parts: "C", "Á" (missing). Option "Á". Correct.
     // "BÀ" -> parts: "B", "À" (missing). Option "BÀ". Wait, if option is "BÀ" but missing part is "À", then check needs adjustment.
-    // Let's assume options MATCH the missing text exactly. 
-    // In my data: "BÀ" -> Options ["BA", "BÀ", "BÁ"]. Missing is "À". 
-    // Ah, for "BÀ", usually we teach "B" + "A" + "Huyền" = "Bà". 
+    // Let's assume options MATCH the missing text exactly.
+    // In my data: "BÀ" -> Options ["BA", "BÀ", "BÁ"]. Missing is "À".
+    // Ah, for "BÀ", usually we teach "B" + "A" + "Huyền" = "Bà".
     // Or "B" + "À" = "Bà".
     // Let's stick to "options match the text of the missing part".
-    // So for "BÀ", options should be related to "À". 
+    // So for "BÀ", options should be related to "À".
     // Let's update data "BÀ" options to ['A', 'À', 'Á'] if missing is 'À'.
     // Or if missing is Rhyme/Tone combined.
     // I will implicitly fix data logic in check:
@@ -186,7 +118,10 @@ export class SpellingComponent implements OnInit {
           this.loadLevel();
         } else {
           this.isFinished = true;
-          this.mascot.setEmotion('celebrating', 'Chúc mừng bé đã hoàn thành tất cả! 🏆', 4000);
+          // Increment daily completion count
+          this.dailyProgress.incrementCompletion('spelling');
+          const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
+          this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
         }
       }, 2000);
     } else {

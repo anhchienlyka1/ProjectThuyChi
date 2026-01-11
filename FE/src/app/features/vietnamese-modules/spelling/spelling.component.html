@@ -1,5 +1,5 @@
 <div
-    class="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-red-100 p-4 flex flex-col items-center relative overflow-hidden">
+    class="min-h-screen bg-gradient-to-br from-yellow-50 via-green-50 to-blue-50 p-4 md:p-8 flex flex-col relative overflow-hidden">
 
     <!-- Game Finished Overlay -->
     <div *ngIf="isFinished"
@@ -9,14 +9,18 @@
             <div
                 class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://www.svgrepo.com/show/308930/confetti.svg')] bg-cover">
             </div>
+
             <h2
-                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-8">
+                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-green-600 mb-8">
                 Hoàn Thành!
             </h2>
+
             <div class="text-9xl mb-8">🏆</div>
+
             <p class="text-2xl text-gray-600 font-bold mb-8">
                 Chúc mừng bé đã hoàn thành bài tập đánh vần!
             </p>
+
             <div class="flex flex-col gap-4">
                 <kid-button (click)="restartGame()" variant="primary" size="lg" class="w-full justify-center">
                     🔄 Chơi Lại
@@ -36,38 +40,48 @@
             <div class="text-9xl mb-6">
                 {{ isCorrect ? '🎉' : '🤔' }}
             </div>
-            <h2 class="text-4xl md:text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
+            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
                 [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
                 {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
             </h2>
-            <p class="text-xl md:text-2xl text-gray-500 font-bold">
-                {{ isCorrect ? 'Bé giỏi quá đi mất!' : 'Bé thử lại nhé!' }}
+            <p class="text-2xl text-gray-500 font-bold">
+                {{ isCorrect ? 'Bé quá siêu!' : 'Cố gắng lại nhé!' }}
             </p>
         </div>
     </div>
 
-    <!-- Decorative Blobs -->
+    <!-- Decorative Blobs (From Old Design, kept for liveliness) -->
     <div
-        class="absolute top-0 left-0 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob">
+        class="absolute top-0 left-0 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20 animate-blob">
     </div>
     <div
-        class="absolute top-0 right-0 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000">
+        class="absolute top-0 right-0 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20 animate-blob animation-delay-2000">
     </div>
 
-    <!-- Header -->
-    <div class="w-full max-w-6xl flex justify-between items-center mb-6 z-10">
-        <kid-button (click)="goBack()" variant="neutral" size="sm">
-            ← Quay lại
-        </kid-button>
-        <div
-            class="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-5 py-2 rounded-full shadow-md border-2 border-white">
-            <span class="text-2xl">🗣️</span>
-            <span class="font-bold text-pink-600 text-lg">Bài {{currentLevelIndex + 1}}</span>
+    <!-- Header Section (New Design) -->
+    <div class="relative z-10 mb-6 w-full max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-3">
+            <kid-button (click)="goBack()" variant="neutral" size="md">
+                ← Quay lại
+            </kid-button>
+
+            <!-- Title -->
+            <h1
+                class="hidden md:block text-2xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 drop-shadow-sm flex-1 mx-4">
+                Tập Đánh Vần
+            </h1>
+
+            <div
+                class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2 animate-bounce">
+                <span class="text-2xl">📝</span>
+                <span class="text-xl md:text-2xl font-black text-yellow-600">Bài {{currentLevelIndex + 1}}</span>
+            </div>
         </div>
     </div>
 
-    <!-- Main Game Area -->
-    <div class="flex-1 w-full max-w-6xl flex flex-col md:flex-row items-center justify-center z-10 md:gap-12 pb-4">
+    <!-- Game Content (Restored Old Layout Structure) -->
+    <div
+        class="flex-1 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center z-10 md:gap-12 pb-4">
 
         <!-- LEFT: Image & Word Construction -->
         <div class="flex flex-col items-center mb-6 md:mb-0">
@@ -98,12 +112,12 @@
 
                     <!-- Missing Part (Drop Zone) -->
                     <div *ngIf="part.missing"
-                        class="w-16 h-20 md:w-20 md:h-24 rounded-2xl flex items-center justify-center border-4 border-dashed transition-all duration-300"
+                        class="w-16 h-20 md:w-20 md:h-24 rounded-2xl flex items-center justify-center border-4 transition-all duration-300"
                         [ngClass]="{
-                             'bg-white border-gray-300': !userSelection && !isCorrect,
-                             'bg-green-100 border-green-400': isCorrect,
-                             'bg-red-100 border-red-400': isWrong && userSelection,
-                             'bg-blue-50 border-blue-400': userSelection && !isCorrect && !isWrong
+                             'bg-white border-dashed border-gray-300': !userSelection && !isCorrect,
+                             'bg-green-100 border-solid border-green-400': isCorrect,
+                             'bg-red-100 border-solid border-red-400': isWrong && userSelection,
+                             'bg-blue-50 border-solid border-blue-400': userSelection && !isCorrect && !isWrong
                          }">
                         <span *ngIf="isCorrect" class="text-4xl md:text-5xl font-black text-green-600 animate-pop-in">{{
                             part.text }}</span>
@@ -126,6 +140,12 @@
                     <span *ngIf="!isCorrect" class="text-3xl text-gray-300 font-bold">...</span>
                 </div>
             </div>
+
+            <!-- Hint Text -->
+            <div
+                class="mt-4 bg-white/60 backdrop-blur-sm px-6 py-2 rounded-full border border-white/50 text-gray-600 font-bold text-lg text-center shadow-sm">
+                💡 {{ currentLevel.hint }}
+            </div>
         </div>
 
         <!-- RIGHT: Options -->
@@ -143,7 +163,7 @@
                     </div>
 
                     <div
-                        class="absolute inset-0 flex items-center justify-center rounded-2xl bg-gradient-to-r from-pink-400 to-rose-400 text-white font-black text-4xl shadow-lg group-hover:from-pink-500 group-hover:to-rose-500 transition-all">
+                        class="absolute inset-0 flex items-center justify-center rounded-2xl bg-gradient-to-r from-yellow-300 to-orange-400 text-white font-black text-4xl shadow-lg group-hover:from-yellow-400 group-hover:to-orange-500 transition-all">
                         {{ option }}
                     </div>
                 </button>

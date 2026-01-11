@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MascotService } from '../../core/services/mascot.service';
 import { GamificationStore } from '../../core/store/gamification.store';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   template: `
     <div class="home-container">
+
 
         <!-- Floating decorative icons -->
         <div class="floating-icon star">⭐</div>
@@ -22,8 +23,8 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <!-- Mascot/Avatar Section -->
             <div class="mascot-container" (click)="pokeMascot()">
                 <div class="mascot-box">
-                    <img src="/assets/images/avatar.png"
-                         alt="Mascot - Bé Thủy Chi"
+                    <img src="/assets/images/avatar-girl.png"
+                         alt="Mascot - Bé Thùy Chi"
                          class="mascot-img">
                 </div>
 
@@ -39,7 +40,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <p class="subtitle">Hôm nay bé muốn học gì nào?</p>
 
             <!-- Main CTA Button -->
-            <button routerLink="/select-subject" class="cta-button">
+            <button (click)="startLearning()" class="cta-button">
                 <span class="button-content">
                     <span class="icon-start">✨</span>
                     <span class="button-text">Bắt đầu học</span>
@@ -49,7 +50,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
             </button>
 
             <!-- Parents Link -->
-            <button routerLink="/parents" class="parents-link">
+            <button (click)="goToParentCorner()" class="parents-link">
                 <span>👤</span>
                 <span>Góc phụ huynh</span>
             </button>
@@ -60,7 +61,11 @@ import { GamificationStore } from '../../core/store/gamification.store';
   styles: [`
     .home-container {
       min-height: 100vh;
-      background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #dbeafe 100%);
+      background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 100%);
+      background-image: url('/assets/images/grassy-hills-bg.jpg');
+      background-size: 100% auto;
+      background-position: center bottom;
+      background-repeat: no-repeat;
       position: relative;
       overflow: hidden;
       display: flex;
@@ -69,31 +74,34 @@ import { GamificationStore } from '../../core/store/gamification.store';
       padding: 20px;
     }
 
+
+
     .floating-icon {
       position: absolute;
       font-size: 3rem;
       animation: float 6s ease-in-out infinite;
+      z-index: 3;
     }
 
     .floating-icon.star {
       top: 80px;
       left: 80px;
-      color: rgba(192, 132, 252, 0.3);
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.5));
       animation-delay: 0s;
     }
 
     .floating-icon.book {
       top: 60px;
       right: 80px;
-      color: rgba(251, 191, 36, 0.3);
       font-size: 3.5rem;
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.5));
       animation-delay: 1s;
     }
 
     .floating-icon.heart {
       bottom: 160px;
       left: 60px;
-      color: rgba(244, 114, 182, 0.3);
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.5));
       animation-delay: 2s;
     }
 
@@ -110,6 +118,8 @@ import { GamificationStore } from '../../core/store/gamification.store';
       gap: 20px;
       max-width: 600px;
       width: 100%;
+      position: relative;
+      z-index: 10;
     }
 
     .mascot-container {
@@ -306,6 +316,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
 export class HomeComponent implements OnInit {
   mascot = inject(MascotService);
   gameStore = inject(GamificationStore);
+  private router = inject(Router);
 
   ngOnInit() {
     setTimeout(() => {
@@ -315,5 +326,15 @@ export class HomeComponent implements OnInit {
 
   pokeMascot() {
     this.mascot.setEmotion('happy', 'Hihi, nhột quá!', true, 2000);
+  }
+
+  startLearning() {
+    // Navigate to login with student type
+    this.router.navigate(['/login'], { queryParams: { type: 'student' } });
+  }
+
+  goToParentCorner() {
+    // Navigate to login with parent type
+    this.router.navigate(['/login'], { queryParams: { type: 'parent' } });
   }
 }

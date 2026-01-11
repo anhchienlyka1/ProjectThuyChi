@@ -6,6 +6,7 @@ import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.co
 
 import { MathLevelService } from '../../core/services/math-level.service';
 import { MathLevel } from '../../core/models/math-level.model';
+import { DailyProgressService } from '../../core/services/daily-progress.service';
 
 
 @Component({
@@ -18,12 +19,15 @@ import { MathLevel } from '../../core/models/math-level.model';
 export class MathModulesComponent implements OnInit {
     private router = inject(Router);
     private mathLevelService = inject(MathLevelService);
+    dailyProgress = inject(DailyProgressService);
     mascot = inject(MascotService);
 
     levels$ = this.mathLevelService.getLevels();
 
     ngOnInit() {
         this.mascot.setEmotion('happy', 'Chào con! Hãy chọn bài học yêu thích nhé! 🌟', 4000);
+        // Refresh daily completions to show updated badges
+        this.dailyProgress.refreshCompletions().subscribe();
     }
 
     selectLevel(level: MathLevel) {

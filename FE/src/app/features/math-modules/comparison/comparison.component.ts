@@ -5,6 +5,9 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
 import { MascotService } from '../../../core/services/mascot.service';
 import { ComparisonService } from '../../../core/services/comparison.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { LearningService } from '../../../core/services/learning.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
+
 
 @Component({
   selector: 'app-comparison',
@@ -36,6 +39,9 @@ export class ComparisonComponent implements OnInit {
   private mascot = inject(MascotService);
   private comparisonService = inject(ComparisonService);
   private audioService = inject(AudioService);
+  private learningService = inject(LearningService);
+  private dailyProgress = inject(DailyProgressService);
+
 
   // Left expression
   leftNum1: number = 0;
@@ -61,6 +67,8 @@ export class ComparisonComponent implements OnInit {
   correctCount = 0;
   wrongCount = 0;
   isFinished = false;
+  startTime: number = 0;
+
 
   ngOnInit() {
     this.comparisonService.getConfig().subscribe(config => {
@@ -78,15 +86,19 @@ export class ComparisonComponent implements OnInit {
     this.wrongCount = 0;
     this.score = 0;
     this.isFinished = false;
+    this.startTime = Date.now();
     this.generateNewRound();
+
   }
 
   generateNewRound() {
     this.currentQuestionIndex++;
 
     const min = this.config.difficulty?.minNumber || 1;
-    const max = this.config.difficulty?.maxNumber || 10;
-    const maxResult = 30; // Maximum result allowed
+    // Upgrade difficulty: Ensure max is at least 20 even if config says 10
+    const max = Math.max(this.config.difficulty?.maxNumber || 20, 20);
+    const maxResult = 50; // Maximum result allowed (increased from 30)
+
 
     // Generate left expression with result <= 30
     do {
@@ -167,8 +179,32 @@ export class ComparisonComponent implements OnInit {
 
   finishGame() {
     this.isFinished = true;
-    this.mascot.setEmotion('celebrating', `Chúc mừng bé hoàn thành bài học!`, 5000);
+    const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+
+    // Increment daily completion count
+    this.dailyProgress.incrementCompletion('comparison');
+
+    this.learningService.completeSession({
+      levelId: 'comparison',
+      score: this.score,
+      totalQuestions: this.totalQuestions,
+      durationSeconds: durationSeconds
+    }).subscribe({
+      next: (response) => {
+        const completionCount = this.dailyProgress.getTodayCompletionCount('comparison');
+        const starMessage = response.starsEarned > 0
+          ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
+          : `Bé hãy cố gắng hơn lần sau nhé!`;
+        this.mascot.setEmotion('celebrating', starMessage, 5000);
+      },
+      error: (err) => {
+        console.error('Failed to save progress', err);
+        const completionCount = this.dailyProgress.getTodayCompletionCount('comparison');
+        this.mascot.setEmotion('celebrating', `Chúc mừng bé hoàn thành bài học! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+      }
+    });
   }
+
 
   goBack() {
     this.router.navigate(['/math']);

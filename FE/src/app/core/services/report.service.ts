@@ -18,7 +18,7 @@ export class ReportService {
   private platformId = inject(PLATFORM_ID);
 
   // In a real app, this would be backed by an API or IndexedDB
-  private sessions = signal<LearningSession[]>([]);
+  readonly sessions = signal<LearningSession[]>([]);
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {

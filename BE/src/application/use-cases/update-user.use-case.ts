@@ -29,6 +29,11 @@ export class UpdateUserUseCase {
             user.updateProfile(updateUserDto.name);
         }
 
+        // Update gender if provided
+        if (updateUserDto.gender) {
+            user.setGender(updateUserDto.gender);
+        }
+
         const updatedUser = await this.userRepository.update(user);
 
         return new UserResponseDto({
@@ -37,6 +42,8 @@ export class UpdateUserUseCase {
             name: updatedUser.name,
             createdAt: updatedUser.createdAt,
             updatedAt: updatedUser.updatedAt,
+            hasPinCode: !!updatedUser.pinCode,
+            gender: updatedUser.gender,
         });
     }
 }

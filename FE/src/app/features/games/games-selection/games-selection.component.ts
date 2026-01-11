@@ -9,6 +9,11 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
   imports: [CommonModule, RouterLink, KidButtonComponent],
   template: `
     <div class="games-selection-container">
+      <!-- Back Button -->
+      <div class="back-button-wrapper">
+        <kid-button variant="neutral" routerLink="/home">← Quay lại</kid-button>
+      </div>
+
       <h1 class="title">Bé Và Ba Mẹ Cùng Chơi Nhé!</h1>
       <div class="games-grid">
         <div class="game-card">
@@ -30,10 +35,6 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
           <p class="game-desc">Nhiều trò chơi thú vị khác đang chờ đón!</p>
         </div>
       </div>
-
-      <div class="back-button-container">
-          <kid-button variant="neutral" routerLink="/home">Quay Về</kid-button>
-      </div>
     </div>
   `,
   styles: [`
@@ -45,6 +46,13 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
       flex-direction: column;
       align-items: center;
       font-family: 'Nunito', sans-serif;
+      position: relative;
+    }
+    .back-button-wrapper {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
     }
     .title {
       font-family: 'Nunito', sans-serif;
@@ -108,10 +116,6 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
     .coming-soon {
         opacity: 0.7;
         filter: grayscale(0.5);
-    }
-    .back-button-container {
-        margin-top: auto;
-        padding-top: 3rem;
     }
   `]
 })

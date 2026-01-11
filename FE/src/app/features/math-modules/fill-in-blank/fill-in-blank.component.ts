@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../../core/services/mascot.service';
 import { FillInBlankService } from '../../../core/services/fill-in-blank.service';
+import { LearningService } from '../../../core/services/learning.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
+
 
 @Component({
     selector: 'app-fill-in-blank',
@@ -16,7 +19,7 @@ import { FillInBlankService } from '../../../core/services/fill-in-blank.service
       50% { transform: scale(1.05); }
     }
     .animate-pulse-scale { animation: pulse-scale 2s ease-in-out infinite; }
-    
+
     @keyframes bounce-in {
       0% { transform: scale(0.3); opacity: 0; }
       50% { transform: scale(1.05); }
@@ -30,6 +33,9 @@ export class FillInBlankComponent implements OnInit {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private service = inject(FillInBlankService);
+    private learningService = inject(LearningService);
+    private dailyProgress = inject(DailyProgressService);
+
 
     config: any = {};
 
@@ -47,6 +53,8 @@ export class FillInBlankComponent implements OnInit {
     isFinished = false;
     showFeedback = false;
     isCorrect = false;
+    startTime: number = 0;
+
 
     // Type of question for styling
     questionType: 'sequence' | 'equation' = 'sequence';
@@ -65,8 +73,11 @@ export class FillInBlankComponent implements OnInit {
         this.correctCount = 0;
         this.wrongCount = 0;
         this.score = 0;
+        this.score = 0;
         this.isFinished = false;
+        this.startTime = Date.now();
         this.generateNewRound();
+
     }
 
     generateNewRound() {
@@ -105,27 +116,25 @@ export class FillInBlankComponent implements OnInit {
     }
 
     generateEquation() {
-        // num1 op1 num2 op2 num3 = result
-        let num1, num2, num3, result;
-        let op1: string, op2: string;
+        // num1 op1 num2 = result
+        let num1, num2, result;
+        let op1: string;
 
         // Loop to ensure we get a valid positive equation for kids
         do {
             num1 = Math.floor(Math.random() * 10) + 1;
             num2 = Math.floor(Math.random() * 10) + 1;
-            num3 = Math.floor(Math.random() * 10) + 1;
 
             op1 = Math.random() > 0.5 ? '+' : '-';
-            op2 = Math.random() > 0.5 ? '+' : '-';
 
-            // Calculate intermediate and final result
-            let intermediate = (op1 === '+') ? num1 + num2 : num1 - num2;
-            result = (op2 === '+') ? intermediate + num3 : intermediate - num3;
+            // Calculate result
+            result = (op1 === '+') ? num1 + num2 : num1 - num2;
 
-        } while (result < 0 || result > 10 || (num1 - num2 < 0 && op1 === '-'));
+        } while (result < 0 || result > 20 || (num1 - num2 < 0 && op1 === '-'));
 
-        // Randomly hide one of the 4 numbers (num1, num2, num3, or result)
-        const hidePos = Math.floor(Math.random() * 4);
+        // Randomly hide one of the 3 numbers (num1, num2, or result)
+        // 0: hide num1, 1: hide num2, 2: hide result
+        const hidePos = Math.floor(Math.random() * 3);
 
         this.displayParts = [];
 
@@ -147,20 +156,10 @@ export class FillInBlankComponent implements OnInit {
             this.displayParts.push(num2.toString());
         }
 
-        this.displayParts.push(op2);
-
-        // num3
-        if (hidePos === 2) {
-            this.displayParts.push('?');
-            this.correctAnswer = num3;
-        } else {
-            this.displayParts.push(num3.toString());
-        }
-
         this.displayParts.push('=');
 
         // result
-        if (hidePos === 3) {
+        if (hidePos === 2) {
             this.displayParts.push('?');
             this.correctAnswer = result;
         } else {
@@ -211,8 +210,32 @@ export class FillInBlankComponent implements OnInit {
 
     finishGame() {
         this.isFinished = true;
-        this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập!`, 5000);
+        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+
+        // Increment daily completion count
+        this.dailyProgress.incrementCompletion('fill-in-blank');
+
+        this.learningService.completeSession({
+            levelId: 'fill-in-blank',
+            score: this.score,
+            totalQuestions: this.totalQuestions,
+            durationSeconds: durationSeconds
+        }).subscribe({
+            next: (response) => {
+                const completionCount = this.dailyProgress.getTodayCompletionCount('fill-in-blank');
+                const starMessage = response.starsEarned > 0
+                    ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
+                    : `Bé hãy cố gắng hơn lần sau nhé!`;
+                this.mascot.setEmotion('celebrating', starMessage, 5000);
+            },
+            error: (err) => {
+                console.error('Failed to save progress', err);
+                const completionCount = this.dailyProgress.getTodayCompletionCount('fill-in-blank');
+                this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+            }
+        });
     }
+
 
     goBack() {
         this.router.navigate(['/math']);

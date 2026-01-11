@@ -1,17 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-
-interface WordLevel {
-  id: number;
-  word: string;
-  image: string; // Emoji for now
-  hint: string;
-}
-
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../../core/services/mascot.service';
+import { SimpleWordsService, WordLevel } from '../../../core/services/simple-words.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
 
 @Component({
   selector: 'app-simple-words',
@@ -21,26 +15,15 @@ import { MascotService } from '../../../core/services/mascot.service';
   styleUrl: './simple-words.component.css'
 })
 export class SimpleWordsComponent implements OnInit {
-  levels: WordLevel[] = [
-    { id: 1, word: 'CÁ', image: '🐟', hint: 'Con gì bơi dưới nước?' },
-    { id: 2, word: 'GÀ', image: '🐔', hint: 'Con gì gáy ò ó o?' },
-    { id: 3, word: 'XE', image: '🚗', hint: 'Phương tiện đi lại 4 bánh?' },
-    { id: 4, word: 'HOA', image: '🌸', hint: 'Cây gì nở rực rỡ?' },
-    { id: 5, word: 'BÓNG', image: '⚽', hint: 'Vật tròn để đá?' },
-    { id: 6, word: 'MÈO', image: '🐱', hint: 'Con gì kêu meo meo?' },
-    { id: 7, word: 'CHÓ', image: '🐕', hint: 'Con gì giữ nhà?' },
-    { id: 8, word: 'NHÀ', image: '🏠', hint: 'Nơi gia đình sinh sống?' },
-    { id: 9, word: 'ÁO', image: '👕', hint: 'Mặc trên người?' },
-    { id: 10, word: 'TÁO', image: '🍎', hint: 'Quả gì màu đỏ?' },
-    { id: 11, word: 'LÁ', image: '🍃', hint: 'Mọc trên cành cây?' },
-    { id: 12, word: 'SÁCH', image: '📚', hint: 'Để đọc?' },
-    { id: 13, word: 'BÚT', image: '✏️', hint: 'Để viết?' },
-    { id: 14, word: 'GHẾ', image: '🪑', hint: 'Để ngồi?' }
+  private simpleWordsService = inject(SimpleWordsService);
+  private location = inject(Location);
+  private router = inject(Router);
+  private mascot = inject(MascotService);
+  private dailyProgress = inject(DailyProgressService);
 
-  ];
-
+  levels: WordLevel[] = [];
   currentLevelIndex = 0;
-  currentLevel: WordLevel = this.levels[0];
+  currentLevel!: WordLevel;
 
   // Game State
   userAnswer: (string | null)[] = [];
@@ -51,11 +34,25 @@ export class SimpleWordsComponent implements OnInit {
   showFeedback: boolean = false;
   isFinished: boolean = false;
 
-  constructor(private location: Location, private router: Router, private mascot: MascotService) { }
-
   ngOnInit(): void {
     this.mascot.setEmotion('happy', 'Chào con! Hãy ghép từ đúng nhé! 📚', 3000);
-    this.loadLevel();
+    this.loadLevelsFromAPI();
+  }
+
+  loadLevelsFromAPI() {
+    this.simpleWordsService.getLevels().subscribe({
+      next: (data) => {
+        this.levels = data;
+        if (this.levels.length > 0) {
+          this.loadLevel();
+        } else {
+          console.warn('No simple words levels found in database');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load simple words levels:', err);
+      }
+    });
   }
 
   loadLevel() {
@@ -131,7 +128,10 @@ export class SimpleWordsComponent implements OnInit {
         } else {
           // Finished all levels
           this.isFinished = true;
-          this.mascot.setEmotion('celebrating', 'Chúc mừng bé đã hoàn thành tất cả các bài! 🏆', 4000);
+          // Increment daily completion count
+          this.dailyProgress.incrementCompletion('simple-words');
+          const completionCount = this.dailyProgress.getTodayCompletionCount('simple-words');
+          this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả các bài! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
         }
       }, 2000);
     } else {

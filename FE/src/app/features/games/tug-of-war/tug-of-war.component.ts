@@ -24,7 +24,7 @@ interface PlayerState {
 })
 export class TugOfWarComponent implements OnInit, OnDestroy {
     // Game Configuration
-    readonly GAME_DURATION_SEC = 300; // 5 minutes max
+    readonly GAME_DURATION_SEC = 600; // 10 minutes max
     readonly WIN_SCORE = 50; // Points needed to reach finish line
 
     // Game State

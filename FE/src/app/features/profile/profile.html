@@ -1,0 +1,188 @@
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 p-6"
+  style="padding-bottom: 5rem;">
+  <!-- Decorative Floating Icons -->
+  <div class="floating-decorations">
+    <div class="floating-icon icon-1">⭐</div>
+    <div class="floating-icon icon-2">🌈</div>
+    <div class="floating-icon icon-3">🎨</div>
+    <div class="floating-icon icon-4">🎵</div>
+    <div class="floating-icon icon-5">🚀</div>
+    <div class="floating-icon icon-6">🦄</div>
+    <div class="floating-icon icon-7">🌟</div>
+    <div class="floating-icon icon-8">🎈</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-4">
+      <kid-button (click)="goBack()" variant="neutral" size="md">
+        ← Quay lại
+      </kid-button>
+    </div>
+    <!-- Header Title -->
+    <div class="text-center relative z-10 mb-8">
+      <h1
+        class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 drop-shadow-sm tracking-wide inline-block">
+        Hồ Sơ Của Bé
+      </h1>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="mb-8">
+      <kid-card borderColor="primary">
+        <div class="flex flex-col md:flex-row items-center gap-8 py-4">
+          <!-- Avatar -->
+          <div class="hover:animate-bounce-custom cursor-pointer">
+            <kid-avatar [src]="gameStore.profile().avatar" [size]="140" borderColor="primary"
+              status="online"></kid-avatar>
+          </div>
+
+          <div class="flex-1 w-full space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-3xl md:text-4xl font-black text-kid-text">{{ gameStore.profile().name }}
+                </h2>
+                <div class="flex items-center gap-3 mt-1">
+                  <span
+                    class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full font-black text-sm uppercase tracking-wider shadow-sm">
+                    Level {{ gameStore.profile().level }}
+                  </span>
+                  <div
+                    class="flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold text-sm shadow-sm">
+                    <span>🌟</span>
+                    <span>{{ gameStore.stars() }} Sao</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200">
+              <div class="flex justify-between text-sm font-bold text-gray-500 uppercase tracking-tight">
+                <span>Tiến độ Level tiếp theo</span>
+                <span>{{ gameStore.profile().currentXp }} / {{ gameStore.profile().nextLevelXp }} XP</span>
+              </div>
+              <kid-progress-bar [value]="gameStore.progressPercent()" color="primary" [height]="24"></kid-progress-bar>
+            </div>
+          </div>
+        </div>
+      </kid-card>
+    </div>
+
+    <!-- Stats Grid (Today's Score) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div
+        class="bg-white rounded-3xl p-6 border-b-8 border-kid-secondary shadow-lg transform hover:-translate-y-1 transition-transform">
+        <div class="text-center space-y-3">
+          <div class="text-5xl animate-wiggle">📚</div>
+          <div>
+            <div class="text-lg font-bold text-gray-400 uppercase tracking-widest text-xs mb-1">Bài Học Hôm
+              Nay</div>
+            <div class="text-5xl font-black text-kid-secondary">{{ todayStats().lessons }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-3xl p-6 border-b-8 border-kid-accent shadow-lg transform hover:-translate-y-1 transition-transform">
+        <div class="text-center space-y-3">
+          <div class="text-5xl animate-wiggle" style="animation-delay: 0.1s">✅</div>
+          <div>
+            <div class="text-lg font-bold text-gray-400 uppercase tracking-widest text-xs mb-1">Câu Trả Lời
+              Đúng</div>
+            <div class="text-5xl font-black text-kid-accent">{{ todayStats().correct }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-3xl p-6 border-b-8 border-kid-primary shadow-lg transform hover:-translate-y-1 transition-transform">
+        <div class="text-center space-y-3">
+          <div class="text-5xl animate-wiggle" style="animation-delay: 0.2s">⏱️</div>
+          <div>
+            <div class="text-lg font-bold text-gray-400 uppercase tracking-widest text-xs mb-1">Phút Học Tập
+            </div>
+            <div class="text-5xl font-black text-kid-primary">{{ todayStats().durationMinutes }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 mb-8">
+      <!-- Certificates List Link -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl md:text-3xl font-black text-pink-700 drop-shadow-sm flex items-center gap-2">
+            <span>🏵️</span> Phiếu Bé Ngoan
+          </h2>
+          <kid-button (click)="viewAllCertificates()" variant="secondary" size="md">
+            📜 Xem tất cả phiếu
+          </kid-button>
+        </div>
+
+        <!-- Recent Certificates Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          @for (cert of recentCertificates(); track cert.id) {
+          <div (click)="viewAllCertificates()"
+            class="cursor-pointer group relative bg-white rounded-3xl p-3 shadow-sm border-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md"
+            [class.border-gray-200]="!cert.unlocked" [class.border-pink-200]="cert.unlocked && cert.theme === 'pink'"
+            [class.border-blue-200]="cert.unlocked && cert.theme === 'blue'"
+            [class.border-yellow-200]="cert.unlocked && cert.theme === 'yellow'"
+            [class.border-green-200]="cert.unlocked && cert.theme === 'green'" [class.grayscale]="!cert.unlocked">
+
+            <!-- Inner content -->
+            <div
+              class="rounded-2xl border-2 border-dashed border-gray-300 p-6 flex items-center gap-6 bg-gradient-to-br h-full"
+              [ngClass]="{
+                                 'from-pink-50 to-white': cert.theme === 'pink',
+                                 'from-blue-50 to-white': cert.theme === 'blue',
+                                 'from-yellow-50 to-white': cert.theme === 'yellow',
+                                 'from-green-50 to-white': cert.theme === 'green',
+                                 'bg-gray-50': !cert.unlocked
+                             }">
+
+              <!-- Icon -->
+              <div class="text-6xl filter drop-shadow-sm group-hover:scale-110 transition-transform">
+                @if (cert.unlocked) { 🏵️ } @else { 🔒 }
+              </div>
+
+              <!-- Text Content -->
+              <div class="flex-1 min-w-0">
+                <h3 class="font-black text-2xl text-gray-800 truncate mb-1" [ngClass]="{
+                                        'text-pink-600': cert.theme === 'pink',
+                                        'text-blue-600': cert.theme === 'blue',
+                                        'text-yellow-600': cert.theme === 'yellow',
+                                        'text-green-600': cert.theme === 'green',
+                                        'text-gray-500': !cert.unlocked
+                                    }">{{ cert.name }}</h3>
+                <p class="text-base text-gray-500 font-medium truncate mb-2">{{ cert.description }}</p>
+                @if (cert.date && cert.unlocked) {
+                <div
+                  class="inline-flex items-center gap-2 bg-white/60 px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+                  <span class="text-sm">📅</span>
+                  <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ cert.date }}</span>
+                </div>
+                }
+              </div>
+
+              <!-- Arrow -->
+              <div class="text-gray-300 group-hover:text-gray-600 text-2xl">➜</div>
+            </div>
+
+            <!-- Locked Overlay Text -->
+            @if (!cert.unlocked) {
+            <div class="absolute inset-0 bg-white/60 flex items-center justify-center rounded-3xl backdrop-blur-[1px]">
+              <span
+                class="bg-gray-100 text-gray-500 text-sm font-bold px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+                🔒 Chưa đạt được
+              </span>
+            </div>
+            }
+          </div>
+          }
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

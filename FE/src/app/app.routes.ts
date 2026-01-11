@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ParentGateGuard } from './core/guards/parent-gate.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -12,9 +12,30 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'login',
+        title: 'Đăng nhập',
+        loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
+      },
+      {
         path: 'home',
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       },
+      {
+        path: 'profile',
+        title: 'Hồ Sơ Của Bé',
+        loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'profile/badges',
+        title: 'Bộ Sưu Tập Huy Hiệu',
+        loadComponent: () => import('./features/profile/my-badges/my-badges.component').then(m => m.MyBadgesComponent)
+      },
+      {
+        path: 'profile/certificates',
+        title: 'Phiếu Bé Ngoan',
+        loadComponent: () => import('./features/profile/my-certificates/my-certificates.component').then(m => m.MyCertificatesComponent)
+      },
+
       {
         path: 'select-age',
         redirectTo: 'select-subject',
@@ -111,14 +132,40 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'parent-gate',
+    title: 'Xác thực Phụ Huynh',
+    loadComponent: () => import('./features/parent-gate/parent-gate.component').then(m => m.ParentGateComponent)
+  },
+  {
     path: 'parents',
     title: 'Phụ Huynh',
-    canActivate: [ParentGateGuard],
+    canActivate: [AuthGuard],
     loadComponent: () => import('./layouts/parent-layout/parent-layout.component').then(m => m.ParentLayoutComponent),
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        title: 'Tổng quan - Góc Phụ Huynh',
+        loadComponent: () => import('./features/parent-dashboard/parent-dashboard.component').then(m => m.ParentDashboardComponent)
+      },
+      {
+        path: 'history',
+        title: 'Lịch sử học tập - Góc Phụ Huynh',
+        loadComponent: () => import('./features/parent-dashboard/learning-history.component').then(m => m.LearningHistoryComponent)
+      },
+      {
+        path: 'settings',
+        title: 'Cài đặt - Góc Phụ Huynh',
+        loadComponent: () => import('./features/parent-dashboard/parent-settings.component').then(m => m.ParentSettingsComponent)
+      },
+      {
+        path: 'reports',
+        title: 'Báo cáo - Góc Phụ Huynh',
+        loadComponent: () => import('./features/parent-dashboard/learning-report.component').then(m => m.LearningReportComponent)
+      },
+      {
+        path: 'badge-management',
+        title: 'Quản Lý Phiếu Bé Ngoan - Góc Phụ Huynh',
+        loadComponent: () => import('./features/badge-management/badge-management').then(m => m.BadgeManagementComponent)
       }
     ]
   }

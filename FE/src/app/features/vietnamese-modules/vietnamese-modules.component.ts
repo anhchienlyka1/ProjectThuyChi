@@ -7,6 +7,7 @@ import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.co
 import { VietnameseLevelService } from '../../core/services/vietnamese-level.service';
 import { VietnameseLevel } from '../../core/models/vietnamese-level.model';
 import { AgeService } from '../../core/services/age.service';
+import { DailyProgressService } from '../../core/services/daily-progress.service';
 
 @Component({
     selector: 'app-vietnamese-modules',
@@ -20,11 +21,14 @@ export class VietnameseModulesComponent implements OnInit {
     private vietnameseLevelService = inject(VietnameseLevelService);
     private ageService = inject(AgeService);
     mascot = inject(MascotService);
+    dailyProgress = inject(DailyProgressService);
 
     levels$ = this.vietnameseLevelService.getLevels();
 
     ngOnInit() {
         this.mascot.setEmotion('happy', 'Chào con! Hãy cùng học Tiếng Việt nhé! 📚', 4000);
+        // Refresh daily completions to show updated badges
+        this.dailyProgress.refreshCompletions().subscribe();
     }
 
     selectLevel(level: VietnameseLevel) {

@@ -1,15 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.component';
 import { MascotService } from '../../core/services/mascot.service';
 import { SubjectService } from '../../core/services/subject.service';
 import { SubjectCard } from '../../core/models/subject.model';
+import { GamificationStore } from '../../core/store/gamification.store';
 
 @Component({
   selector: 'app-subject-selection',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent],
+  imports: [CommonModule, KidButtonComponent, RouterLink],
   template: `
     <div class="selection-container">
 
@@ -19,6 +20,18 @@ import { SubjectCard } from '../../core/models/subject.model';
           ← Quay lại
         </kid-button>
       </div>
+
+      <!-- Top Right Profile Button -->
+      <a routerLink="/profile" class="profile-button">
+        <div class="profile-content">
+          <div class="profile-avatar">
+            <img [src]="gameStore.profile().avatar" alt="Profile" class="avatar-img">
+          </div>
+          <div class="profile-name">
+            {{ gameStore.profile().name }}
+          </div>
+        </div>
+      </a>
 
       <!-- Decorative Floating Icons -->
       <div class="floating-decorations">
@@ -84,6 +97,56 @@ import { SubjectCard } from '../../core/models/subject.model';
       top: 20px;
       left: 20px;
       z-index: 10;
+    }
+
+    .profile-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      text-decoration: none;
+      transform: translateZ(0);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-button:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      background: white;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: #8b5cf6;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid white;
+      margin-top: -8px;
     }
 
     /* Removed old .back-button styles */
@@ -297,6 +360,7 @@ export class SubjectSelectionComponent {
   private router = inject(Router);
   private subjectService = inject(SubjectService);
   mascot = inject(MascotService);
+  gameStore = inject(GamificationStore);
 
   subjects$ = this.subjectService.getSubjects();
 

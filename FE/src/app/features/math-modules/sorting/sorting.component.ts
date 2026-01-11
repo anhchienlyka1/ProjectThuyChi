@@ -5,6 +5,9 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
 import { MascotService } from '../../../core/services/mascot.service';
 import { SortingService } from '../../../core/services/sorting.service';
 import { SortingQuestion } from '../../../core/models/sorting-config.model';
+import { LearningService } from '../../../core/services/learning.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
+
 
 @Component({
     selector: 'app-sorting',
@@ -42,6 +45,9 @@ export class SortingComponent implements OnInit {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private service = inject(SortingService);
+    private learningService = inject(LearningService);
+    private dailyProgress = inject(DailyProgressService);
+
 
     config: any = {};
     questions: SortingQuestion[] = [];
@@ -61,6 +67,8 @@ export class SortingComponent implements OnInit {
     showFeedback = false;
     feedbackMessage = '';
     isCorrect = false;
+    startTime: number = 0;
+
 
     // To track if the current round has had any errors, to decide whether to increment correctCount for the QUESTION
     hasErrorInCurrentRound = false;
@@ -81,7 +89,10 @@ export class SortingComponent implements OnInit {
         this.correctCount = 0;
         this.wrongCount = 0;
         this.isFinished = false;
+        this.isFinished = false;
+        this.startTime = Date.now();
         this.generateNewRound();
+
     }
 
     generateNewRound() {
@@ -208,8 +219,32 @@ export class SortingComponent implements OnInit {
 
     finishGame() {
         this.isFinished = true;
-        this.mascot.setEmotion('celebrating', 'Chúc mừng con đã hoàn thành bài học!', 5000);
+        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+
+        // Increment daily completion count
+        this.dailyProgress.incrementCompletion('sorting');
+
+        this.learningService.completeSession({
+            levelId: 'sorting',
+            score: this.score,
+            totalQuestions: this.totalQuestions,
+            durationSeconds: durationSeconds
+        }).subscribe({
+            next: (response) => {
+                const completionCount = this.dailyProgress.getTodayCompletionCount('sorting');
+                const starMessage = response.starsEarned > 0
+                    ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
+                    : `Bé hãy cố gắng hơn lần sau nhé!`;
+                this.mascot.setEmotion('celebrating', starMessage, 5000);
+            },
+            error: (err) => {
+                console.error('Failed to save progress', err);
+                const completionCount = this.dailyProgress.getTodayCompletionCount('sorting');
+                this.mascot.setEmotion('celebrating', `Chúc mừng con đã hoàn thành bài học! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+            }
+        });
     }
+
 
     goBack() {
         this.router.navigate(['/math']);

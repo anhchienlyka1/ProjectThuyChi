@@ -14,26 +14,17 @@ export class ParentGateGuard implements CanActivate {
             return false; // Don't allow access on server
         }
 
-        // In a real app, we would show a modal here.
-        // For now, let's use a simple browser prompt for the MVP
-        // to satisfy the "Math Guard" requirement without complex UI overhead yet.
+        // Check if parent has been verified in this session
+        const verified = sessionStorage.getItem('parent_verified') === 'true';
 
-        // We can allow "admin" bypass for dev
+        // Dev bypass for development
         const devBypass = localStorage.getItem('parent_dev_mode') === 'true';
-        if (devBypass) return true;
 
-        const num1 = Math.floor(Math.random() * 10) + 1;
-        const num2 = Math.floor(Math.random() * 10) + 1;
-        const answer = num1 + num2;
-
-        const input = prompt(`Bài kiểm tra phụ huynh: ${num1} + ${num2} = ?`);
-
-        if (input && parseInt(input, 10) === answer) {
+        if (verified || devBypass) {
             return true;
-        } else {
-            alert('Sai rồi! Chỉ phụ huynh mới được vào đây ạ.');
-            this.router.navigate(['/']);
-            return false;
         }
+
+        // Redirect to parent gate page for verification
+        return this.router.createUrlTree(['/parent-gate']);
     }
 }

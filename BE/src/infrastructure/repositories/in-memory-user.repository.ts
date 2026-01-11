@@ -21,6 +21,11 @@ export class InMemoryUserRepository implements IUserRepository {
         return user || null;
     }
 
+    async findByPin(pin: string): Promise<User | null> {
+        const user = this.users.find((u) => u.pinCode === pin);
+        return user || null;
+    }
+
     async findAll(): Promise<User[]> {
         return [...this.users];
     }
@@ -45,5 +50,9 @@ export class InMemoryUserRepository implements IUserRepository {
             throw new Error('User not found');
         }
         this.users.splice(index, 1);
+    }
+
+    async findByParentId(parentId: string): Promise<User[]> {
+        return this.users.filter(user => user.parentId === parentId);
     }
 }

@@ -5,6 +5,9 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
 import { MascotService } from '../../../core/services/mascot.service';
 import { AdditionService } from '../../../core/services/addition.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { LearningService } from '../../../core/services/learning.service';
+import { DailyProgressService } from '../../../core/services/daily-progress.service';
+
 
 @Component({
     selector: 'app-addition',
@@ -41,14 +44,17 @@ export class AdditionComponent implements OnInit {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private additionService = inject(AdditionService);
-    private audioService = inject(AudioService); // [NEW] Inject AudioService
+    private audioService = inject(AudioService);
+    private learningService = inject(LearningService);
+    private dailyProgress = inject(DailyProgressService);
 
-    config: any = {}; // Full config
-    // Game State
+
+    config: any = {};
     firstNumber: number = 0;
     secondNumber: number = 0;
     correctAnswer: number = 0;
-    options: number[] = [];
+    userAnswer: string = '';
+
 
     items: string[] = ['🍎']; // Default
     currentItem = '🍎';
@@ -62,6 +68,8 @@ export class AdditionComponent implements OnInit {
     isFinished = false;
     showFeedback = false;
     isCorrect = false;
+    startTime: number = 0;
+
 
     ngOnInit() {
         this.additionService.getConfig().subscribe(config => {
@@ -78,11 +86,18 @@ export class AdditionComponent implements OnInit {
         this.correctCount = 0;
         this.wrongCount = 0;
         this.score = 0;
+        this.score = 0;
         this.isFinished = false;
+        this.startTime = Date.now();
+        this.startTime = Date.now();
+        this.userAnswer = '';
         this.generateNewRound();
+
+
     }
 
     generateNewRound() {
+        this.userAnswer = ''; // Clear previous answer
         this.currentQuestionIndex++;
 
         // Logic: Sum >= 20 and <= 100
@@ -96,7 +111,7 @@ export class AdditionComponent implements OnInit {
         this.correctAnswer = this.firstNumber + this.secondNumber;
 
         this.currentItem = this.items[Math.floor(Math.random() * this.items.length)];
-        this.generateOptions();
+
 
         const prompt = this.config.mascotPrompts?.question
             .replace('{index}', this.currentQuestionIndex.toString())
@@ -115,25 +130,27 @@ export class AdditionComponent implements OnInit {
         this.audioService.speak(text);
     }
 
-    generateOptions() {
-        const opts = new Set<number>();
-        opts.add(this.correctAnswer);
+    handleKeypadInput(key: string) {
+        if (this.showFeedback) return;
 
-        while (opts.size < 4) {
-            // Generate close wrong answers
-            const offset = Math.floor(Math.random() * 11) - 5; // -5 to +5
-            const val = this.correctAnswer + offset;
-            if (val > 0 && val <= 100 && val !== this.correctAnswer) {
-                opts.add(val);
+        if (key === 'DELETE') {
+            this.userAnswer = this.userAnswer.slice(0, -1);
+        } else if (key === 'SUBMIT') {
+            this.checkAnswer();
+        } else {
+            // Limit length to 3 digits
+            if (this.userAnswer.length < 3) {
+                this.userAnswer += key;
             }
         }
-
-        // Shuffle options
-        this.options = Array.from(opts).sort(() => Math.random() - 0.5);
     }
 
-    checkAnswer(selected: number) {
+
+    checkAnswer() {
+        if (!this.userAnswer) return;
+        const selected = parseInt(this.userAnswer, 10);
         const correct = selected === this.correctAnswer;
+
         this.isCorrect = correct;
         this.showFeedback = true;
 
@@ -145,27 +162,57 @@ export class AdditionComponent implements OnInit {
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
             this.mascot.setEmotion('happy', msg, 2000);
+
+            setTimeout(() => {
+                this.showFeedback = false;
+                if (this.currentQuestionIndex < this.totalQuestions) {
+                    this.generateNewRound();
+                } else {
+                    this.finishGame();
+                }
+            }, 2000);
         } else {
             this.wrongCount++;
-            const msgs = this.config.feedback?.wrong || ['Sai rồi!'];
+            const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
             this.mascot.setEmotion('sad', msg, 2000);
-        }
 
-        setTimeout(() => {
-            this.showFeedback = false;
-            if (this.currentQuestionIndex < this.totalQuestions) {
-                this.generateNewRound();
-            } else {
-                this.finishGame();
-            }
-        }, 2000);
+            // Allow retry without moving to next question
+            setTimeout(() => {
+                this.showFeedback = false;
+                this.userAnswer = ''; // Clear answer so they can try again easily
+            }, 2000);
+        }
     }
 
     finishGame() {
         this.isFinished = true;
-        this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập!`, 5000);
+        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+
+        // Increment daily completion count
+        this.dailyProgress.incrementCompletion('addition');
+
+        this.learningService.completeSession({
+            levelId: 'addition',
+            score: this.score,
+            totalQuestions: this.totalQuestions,
+            durationSeconds: durationSeconds
+        }).subscribe({
+            next: (response) => {
+                const completionCount = this.dailyProgress.getTodayCompletionCount('addition');
+                const starMessage = response.starsEarned > 0
+                    ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
+                    : `Bé hãy cố gắng hơn lần sau nhé!`;
+                this.mascot.setEmotion('celebrating', starMessage, 5000);
+            },
+            error: (err) => {
+                console.error('Failed to save progress', err);
+                const completionCount = this.dailyProgress.getTodayCompletionCount('addition');
+                this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+            }
+        });
     }
+
 
     goBack() {
         this.router.navigate(['/math']);

@@ -59,7 +59,7 @@
 
         <!-- Split Screen: Right Player (Hare) -->
         <div class="player-zone right-player" [class.winner-glow]="winner === 'right'">
-            <div class="player-avatar">🐰 Thỏ (Ba Mẹ)</div>
+            <div class="player-avatar">🐰 Thỏ (Bố Mẹ)</div>
 
             <div *ngIf="gameStatus === 'playing' && currentQuestionRight; else waitingState" class="question-panel">
                 <div class="question-text">{{ currentQuestionRight.text }}</div>

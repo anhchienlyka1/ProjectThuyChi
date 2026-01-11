@@ -47,6 +47,9 @@ export class CreateUserUseCase {
             createUserDto.name,
             new Date(),
             new Date(),
+            undefined, // pinCode
+            createUserDto.gender, // gender
+            createUserDto.parentId, // parentId
         );
 
         // 4. Lưu vào database
@@ -59,6 +62,9 @@ export class CreateUserUseCase {
             name: savedUser.name,
             createdAt: savedUser.createdAt,
             updatedAt: savedUser.updatedAt,
+            hasPinCode: !!savedUser.pinCode,
+            gender: savedUser.gender,
+            parentId: savedUser.parentId,
         });
     }
 

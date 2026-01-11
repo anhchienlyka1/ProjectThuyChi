@@ -22,25 +22,40 @@ export class TypeORMUserRepository implements IUserRepository {
     ) { }
 
     async findById(id: string): Promise<User | null> {
-        const schema = await this.repository.findOne({ where: { id } });
+        const schema = await this.repository.findOne({ where: { id, isDeleted: false } });
         return schema ? this.toDomain(schema) : null;
     }
 
+
     async findByEmail(email: string): Promise<User | null> {
-        const schema = await this.repository.findOne({ where: { email } });
+        const schema = await this.repository.findOne({ where: { email, isDeleted: false } });
         return schema ? this.toDomain(schema) : null;
+    }
+
+    async findByPin(pin: string): Promise<User | null> {
+        const schema = await this.repository.findOne({ where: { pinCode: pin, isDeleted: false } });
+        return schema ? this.toDomain(schema) : null;
+    }
+
+    async findByParentId(parentId: string): Promise<User[]> {
+        const schemas = await this.repository.find({ where: { parentId, isDeleted: false } });
+        return schemas.map((schema) => this.toDomain(schema));
     }
 
     async findAll(): Promise<User[]> {
-        const schemas = await this.repository.find();
+        const schemas = await this.repository.find({ where: { isDeleted: false } });
         return schemas.map((schema) => this.toDomain(schema));
     }
+
 
     async create(user: User): Promise<User> {
         const schema = this.repository.create({
             id: user.id,
             email: user.email,
             name: user.name,
+            pinCode: user.pinCode,
+            gender: user.gender,
+            parentId: user.parentId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         });
@@ -52,6 +67,9 @@ export class TypeORMUserRepository implements IUserRepository {
         await this.repository.update(user.id, {
             email: user.email,
             name: user.name,
+            pinCode: user.pinCode,
+            gender: user.gender,
+            // parentId usually doesn't change, but consistent to include
             updatedAt: user.updatedAt,
         });
         const updated = await this.repository.findOne({ where: { id: user.id } });
@@ -62,8 +80,9 @@ export class TypeORMUserRepository implements IUserRepository {
     }
 
     async delete(id: string): Promise<void> {
-        await this.repository.delete(id);
+        await this.repository.update(id, { isDeleted: true });
     }
+
 
     /**
      * Convert TypeORM Schema to Domain Entity
@@ -75,6 +94,9 @@ export class TypeORMUserRepository implements IUserRepository {
             schema.name,
             schema.createdAt,
             schema.updatedAt,
+            schema.pinCode,
+            schema.gender,
+            schema.parentId,
         );
     }
 }

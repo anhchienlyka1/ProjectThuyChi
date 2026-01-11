@@ -1,0 +1,202 @@
+[
+    {
+        "word": "CÁ",
+        "image": "🐟",
+        "parts": [
+            {
+                "text": "C",
+                "missing": false
+            },
+            {
+                "text": "Á",
+                "missing": true
+            }
+        ],
+        "options": [
+            "A",
+            "Á",
+            "À"
+        ],
+        "hint": "Dấu sắc trên chữ a!"
+    },
+    {
+        "word": "BÀ",
+        "image": "👵",
+        "parts": [
+            {
+                "text": "B",
+                "missing": false
+            },
+            {
+                "text": "À",
+                "missing": true
+            }
+        ],
+        "options": [
+            "A",
+            "À",
+            "Á"
+        ],
+        "hint": "Ai là mẹ của mẹ?"
+    },
+    {
+        "word": "BÓNG",
+        "image": "⚽",
+        "parts": [
+            {
+                "text": "B",
+                "missing": false
+            },
+            {
+                "text": "ÓNG",
+                "missing": true
+            }
+        ],
+        "options": [
+            "ONG",
+            "ÔNG",
+            "ÓNG"
+        ],
+        "hint": "Vần ong hay ông?"
+    },
+    {
+        "word": "GÀ",
+        "image": "🐔",
+        "parts": [
+            {
+                "text": "G",
+                "missing": false
+            },
+            {
+                "text": "À",
+                "missing": true
+            }
+        ],
+        "options": [
+            "A",
+            "À",
+            "Á"
+        ],
+        "hint": "Con gà cục tác..."
+    },
+    {
+        "word": "MÈO",
+        "image": "🐱",
+        "parts": [
+            {
+                "text": "M",
+                "missing": false
+            },
+            {
+                "text": "ÈO",
+                "missing": true
+            }
+        ],
+        "options": [
+            "EO",
+            "ÈO",
+            "ÉO"
+        ],
+        "hint": "Meo meo..."
+    },
+    {
+        "word": "LÁ",
+        "image": "🍃",
+        "parts": [
+            {
+                "text": "L",
+                "missing": false
+            },
+            {
+                "text": "Á",
+                "missing": true
+            }
+        ],
+        "options": [
+            "A",
+            "Á",
+            "À"
+        ],
+        "hint": "Dấu sắc trên chữ a"
+    },
+    {
+        "word": "NHO",
+        "image": "🍇",
+        "parts": [
+            {
+                "text": "NH",
+                "missing": false
+            },
+            {
+                "text": "O",
+                "missing": true
+            }
+        ],
+        "options": [
+            "O",
+            "Ô",
+            "Ơ"
+        ],
+        "hint": "Quả tròn ngọt lịm"
+    },
+    {
+        "word": "GHẾ",
+        "image": "🪑",
+        "parts": [
+            {
+                "text": "GH",
+                "missing": false
+            },
+            {
+                "text": "Ế",
+                "missing": true
+            }
+        ],
+        "options": [
+            "Ê",
+            "Ế",
+            "Ề"
+        ],
+        "hint": "Vật để ngồi"
+    },
+    {
+        "word": "VỞ",
+        "image": "📓",
+        "parts": [
+            {
+                "text": "V",
+                "missing": false
+            },
+            {
+                "text": "Ở",
+                "missing": true
+            }
+        ],
+        "options": [
+            "Ơ",
+            "Ở",
+            "Ỡ"
+        ],
+        "hint": "Để viết bài"
+    },
+    {
+        "word": "TÔ",
+        "image": "🍜",
+        "parts": [
+            {
+                "text": "T",
+                "missing": false
+            },
+            {
+                "text": "Ô",
+                "missing": true
+            }
+        ],
+        "options": [
+            "O",
+            "Ô",
+            "Ơ"
+        ],
+        "hint": "Đựng phở, bún"
+    }
+]

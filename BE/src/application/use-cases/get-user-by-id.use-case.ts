@@ -26,6 +26,8 @@ export class GetUserByIdUseCase {
             name: user.name,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+            hasPinCode: !!user.pinCode, // Flag để check có PIN hay chưa
+            gender: user.gender,
         });
     }
 }
