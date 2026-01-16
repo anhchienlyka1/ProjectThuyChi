@@ -8,6 +8,8 @@ import { LearningSessionSchema } from '../infrastructure/database/schemas/learni
 import { UserProgressSchema } from '../infrastructure/database/schemas/user-progress.schema';
 import { UserSchema } from '../infrastructure/database/schemas/user.schema';
 import { QuestionAttemptSchema } from '../infrastructure/database/schemas/question-attempt.schema';
+import { AchievementModule } from './achievement.module';
+import { LevelSchema } from '../infrastructure/database/schemas/level.schema';
 
 @Module({
     imports: [
@@ -15,8 +17,10 @@ import { QuestionAttemptSchema } from '../infrastructure/database/schemas/questi
             LearningSessionSchema,
             UserProgressSchema,
             UserSchema,
-            QuestionAttemptSchema
-        ])
+            QuestionAttemptSchema,
+            LevelSchema
+        ]),
+        AchievementModule
     ],
     controllers: [LearningController, QuestionAttemptController],
     providers: [LearningService, QuestionAttemptService],

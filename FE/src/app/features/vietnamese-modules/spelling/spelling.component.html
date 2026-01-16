@@ -71,6 +71,9 @@
                 Tập Đánh Vần
             </h1>
 
+            <!-- Timer Component -->
+            <app-lesson-timer [compact]="true"></app-lesson-timer>
+
             <div
                 class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2 animate-bounce">
                 <span class="text-2xl">📝</span>
@@ -172,3 +175,11 @@
 
     </div>
 </div>
+
+<!-- Completion Stats Modal -->
+<app-lesson-completion-stats
+    *ngIf="showCompletionStats"
+    [levelId]="'spelling'"
+    [currentDuration]="completionDuration"
+    (close)="closeCompletionStats()">
+</app-lesson-completion-stats>

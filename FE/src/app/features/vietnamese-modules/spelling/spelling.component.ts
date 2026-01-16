@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
@@ -6,20 +6,26 @@ import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button
 import { MascotService } from '../../../core/services/mascot.service';
 import { SpellingService, SpellingLevel } from '../../../core/services/spelling.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { LessonTimerService } from '../../../core/services/lesson-timer.service';
+import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
+import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
+import { LearningService } from '../../../core/services/learning.service';
 
 @Component({
   selector: 'app-spelling',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent],
+  imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
   templateUrl: './spelling.component.html',
   styleUrl: './spelling.component.css'
 })
-export class SpellingComponent implements OnInit {
+export class SpellingComponent implements OnInit, OnDestroy {
   private spellingService = inject(SpellingService);
   private location = inject(Location);
   private router = inject(Router);
   private mascot = inject(MascotService);
   private dailyProgress = inject(DailyProgressService);
+  private lessonTimer = inject(LessonTimerService);
+  private learningService = inject(LearningService);
 
   levels: SpellingLevel[] = [];
   currentLevelIndex = 0;
@@ -34,9 +40,18 @@ export class SpellingComponent implements OnInit {
   showFeedback: boolean = false;
   isFinished: boolean = false;
 
+  // Timer and stats
+  showCompletionStats = false;
+  completionDuration = 0;
+  startTime = 0;
+
   ngOnInit(): void {
     this.mascot.setEmotion('happy', 'Chào con! Hãy chọn vần đúng nhé! 🗣️', 3000);
     this.loadLevelsFromAPI();
+  }
+
+  ngOnDestroy() {
+    this.lessonTimer.stopTimer();
   }
 
   loadLevelsFromAPI() {
@@ -44,6 +59,8 @@ export class SpellingComponent implements OnInit {
       next: (data) => {
         this.levels = data;
         if (this.levels.length > 0) {
+          this.startTime = Date.now();
+          this.lessonTimer.startTimer('spelling');
           this.loadLevel();
         } else {
           console.warn('No spelling levels found in database');
@@ -118,10 +135,36 @@ export class SpellingComponent implements OnInit {
           this.loadLevel();
         } else {
           this.isFinished = true;
+
+          // Stop timer and save session
+          const durationSeconds = this.lessonTimer.stopTimer();
+          this.completionDuration = durationSeconds;
+
           // Increment daily completion count
           this.dailyProgress.incrementCompletion('spelling');
-          const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
-          this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
+
+          // Save to backend
+          this.learningService.completeSession({
+            levelId: 'spelling',
+            score: this.levels.length,
+            totalQuestions: this.levels.length,
+            durationSeconds: durationSeconds
+          }).subscribe({
+            next: (response) => {
+              const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
+              this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
+
+              // Show completion stats after 2 seconds
+              setTimeout(() => {
+                this.showCompletionStats = true;
+              }, 2000);
+            },
+            error: (err) => {
+              console.error('Failed to save progress', err);
+              const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
+              this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
+            }
+          });
         }
       }, 2000);
     } else {
@@ -141,7 +184,14 @@ export class SpellingComponent implements OnInit {
   restartGame() {
     this.currentLevelIndex = 0;
     this.isFinished = false;
+    this.showCompletionStats = false;
+    this.startTime = Date.now();
+    this.lessonTimer.startTimer('spelling');
     this.loadLevel();
+  }
+
+  closeCompletionStats() {
+    this.showCompletionStats = false;
   }
 
   goBack() {

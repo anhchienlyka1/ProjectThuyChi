@@ -12,6 +12,8 @@ import { SubjectModule } from './modules/subject.module';
 import { LevelModule } from './modules/level.module';
 import { LearningModule } from './modules/learning.module';
 import { AuthModule } from './modules/auth.module';
+import { StudentProfileModule } from './modules/student-profile.module';
+import { AchievementModule } from './modules/achievement.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { AuthModule } from './modules/auth.module';
     LevelModule,
     LearningModule,
     AuthModule,
+    StudentProfileModule,
+    AchievementModule,
   ],
   controllers: [AppController],
   providers: [

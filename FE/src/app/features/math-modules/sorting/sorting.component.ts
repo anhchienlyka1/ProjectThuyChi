@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
@@ -7,12 +7,15 @@ import { SortingService } from '../../../core/services/sorting.service';
 import { SortingQuestion } from '../../../core/models/sorting-config.model';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { LessonTimerService } from '../../../core/services/lesson-timer.service';
+import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
+import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
 
 
 @Component({
     selector: 'app-sorting',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent],
+    imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
     templateUrl: './sorting.component.html',
     styles: [`
     /* Animations shared with other modules */
@@ -41,12 +44,13 @@ import { DailyProgressService } from '../../../core/services/daily-progress.serv
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
   `]
 })
-export class SortingComponent implements OnInit {
+export class SortingComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private service = inject(SortingService);
     private learningService = inject(LearningService);
     private dailyProgress = inject(DailyProgressService);
+    private lessonTimer = inject(LessonTimerService);
 
 
     config: any = {};
@@ -68,6 +72,8 @@ export class SortingComponent implements OnInit {
     feedbackMessage = '';
     isCorrect = false;
     startTime: number = 0;
+    showCompletionStats = false;
+    completionDuration = 0;
 
 
     // To track if the current round has had any errors, to decide whether to increment correctCount for the QUESTION
@@ -83,16 +89,20 @@ export class SortingComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        this.lessonTimer.stopTimer();
+    }
+
     startGame() {
         this.currentQuestionIndex = 0;
         this.score = 0;
         this.correctCount = 0;
         this.wrongCount = 0;
         this.isFinished = false;
-        this.isFinished = false;
+        this.showCompletionStats = false;
         this.startTime = Date.now();
+        this.lessonTimer.startTimer('sorting');
         this.generateNewRound();
-
     }
 
     generateNewRound() {
@@ -219,7 +229,8 @@ export class SortingComponent implements OnInit {
 
     finishGame() {
         this.isFinished = true;
-        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+        const durationSeconds = this.lessonTimer.stopTimer();
+        this.completionDuration = durationSeconds;
 
         // Increment daily completion count
         this.dailyProgress.incrementCompletion('sorting');
@@ -236,6 +247,10 @@ export class SortingComponent implements OnInit {
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
+
+                setTimeout(() => {
+                    this.showCompletionStats = true;
+                }, 2000);
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
@@ -245,8 +260,18 @@ export class SortingComponent implements OnInit {
         });
     }
 
+    closeCompletionStats() {
+        this.showCompletionStats = false;
+    }
+
 
     goBack() {
         this.router.navigate(['/math']);
+    }
+
+    formatDuration(seconds: number): string {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 }

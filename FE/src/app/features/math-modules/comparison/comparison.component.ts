@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
@@ -7,12 +7,15 @@ import { ComparisonService } from '../../../core/services/comparison.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { LessonTimerService } from '../../../core/services/lesson-timer.service';
+import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
+import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
 
 
 @Component({
   selector: 'app-comparison',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent],
+  imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
   templateUrl: './comparison.component.html',
   styles: [`
     @keyframes pop-in {
@@ -34,13 +37,14 @@ import { DailyProgressService } from '../../../core/services/daily-progress.serv
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
   `]
 })
-export class ComparisonComponent implements OnInit {
+export class ComparisonComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private mascot = inject(MascotService);
   private comparisonService = inject(ComparisonService);
   private audioService = inject(AudioService);
   private learningService = inject(LearningService);
   private dailyProgress = inject(DailyProgressService);
+  private lessonTimer = inject(LessonTimerService);
 
 
   // Left expression
@@ -68,6 +72,11 @@ export class ComparisonComponent implements OnInit {
   wrongCount = 0;
   isFinished = false;
   startTime: number = 0;
+  showCompletionStats = false;
+  completionDuration = 0;
+
+  // Track if current question has been answered incorrectly (no score if retry)
+  hasErrorInCurrentRound = false;
 
 
   ngOnInit() {
@@ -80,19 +89,25 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.lessonTimer.stopTimer();
+  }
+
   startGame() {
     this.currentQuestionIndex = 0;
     this.correctCount = 0;
     this.wrongCount = 0;
     this.score = 0;
     this.isFinished = false;
+    this.showCompletionStats = false;
     this.startTime = Date.now();
+    this.lessonTimer.startTimer('comparison');
     this.generateNewRound();
-
   }
 
   generateNewRound() {
     this.currentQuestionIndex++;
+    this.hasErrorInCurrentRound = false; // Reset error flag for new question
 
     const min = this.config.difficulty?.minNumber || 1;
     // Upgrade difficulty: Ensure max is at least 20 even if config says 10
@@ -152,34 +167,48 @@ export class ComparisonComponent implements OnInit {
     this.showFeedback = true;
 
     if (correct) {
-      this.score += (this.config.pointsPerQuestion || 10);
-      this.correctCount++;
+      // Only count score if this is the first attempt (no errors in this round)
+      if (!this.hasErrorInCurrentRound) {
+        this.score += (this.config.pointsPerQuestion || 10);
+        this.correctCount++;
+      }
       this.mascot.celebrate();
 
       const msgs = this.config.feedback?.correct || ['Hoan hô!'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
       this.mascot.setEmotion('happy', msg, 2000);
+
+      // Move to next question or finish
+      setTimeout(() => {
+        this.showFeedback = false;
+        if (this.currentQuestionIndex < this.totalQuestions) {
+          this.generateNewRound();
+        } else {
+          this.finishGame();
+        }
+      }, 2000);
     } else {
-      this.wrongCount++;
-      const msgs = this.config.feedback?.wrong || ['Sai rồi!'];
+      // Mark this question as having an error - no score will be given even if retry succeeds
+      if (!this.hasErrorInCurrentRound) {
+        this.wrongCount++;
+      }
+      this.hasErrorInCurrentRound = true;
+
+      const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
       this.mascot.setEmotion('sad', msg, 2000);
-    }
 
-    // Always move to next question or finish
-    setTimeout(() => {
-      this.showFeedback = false;
-      if (this.currentQuestionIndex < this.totalQuestions) {
-        this.generateNewRound();
-      } else {
-        this.finishGame();
-      }
-    }, 2000);
+      // Allow retry without moving to next question
+      setTimeout(() => {
+        this.showFeedback = false;
+      }, 2000);
+    }
   }
 
   finishGame() {
     this.isFinished = true;
-    const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+    const durationSeconds = this.lessonTimer.stopTimer();
+    this.completionDuration = durationSeconds;
 
     // Increment daily completion count
     this.dailyProgress.incrementCompletion('comparison');
@@ -196,6 +225,10 @@ export class ComparisonComponent implements OnInit {
           ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
           : `Bé hãy cố gắng hơn lần sau nhé!`;
         this.mascot.setEmotion('celebrating', starMessage, 5000);
+
+        setTimeout(() => {
+          this.showCompletionStats = true;
+        }, 2000);
       },
       error: (err) => {
         console.error('Failed to save progress', err);
@@ -205,8 +238,18 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
+  closeCompletionStats() {
+    this.showCompletionStats = false;
+  }
+
 
   goBack() {
     this.router.navigate(['/math']);
+  }
+
+  formatDuration(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 }

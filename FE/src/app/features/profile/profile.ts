@@ -1,9 +1,11 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { GamificationStore } from '../../core/store/gamification.store';
 import { ReportService } from '../../core/services/report.service';
 import { AchievementService } from '../../core/services/achievement.service';
+import { StudentProfileService, Achievement } from '../../core/services/student-profile.service';
+import { AuthService } from '../../core/services/auth.service';
 import { KidCardComponent } from '../../shared/ui-kit/kid-card/kid-card.component';
 import { KidAvatarComponent } from '../../shared/ui-kit/kid-avatar/kid-avatar.component';
 import { KidProgressBarComponent } from '../../shared/ui-kit/kid-progress-bar/kid-progress-bar.component';
@@ -36,67 +38,85 @@ export class ProfileComponent {
   gameStore = inject(GamificationStore);
   reportService = inject(ReportService);
   achievementService = inject(AchievementService);
+  studentProfileService = inject(StudentProfileService);
+  authService = inject(AuthService);
   private router = inject(Router);
 
-  // Mock computed certificates for the profile preview (latest 4)
-  recentCertificates = computed(() => {
-    const allCerts: Certificate[] = [
-      {
-        id: 'cert_1',
-        name: 'Bé Ngoan Tuần 1',
-        description: 'Hoàn thành xuất sắc bài tập tuần 1',
-        date: '01/01/2026',
-        unlocked: true,
-        theme: 'pink'
-      },
-      {
-        id: 'cert_2',
-        name: 'Bé Ngoan Tuần 2',
-        description: 'Chăm chỉ học toán mỗi ngày',
-        date: '08/01/2026',
-        unlocked: true,
-        theme: 'blue'
-      },
-      {
-        id: 'cert_3',
-        name: 'Bé Ngoan Tuần 3',
-        description: 'Đạt điểm tối đa 3 bài kiểm tra',
-        unlocked: false,
-        theme: 'yellow'
-      },
-      {
-        id: 'cert_4',
-        name: 'Bé Ngoan Tháng 1',
-        description: 'Hoàn thành mọi thử thách tháng 1',
-        unlocked: false,
-        theme: 'green'
-      }
-    ];
-    return allCerts.slice(0, 4);
-  });
+  // Signals for profile data
+  isLoading = signal<boolean>(true);
+  profileData = signal<any>(null);
+  achievements = signal<Achievement[]>([]);
 
-  // Computed for Today's Stats
-  todayStats = computed(() => {
-    const today = new Date().toDateString();
-    const sessions = this.reportService.sessions().filter(s => new Date(s.timestamp).toDateString() === today);
+  // Computed for recent certificates (map from achievements)
+  recentCertificates = signal<Certificate[]>([]);
 
-    return {
-      lessons: sessions.length,
-      correct: sessions.reduce((acc, curr) => acc + curr.correctAnswers, 0),
-      durationMinutes: Math.floor(sessions.reduce((acc, curr) => acc + curr.durationSeconds, 0) / 60)
-    };
+  // Computed for Today's Stats from API
+  todayStats = signal({
+    lessons: 0,
+    correct: 0,
+    durationMinutes: 0
   });
 
   constructor() {
+    // Load profile data when component initializes
+    this.loadProfileData();
+
     // Check for achievements whenever profile is loaded
     this.achievementService.checkAchievements();
+  }
+
+  async loadProfileData() {
+    try {
+      this.isLoading.set(true);
+      const userId = this.authService.getUserId();
+
+      if (!userId) {
+        console.error('No user ID found');
+        this.isLoading.set(false);
+        return;
+      }
+
+      // Fetch profile data
+      const profile = await this.studentProfileService.getStudentProfile(userId);
+      this.profileData.set(profile);
+
+      // Update today's stats from API
+      if (profile.todayStats) {
+        this.todayStats.set({
+          lessons: profile.todayStats.lessonsCompleted,
+          correct: profile.todayStats.correctAnswers,
+          durationMinutes: profile.todayStats.minutesLearned
+        });
+      }
+
+      // Fetch achievements (limit to 4 for profile preview)
+      const achievementsData = await this.studentProfileService.getStudentAchievements(userId, 4);
+      this.achievements.set(achievementsData);
+
+      // Map achievements to certificates format
+      const certs: Certificate[] = achievementsData.map((achievement, index) => {
+        const themes: Array<'pink' | 'blue' | 'yellow' | 'green'> = ['pink', 'blue', 'yellow', 'green'];
+        return {
+          id: achievement.id.toString(),
+          name: achievement.title,
+          description: achievement.description,
+          date: new Date(achievement.earnedAt).toLocaleDateString('vi-VN'),
+          unlocked: true,
+          theme: themes[index % themes.length]
+        };
+      });
+      this.recentCertificates.set(certs);
+
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   goBack() {
     this.router.navigate(['/select-subject']);
   }
-
-
 
   viewAllCertificates() {
     this.router.navigate(['/profile/certificates']);

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
@@ -7,12 +7,15 @@ import { SubtractionService } from '../../../core/services/subtraction.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { LessonTimerService } from '../../../core/services/lesson-timer.service';
+import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
+import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
 
 
 @Component({
     selector: 'app-subtraction',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent],
+    imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
     templateUrl: './subtraction.component.html',
     styles: [`
     @keyframes float {
@@ -40,13 +43,14 @@ import { DailyProgressService } from '../../../core/services/daily-progress.serv
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
   `]
 })
-export class SubtractionComponent implements OnInit {
+export class SubtractionComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private subtractionService = inject(SubtractionService);
     private audioService = inject(AudioService);
     private learningService = inject(LearningService);
     private dailyProgress = inject(DailyProgressService);
+    private lessonTimer = inject(LessonTimerService);
 
 
     config: any = {};
@@ -69,6 +73,12 @@ export class SubtractionComponent implements OnInit {
     isCorrect = false;
     startTime: number = 0;
 
+    // Track if current question has been answered incorrectly (no score if retry)
+    hasErrorInCurrentRound = false;
+
+    showCompletionStats = false;
+    completionDuration = 0;
+
 
     ngOnInit() {
         this.subtractionService.getConfig().subscribe(config => {
@@ -80,20 +90,24 @@ export class SubtractionComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        this.lessonTimer.stopTimer();
+    }
+
     startGame() {
         this.currentQuestionIndex = 0;
         this.correctCount = 0;
         this.wrongCount = 0;
         this.score = 0;
-        this.score = 0;
         this.isFinished = false;
         this.startTime = Date.now();
+        this.lessonTimer.startTimer('subtraction');
         this.generateNewRound();
-
     }
 
     generateNewRound() {
         this.currentQuestionIndex++;
+        this.hasErrorInCurrentRound = false; // Reset error flag for new question
 
         // Logic: firstNumber - secondNumber = correctAnswer
         // Ensure correctAnswer is within 0-20
@@ -154,30 +168,46 @@ export class SubtractionComponent implements OnInit {
         this.showFeedback = true;
 
         if (correct) {
-            this.score += (this.config.pointsPerQuestion || 10);
-            this.correctCount++;
+            // Only count score if this is the first attempt (no errors in this round)
+            if (!this.hasErrorInCurrentRound) {
+                this.score += (this.config.pointsPerQuestion || 10);
+                this.correctCount++;
+            }
             this.mascot.celebrate();
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
             this.mascot.setEmotion('happy', msgs[Math.floor(Math.random() * msgs.length)], 2000);
-        } else {
-            this.wrongCount++;
-            const msgs = this.config.feedback?.wrong || ['Sai rồi!'];
-            this.mascot.setEmotion('sad', msgs[Math.floor(Math.random() * msgs.length)], 2000);
-        }
 
-        setTimeout(() => {
-            this.showFeedback = false;
-            if (this.currentQuestionIndex < this.totalQuestions) {
-                this.generateNewRound();
-            } else {
-                this.finishGame();
+            // Move to next question or finish
+            setTimeout(() => {
+                this.showFeedback = false;
+                if (this.currentQuestionIndex < this.totalQuestions) {
+                    this.generateNewRound();
+                } else {
+                    this.finishGame();
+                }
+            }, 2000);
+        } else {
+            // Mark this question as having an error - no score will be given even if retry succeeds
+            if (!this.hasErrorInCurrentRound) {
+                this.wrongCount++;
             }
-        }, 2000);
+            this.hasErrorInCurrentRound = true;
+
+            const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
+            this.mascot.setEmotion('sad', msgs[Math.floor(Math.random() * msgs.length)], 2000);
+
+            // Allow retry without moving to next question - regenerate options
+            setTimeout(() => {
+                this.showFeedback = false;
+                this.generateOptions(); // Shuffle options for retry
+            }, 2000);
+        }
     }
 
     finishGame() {
         this.isFinished = true;
-        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+        const durationSeconds = this.lessonTimer.stopTimer();
+        this.completionDuration = durationSeconds;
 
         // Increment daily completion count
         this.dailyProgress.incrementCompletion('subtraction');
@@ -194,6 +224,10 @@ export class SubtractionComponent implements OnInit {
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
+
+                setTimeout(() => {
+                    this.showCompletionStats = true;
+                }, 2000);
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
@@ -203,8 +237,18 @@ export class SubtractionComponent implements OnInit {
         });
     }
 
+    closeCompletionStats() {
+        this.showCompletionStats = false;
+    }
+
 
     goBack() {
         this.router.navigate(['/math']);
+    }
+
+    formatDuration(seconds: number): string {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 }

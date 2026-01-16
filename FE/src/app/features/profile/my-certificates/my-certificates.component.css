@@ -1,18 +1,1 @@
-/* Custom styles for certificate specific needs */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 30s linear infinite;
-}
+/* Styles moved to CertificateCardComponent */

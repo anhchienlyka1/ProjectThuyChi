@@ -36,7 +36,7 @@
       <!-- Center: Title -->
       <div class="text-center flex-1 order-first md:order-none">
         <h1
-          class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 drop-shadow-sm">
+          class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 drop-shadow-sm leading-relaxed py-2">
           Bộ Sưu Tập Phiếu Bé Ngoan
         </h1>
       </div>
@@ -57,126 +57,23 @@
     </div>
 
     <!-- Certificates Grid -->
+    @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+      <p class="text-xl font-bold text-blue-600">Đang tải phiếu bé ngoan...</p>
+    </div>
+    } @else if (certificates().length === 0) {
+    <div class="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+      <div class="text-8xl opacity-30">🏵️</div>
+      <p class="text-2xl font-bold text-gray-400">Chưa có phiếu bé ngoan nào</p>
+      <p class="text-lg text-gray-400">Hãy hoàn thành bài học để nhận phiếu bé ngoan nhé!</p>
+    </div>
+    } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       @for (cert of certificates(); track cert.id) {
-      <div class="relative group perspective-1000">
-        <div
-          class="relative bg-white rounded-[2rem] p-2 shadow-xl border-4 transition-all duration-500 transform hover:-translate-y-2 hover:rotate-1"
-          [class.border-gray-200]="!cert.unlocked" [class.border-pink-300]="cert.unlocked && cert.theme === 'pink'"
-          [class.border-blue-300]="cert.unlocked && cert.theme === 'blue'"
-          [class.border-yellow-300]="cert.unlocked && cert.theme === 'yellow'"
-          [class.border-green-300]="cert.unlocked && cert.theme === 'green'" [class.grayscale]="!cert.unlocked">
-
-          <!-- Inner Frame with Pattern -->
-          <div
-            class="h-full rounded-[1.5rem] border-[6px] border-double p-1 flex flex-col items-center text-center relative overflow-hidden"
-            [class.bg-white]="true"
-            [style.background-image]="cert.unlocked ? 'radial-gradient(' + (cert.theme === 'pink' ? '#fbcfe8' : cert.theme === 'blue' ? '#bfdbfe' : cert.theme === 'yellow' ? '#fef08a' : '#bbf7d0') + ' 1px, transparent 1px)' : 'none'"
-            [style.background-size]="'20px 20px'" [ngClass]="{
-                            'border-pink-200': cert.theme === 'pink',
-                            'border-blue-200': cert.theme === 'blue',
-                            'border-yellow-200': cert.theme === 'yellow',
-                            'border-green-200': cert.theme === 'green',
-                            'border-gray-200': !cert.unlocked
-                        }">
-
-            <!-- Decorative Header Arc -->
-            <div class="relative w-full h-16 overflow-hidden mb-2">
-              <div
-                class="absolute -top-[100%] -left-[10%] w-[120%] h-[200%] rounded-[50%] shadow-sm flex items-end justify-center pb-2"
-                [ngClass]="{
-                        'bg-pink-500': cert.theme === 'pink',
-                        'bg-blue-500': cert.theme === 'blue',
-                        'bg-yellow-500': cert.theme === 'yellow',
-                        'bg-green-500': cert.theme === 'green',
-                        'bg-gray-400': !cert.unlocked
-                    }">
-                <span
-                  class="text-white font-black text-xl uppercase tracking-widest drop-shadow-md transform translate-y-[-10px]">Phiếu
-                  Bé Ngoan</span>
-              </div>
-            </div>
-
-            <!-- Main Icon with Glow and Rotation -->
-            <div class="relative mb-2 group-hover:scale-110 transition-transform duration-500 mt-2">
-              <!-- Glow Effect behind icon -->
-              @if(cert.unlocked) {
-              <div
-                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full blur-xl opacity-60"
-                [ngClass]="{
-                                        'bg-pink-300': cert.theme === 'pink',
-                                        'bg-blue-300': cert.theme === 'blue',
-                                        'bg-yellow-300': cert.theme === 'yellow',
-                                        'bg-green-300': cert.theme === 'green'
-                                    }"></div>
-              }
-              <div class="text-9xl relative z-10 drop-shadow-md" [class.animate-spin-slow]="cert.unlocked">
-                @if (cert.unlocked) {
-                🏵️
-                } @else {
-                🔒
-                }
-              </div>
-            </div>
-
-            <div class="flex-1 flex flex-col items-center justify-center w-full px-4">
-              <!-- Certificate Title -->
-              <h3 class="text-3xl font-black mb-2" [ngClass]="{
-                                    'text-pink-600': cert.theme === 'pink',
-                                    'text-blue-600': cert.theme === 'blue',
-                                    'text-yellow-600': cert.theme === 'yellow',
-                                    'text-green-600': cert.theme === 'green',
-                                    'text-gray-500': !cert.unlocked
-                                }">
-                {{ cert.name }}
-              </h3>
-
-              <!-- Decorative Divider -->
-              <div class="flex items-center gap-2 mb-3 opacity-50">
-                <div class="h-[2px] w-8 rounded-full" [class.bg-current]="true"
-                  [style.color]="cert.theme === 'pink' ? '#db2777' : cert.theme === 'blue' ? '#2563eb' : cert.theme === 'yellow' ? '#ca8a04' : '#16a34a'">
-                </div>
-                <div class="text-xs">⭐</div>
-                <div class="h-[2px] w-8 rounded-full" [class.bg-current]="true"
-                  [style.color]="cert.theme === 'pink' ? '#db2777' : cert.theme === 'blue' ? '#2563eb' : cert.theme === 'yellow' ? '#ca8a04' : '#16a34a'">
-                </div>
-              </div>
-
-              <p class="text-gray-600 font-bold mb-6 text-sm md:text-base italic">
-                "{{ cert.description }}"
-              </p>
-            </div>
-
-            <!-- Footer / Date Stamp -->
-            @if (cert.date && cert.unlocked) {
-            <div class="mb-4 relative">
-              <!-- Stamp circle -->
-              <div
-                class="border-2 rounded-xl px-5 py-1.5 flex items-center gap-2 shadow-sm bg-white/80 backdrop-blur-sm"
-                [ngClass]="{
-                                    'border-pink-300 text-pink-600': cert.theme === 'pink',
-                                    'border-blue-300 text-blue-600': cert.theme === 'blue',
-                                    'border-yellow-300 text-yellow-700': cert.theme === 'yellow',
-                                    'border-green-300 text-green-600': cert.theme === 'green'
-                                }">
-                <span class="text-xl">📅</span>
-                <span class="font-black text-sm">{{ cert.date }}</span>
-              </div>
-            </div>
-            }
-
-            <!-- Locked Overlay -->
-            @if (!cert.unlocked) {
-            <div class="absolute inset-0 bg-gray-100/50 flex items-center justify-center backdrop-blur-[1px] z-20">
-              <div class="bg-white px-6 py-2 rounded-full shadow-md border border-gray-200 transform rotate-12">
-                <span class="text-gray-400 font-bold uppercase tracking-wider text-sm">Chưa đạt được</span>
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
+      <app-certificate-card [certificate]="cert"></app-certificate-card>
       }
     </div>
+    }
   </div>
 </div>

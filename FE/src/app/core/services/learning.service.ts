@@ -20,6 +20,37 @@ export interface LearningResponse {
   accuracy: number;
   sessionId: number;
   completed: boolean;
+  achievement?: {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: string;
+    points: number;
+  };
+}
+
+export interface CompletionTimeSession {
+  sessionId: number;
+  levelId: string;
+  levelName: string;
+  durationSeconds: number;
+  score: number;
+  totalQuestions: number;
+  accuracyPercentage: number;
+  stars: number;
+  completedAt: Date;
+}
+
+export interface CompletionTimeResponse {
+  userId: string;
+  levelId: string;
+  totalSessions: number;
+  averageTimeSeconds: number;
+  fastestTimeSeconds: number;
+  slowestTimeSeconds: number;
+  totalTimeSeconds: number;
+  recentSessions: CompletionTimeSession[];
 }
 
 @Injectable({
@@ -47,6 +78,29 @@ export class LearningService {
     return this.http.post<LearningResponse>(this.apiUrl, payload).pipe(
       catchError(error => {
         console.error('Error saving learning session:', error);
+        throw error;
+      })
+    );
+  }
+
+  getCompletionTime(levelId?: string): Observable<CompletionTimeResponse> {
+    const userId = this.authService.getUserId();
+
+    if (!userId) {
+      console.error('[LearningService] No user ID available');
+      return throwError(() => new Error('User not logged in'));
+    }
+
+    const url = `${environment.apiUrl}/learning/completion-time`;
+    const params: any = { userId };
+
+    if (levelId) {
+      params.levelId = levelId;
+    }
+
+    return this.http.get<CompletionTimeResponse>(url, { params }).pipe(
+      catchError(error => {
+        console.error('Error fetching completion time:', error);
         throw error;
       })
     );

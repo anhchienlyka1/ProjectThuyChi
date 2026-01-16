@@ -162,11 +162,7 @@ export const routes: Routes = [
         title: 'Báo cáo - Góc Phụ Huynh',
         loadComponent: () => import('./features/parent-dashboard/learning-report.component').then(m => m.LearningReportComponent)
       },
-      {
-        path: 'badge-management',
-        title: 'Quản Lý Phiếu Bé Ngoan - Góc Phụ Huynh',
-        loadComponent: () => import('./features/badge-management/badge-management').then(m => m.BadgeManagementComponent)
-      }
+
     ]
   }
 ];

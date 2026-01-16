@@ -2,64 +2,71 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
-
-export interface Certificate {
-    id: string;
-    name: string;
-    description: string;
-    date?: string;
-    unlocked: boolean;
-    theme: 'pink' | 'blue' | 'yellow' | 'green';
-}
+import { CertificateCardComponent, Certificate } from '../../../shared/components/certificate-card.component';
+import { StudentProfileService, Achievement } from '../../../core/services/student-profile.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-my-certificates',
     standalone: true,
     imports: [
         CommonModule,
-        KidButtonComponent
+        KidButtonComponent,
+        CertificateCardComponent
     ],
     templateUrl: './my-certificates.component.html',
     styleUrls: ['./my-certificates.component.css']
 })
 export class MyCertificatesComponent {
     private router = inject(Router);
+    private studentProfileService = inject(StudentProfileService);
+    private authService = inject(AuthService);
 
-    certificates = signal<Certificate[]>([
-        {
-            id: 'cert_1',
-            name: 'Bé Ngoan Tuần 1',
-            description: 'Hoàn thành xuất sắc bài tập tuần 1',
-            date: '01/01/2026',
-            unlocked: true,
-            theme: 'pink'
-        },
-        {
-            id: 'cert_2',
-            name: 'Bé Ngoan Tuần 2',
-            description: 'Chăm chỉ học toán mỗi ngày',
-            date: '08/01/2026',
-            unlocked: true,
-            theme: 'blue'
-        },
-        {
-            id: 'cert_3',
-            name: 'Bé Ngoan Tuần 3',
-            description: 'Đạt điểm tối đa 3 bài kiểm tra',
-            unlocked: false,
-            theme: 'yellow'
-        },
-        {
-            id: 'cert_4',
-            name: 'Bé Ngoan Tháng 1',
-            description: 'Hoàn thành mọi thử thách tháng 1',
-            unlocked: false,
-            theme: 'green'
+    // Signals for data
+    isLoading = signal<boolean>(true);
+    certificates = signal<Certificate[]>([]);
+    earnedCount = signal(0);
+    totalCount = signal(0);
+
+    constructor() {
+        this.loadCertificates();
+    }
+
+    async loadCertificates() {
+        try {
+            this.isLoading.set(true);
+            const userId = this.authService.getUserId();
+
+            if (!userId) {
+                console.error('No user ID found');
+                this.isLoading.set(false);
+                return;
+            }
+
+            // Fetch all achievements (no limit)
+            const achievementsData = await this.studentProfileService.getStudentAchievements(userId);
+
+            // Map achievements to certificates format
+            const themes: Array<'pink' | 'blue' | 'yellow' | 'green'> = ['pink', 'blue', 'yellow', 'green'];
+            const certs: Certificate[] = achievementsData.map((achievement, index) => ({
+                id: achievement.id.toString(),
+                name: achievement.title,
+                description: achievement.description,
+                date: new Date(achievement.earnedAt).toLocaleDateString('vi-VN'),
+                unlocked: true, // All fetched achievements are earned
+                theme: themes[index % themes.length]
+            }));
+
+            this.certificates.set(certs);
+            this.earnedCount.set(certs.length);
+            this.totalCount.set(certs.length); // For now, total = earned (we only show earned achievements)
+
+        } catch (error) {
+            console.error('Error loading certificates:', error);
+        } finally {
+            this.isLoading.set(false);
         }
-    ]);
-
-    earnedCount = signal(2); // Mock count based on above
-    totalCount = signal(4);
+    }
 
     goBack() {
         this.router.navigate(['/profile']);

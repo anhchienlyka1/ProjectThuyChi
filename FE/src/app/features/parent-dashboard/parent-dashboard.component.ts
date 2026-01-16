@@ -2,7 +2,9 @@ import { Component, signal, computed, OnInit, Signal, inject } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { StudentSwitcherService, Student } from '../../core/services/student-switcher.service';
 import { AuthService } from '../../core/services/auth.service';
-import { RouterLink } from '@angular/router';
+import { AchievementService } from '../../core/services/achievement.service';
+import { DashboardService } from '../../core/services/dashboard.service';
+import { StudentProfileCardComponent } from '../../shared/components/student-profile-card/student-profile-card.component';
 
 interface LearningActivity {
   id: number;
@@ -37,231 +39,19 @@ interface SubjectProgress {
 @Component({
   selector: 'app-parent-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
-  template: `
-    <div class="max-w-7xl mx-auto space-y-6">
-
-      <!-- Welcome Header -->
-      <div class="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 rounded-3xl p-8 text-white shadow-xl">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold mb-2">👋 Xin chào, Phụ Huynh!</h1>
-            <p class="text-white/90 text-lg">
-              @if (selectedStudent()) {
-                Hôm nay <strong>{{ selectedStudent()?.name }}</strong> đã học được {{ todayStats().lessonsCompleted }} bài và đạt {{ todayStats().averageScore }}% điểm trung bình
-              } @else {
-                Hôm nay bé đã học được {{ todayStats().lessonsCompleted }} bài và đạt {{ todayStats().averageScore }}% điểm trung bình
-              }
-            </p>
-          </div>
-          <div class="hidden md:block">
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-              <div class="text-4xl font-bold">{{ todayStats().totalMinutes }}</div>
-              <div class="text-sm text-white/80">Phút học hôm nay</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Learning Time -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="bg-blue-100 rounded-xl p-3">
-              <span class="text-3xl">⏰</span>
-            </div>
-            <span class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Tuần này</span>
-          </div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().totalHours }}h {{ weekStats().totalMinutes }}m</div>
-          <div class="text-sm text-gray-500">Tổng thời gian học</div>
-          <div class="mt-3 flex items-center text-xs text-green-600">
-            <span class="mr-1">↗</span>
-            <span>+15% so với tuần trước</span>
-          </div>
-        </div>
-
-        <!-- Completed Lessons -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="bg-green-100 rounded-xl p-3">
-              <span class="text-3xl">✅</span>
-            </div>
-            <span class="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">Tuần này</span>
-          </div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().completedLessons }}</div>
-          <div class="text-sm text-gray-500">Bài học hoàn thành</div>
-          <div class="mt-3 flex items-center text-xs text-green-600">
-            <span class="mr-1">↗</span>
-            <span>+8 bài so với tuần trước</span>
-          </div>
-        </div>
-
-        <!-- Average Score -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="bg-yellow-100 rounded-xl p-3">
-              <span class="text-3xl">⭐</span>
-            </div>
-            <span class="text-sm font-semibold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full">Tuần này</span>
-          </div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().averageScore }}%</div>
-          <div class="text-sm text-gray-500">Điểm trung bình</div>
-          <div class="mt-3 flex items-center text-xs text-green-600">
-            <span class="mr-1">↗</span>
-            <span>+5% so với tuần trước</span>
-          </div>
-        </div>
-
-        <!-- Achievements -->
-        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-          <div class="flex items-center justify-between mb-4">
-            <div class="bg-purple-100 rounded-xl p-3">
-              <span class="text-3xl">🏆</span>
-            </div>
-            <span class="text-sm font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Tổng cộng</span>
-          </div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ achievements().length }}</div>
-          <div class="text-sm text-gray-500">Phiếu Bé Ngoan đạt được</div>
-          <div class="mt-3 flex items-center text-xs text-purple-600">
-            <span class="mr-1">🎉</span>
-            <span>+3 phiếu mới tuần này</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subject Progress -->
-      <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-gray-800">📚 Tiến độ theo môn học</h2>
-          <button class="text-sm text-blue-600 hover:text-blue-700 font-semibold">Xem chi tiết →</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (subject of subjectProgress(); track subject.subject) {
-            <div class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="text-4xl" [style.filter]="'hue-rotate(' + subject.color + 'deg)'">{{ subject.icon }}</div>
-                <div class="flex-1">
-                  <h3 class="font-bold text-gray-800">{{ subject.subject }}</h3>
-                  <p class="text-xs text-gray-500">{{ subject.completedLessons }}/{{ subject.totalLessons }} bài</p>
-                </div>
-                <div class="text-2xl font-bold" [style.color]="getProgressColor(subject.progress)">
-                  {{ subject.progress }}%
-                </div>
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div
-                  class="h-full rounded-full transition-all duration-500"
-                  [style.width.%]="subject.progress"
-                  [style.background]="getProgressGradient(subject.progress)">
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Recent Activities & Achievements -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Recent Learning Activities -->
-        <div class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">📝 Hoạt động học tập gần đây</h2>
-            <button class="text-sm text-blue-600 hover:text-blue-700 font-semibold">Xem tất cả →</button>
-          </div>
-
-          <div class="space-y-4">
-            @for (activity of recentActivities(); track activity.id) {
-              <div class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100">
-                <div class="rounded-xl p-3 text-3xl" [style.background]="activity.color + '20'">
-                  {{ activity.icon }}
-                </div>
-                <div class="flex-1">
-                  <h3 class="font-bold text-gray-800">{{ activity.module }}</h3>
-                  <p class="text-sm text-gray-500">{{ activity.subject }} • {{ formatTime(activity.timestamp) }}</p>
-                </div>
-                <div class="text-right">
-                  <div class="font-bold text-lg" [class]="getScoreClass(activity.score, activity.totalQuestions)">
-                    {{ activity.score }}/{{ activity.totalQuestions }}
-                  </div>
-                  <div class="text-xs text-gray-500">{{ activity.duration }} phút</div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Phiếu Bé Ngoan -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-800">🏆 Phiếu Bé Ngoan</h2>
-          </div>
-
-          <div class="space-y-4">
-            @for (achievement of achievements().slice(0, 5); track achievement.id) {
-              <div class="p-4 rounded-xl border-2 transition-all hover:scale-105"
-                [class]="getAchievementBorderClass(achievement.rarity)">
-                <div class="flex items-start gap-3">
-                  <div class="text-3xl">{{ achievement.icon }}</div>
-                  <div class="flex-1">
-                    <h3 class="font-bold text-sm text-gray-800">{{ achievement.title }}</h3>
-                    <p class="text-xs text-gray-500 mt-1">{{ achievement.description }}</p>
-                    <p class="text-xs text-gray-400 mt-2">{{ formatDate(achievement.earnedDate) }}</p>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-
-          <button
-            routerLink="/parents/badge-management"
-            class="w-full mt-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-shadow">
-            Xem tất cả phiếu bé ngoan
-          </button>
-        </div>
-
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">⚡ Thao tác nhanh</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-          <button class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-            <div class="text-4xl mb-3">⏱️</div>
-            <h3 class="font-bold text-lg text-gray-800 mb-1">Cài đặt thời gian</h3>
-            <p class="text-sm text-gray-500">Quản lý thời gian học mỗi ngày</p>
-          </button>
-
-          <button class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-            <div class="text-4xl mb-3">📊</div>
-            <h3 class="font-bold text-lg text-gray-800 mb-1">Báo cáo chi tiết</h3>
-            <p class="text-sm text-gray-500">Xem báo cáo tiến độ đầy đủ</p>
-          </button>
-
-          <button class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-            <div class="text-4xl mb-3">🎯</div>
-            <h3 class="font-bold text-lg text-gray-800 mb-1">Đặt mục tiêu</h3>
-            <p class="text-sm text-gray-500">Thiết lập mục tiêu học tập</p>
-          </button>
-
-        </div>
-      </div>
-
-    </div>
-  `,
+  imports: [CommonModule, StudentProfileCardComponent],
+  templateUrl: './parent-dashboard.component.html',
   styles: [`
     :host {
       display: block;
     }
   `]
 })
+// Trigger rebuild
 export class ParentDashboardComponent implements OnInit {
   private studentSwitcherService = inject(StudentSwitcherService);
+  private achievementService = inject(AchievementService);
+  private dashboardService = inject(DashboardService);
   selectedStudent = this.studentSwitcherService.selectedStudent;
 
   ngOnInit(): void {
@@ -269,53 +59,104 @@ export class ParentDashboardComponent implements OnInit {
     window.addEventListener('studentChanged', () => {
       this.loadDashboardData();
     });
+    // Initial load
+    this.loadDashboardData();
   }
 
-  loadDashboardData(): void {
-    // TODO: Load dashboard data based on selected student
-    console.log('Loading data for student:', this.selectedStudent()?.name);
+  async loadDashboardData(): Promise<void> {
+    const student = this.selectedStudent();
+    console.log('Loading data for student:', student?.name);
+
+    if (student) {
+      try {
+        // 1. Fetch Overview (Stats, Subject Progress)
+        const overview = await this.dashboardService.getParentOverview(student.id);
+
+        this.todayStats.set({
+          lessonsCompleted: overview.dailySummary.lessonsCompleted,
+          totalMinutes: overview.dailySummary.minutesLearned,
+          averageScore: overview.dailySummary.avgScore
+        });
+
+        this.weekStats.set({
+          totalTime: overview.weeklyStats.totalTime.value,
+          timeTrend: overview.weeklyStats.totalTime.trend,
+          completedLessons: overview.weeklyStats.lessonsCompleted.value,
+          lessonsTrend: overview.weeklyStats.lessonsCompleted.trend,
+          averageScore: overview.weeklyStats.avgScore.value,
+          scoreTrend: overview.weeklyStats.avgScore.trend,
+          badges: overview.weeklyStats.badges.value,
+          badgesNew: overview.weeklyStats.badges.newThisWeek
+        });
+
+        this.subjectProgress.set(overview.subjectProgress.map(s => ({
+          subject: s.subjectName,
+          icon: this.getSubjectIcon(s.subjectId),
+          color: s.color || '0', // Hue rotate value or color
+          progress: s.percentage,
+          completedLessons: s.completedLevels,
+          totalLessons: s.totalLevels
+        })));
+
+
+        // 2. Fetch Recent Activities
+        const history = await this.dashboardService.getRecentHistory(student.id);
+        const mappedHistory: LearningActivity[] = history.map((h: any) => ({
+          id: h.id,
+          subject: h.level?.subject?.title || 'Unknown',
+          module: h.level?.title || 'Unknown Module',
+          score: h.score,
+          totalQuestions: h.totalQuestions,
+          duration: Math.round(h.durationSeconds / 60),
+          timestamp: new Date(h.startedAt),
+          icon: this.getSubjectIcon(h.level?.subjectId),
+          color: '#3B82F6' // Default or mapped from subject
+        }));
+        this.recentActivities.set(mappedHistory);
+
+        // 3. Fetch Badges
+        // Need to load them for full list or other uses if desired, but count is covered by weekStats
+
+      } catch (error) {
+        console.error('Failed to load dashboard data', error);
+      }
+    }
   }
 
-  // Mock data - In production, this would come from a service
-  recentActivities = signal<LearningActivity[]>([
-    { id: 1, subject: 'Toán Học', module: 'Phép Cộng 1-10', score: 9, totalQuestions: 10, duration: 12, timestamp: new Date(Date.now() - 1000 * 60 * 30), icon: '➕', color: '#3B82F6' },
-    { id: 2, subject: 'Tiếng Việt', module: 'Bảng Chữ Cái', score: 15, totalQuestions: 15, duration: 18, timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), icon: '📝', color: '#10B981' },
-    { id: 3, subject: 'Toán Học', module: 'So Sánh Số', score: 7, totalQuestions: 10, duration: 15, timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), icon: '⚖️', color: '#3B82F6' },
-    { id: 4, subject: 'Trò Chơi', module: 'Đường Đua Trí Tuệ', score: 12, totalQuestions: 15, duration: 20, timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), icon: '🎮', color: '#F59E0B' },
-    { id: 5, subject: 'Tiếng Việt', module: 'Ghép Từ Đơn', score: 8, totalQuestions: 10, duration: 14, timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), icon: '🔤', color: '#10B981' }
-  ]);
+  // --- Signals ---
 
-  achievements = signal<Achievement[]>([
-    { id: 1, title: 'Nhà Toán Học Nhí', description: 'Hoàn thành 50 bài toán', icon: '🧮', earnedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), rarity: 'epic' },
-    { id: 2, title: 'Streak 7 Ngày', description: 'Học liên tục 7 ngày', icon: '🔥', earnedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1), rarity: 'rare' },
-    { id: 3, title: 'Điểm 10 Hoàn Hảo', description: 'Đạt 10/10 điểm', icon: '💯', earnedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), rarity: 'legendary' },
-    { id: 4, title: 'Người Bạn Chữ', description: 'Học hết bảng chữ cái', icon: '📚', earnedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), rarity: 'common' },
-    { id: 5, title: 'Tốc Độ Ánh Sáng', description: 'Hoàn thành bài trong 5 phút', icon: '⚡', earnedDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), rarity: 'rare' }
-  ]);
+  recentActivities = signal<LearningActivity[]>([]);
+  achievements = signal<Achievement[]>([]); // Optional if we don't display list
 
-  subjectProgress = signal<SubjectProgress[]>([
-    { subject: 'Toán Học', icon: '🔢', color: '0', progress: 75, completedLessons: 15, totalLessons: 20 },
-    { subject: 'Tiếng Việt', icon: '📝', color: '120', progress: 60, completedLessons: 12, totalLessons: 20 },
-    { subject: 'Tiếng Anh', icon: '🔤', color: '200', progress: 40, completedLessons: 8, totalLessons: 20 },
-    { subject: 'Trò Chơi', icon: '🎮', color: '280', progress: 85, completedLessons: 17, totalLessons: 20 }
-  ]);
+  subjectProgress = signal<SubjectProgress[]>([]);
 
-  todayStats = computed(() => {
-    const today = this.recentActivities().filter(a => {
-      const activityDate = new Date(a.timestamp);
-      const now = new Date();
-      return activityDate.toDateString() === now.toDateString();
-    });
-    const totalMinutes = today.reduce((sum, a) => sum + a.duration, 0);
-    const totalScore = today.reduce((sum, a) => sum + a.score, 0);
-    const totalQuestions = today.reduce((sum, a) => sum + a.totalQuestions, 0);
-    const averageScore = totalQuestions > 0 ? Math.round((totalScore / totalQuestions) * 100) : 0;
-    return { lessonsCompleted: today.length, totalMinutes, averageScore };
+  todayStats = signal({
+    lessonsCompleted: 0,
+    totalMinutes: 0,
+    averageScore: 0
   });
 
-  weekStats = computed(() => {
-    return { totalHours: 12, totalMinutes: 35, completedLessons: 42, averageScore: 87 };
+  weekStats = signal({
+    totalTime: '0h 0m',
+    timeTrend: '+0%',
+    completedLessons: 0,
+    lessonsTrend: '+0',
+    averageScore: '0%',
+    scoreTrend: '+0%',
+    badges: 0,
+    badgesNew: 0
   });
+
+  // --- Helpers ---
+
+  getSubjectIcon(subjectId: string): string {
+    switch (subjectId) {
+      case 'math': return '🔢';
+      case 'vietnamese': return '📝';
+      case 'english': return '🔤';
+      default: return '🎮';
+    }
+  }
 
   formatTime(date: Date): string {
     const now = new Date();
@@ -334,6 +175,7 @@ export class ParentDashboardComponent implements OnInit {
   }
 
   getScoreClass(score: number, total: number): string {
+    if (total === 0) return 'text-gray-600';
     const percentage = (score / total) * 100;
     if (percentage >= 90) return 'text-green-600';
     if (percentage >= 70) return 'text-blue-600';

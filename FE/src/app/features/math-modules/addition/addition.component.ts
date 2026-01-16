@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
@@ -7,12 +7,16 @@ import { AdditionService } from '../../../core/services/addition.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { AchievementNotificationComponent } from '../../../shared/components/achievement-notification/achievement-notification.component';
+import { LessonTimerService } from '../../../core/services/lesson-timer.service';
+import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
+import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
 
 
 @Component({
     selector: 'app-addition',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent],
+    imports: [CommonModule, KidButtonComponent, AchievementNotificationComponent, LessonTimerComponent, LessonCompletionStatsComponent],
     templateUrl: './addition.component.html',
     styles: [`
     @keyframes float {
@@ -40,13 +44,14 @@ import { DailyProgressService } from '../../../core/services/daily-progress.serv
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
   `]
 })
-export class AdditionComponent implements OnInit {
+export class AdditionComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     private mascot = inject(MascotService);
     private additionService = inject(AdditionService);
     private audioService = inject(AudioService);
     private learningService = inject(LearningService);
     private dailyProgress = inject(DailyProgressService);
+    private lessonTimer = inject(LessonTimerService);
 
 
     config: any = {};
@@ -70,6 +75,17 @@ export class AdditionComponent implements OnInit {
     isCorrect = false;
     startTime: number = 0;
 
+    // Track if current question has been answered incorrectly (no score if retry)
+    hasErrorInCurrentRound = false;
+
+    // Achievement notification
+    showAchievement = false;
+    earnedAchievement: any = null;
+
+    // Completion stats
+    showCompletionStats = false;
+    completionDuration = 0;
+
 
     ngOnInit() {
         this.additionService.getConfig().subscribe(config => {
@@ -81,24 +97,30 @@ export class AdditionComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        // Stop timer when leaving component
+        this.lessonTimer.stopTimer();
+    }
+
     startGame() {
         this.currentQuestionIndex = 0;
         this.correctCount = 0;
         this.wrongCount = 0;
         this.score = 0;
-        this.score = 0;
         this.isFinished = false;
         this.startTime = Date.now();
-        this.startTime = Date.now();
         this.userAnswer = '';
+
+        // Start lesson timer
+        this.lessonTimer.startTimer('addition');
+
         this.generateNewRound();
-
-
     }
 
     generateNewRound() {
         this.userAnswer = ''; // Clear previous answer
         this.currentQuestionIndex++;
+        this.hasErrorInCurrentRound = false; // Reset error flag for new question
 
         // Logic: Sum >= 20 and <= 100
         const minSum = 20;
@@ -155,8 +177,11 @@ export class AdditionComponent implements OnInit {
         this.showFeedback = true;
 
         if (correct) {
-            this.score += (this.config.pointsPerQuestion || 10);
-            this.correctCount++;
+            // Only count score if this is the first attempt (no errors in this round)
+            if (!this.hasErrorInCurrentRound) {
+                this.score += (this.config.pointsPerQuestion || 10);
+                this.correctCount++;
+            }
             this.mascot.celebrate();
 
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
@@ -172,7 +197,12 @@ export class AdditionComponent implements OnInit {
                 }
             }, 2000);
         } else {
-            this.wrongCount++;
+            // Mark this question as having an error - no score will be given even if retry succeeds
+            if (!this.hasErrorInCurrentRound) {
+                this.wrongCount++;
+            }
+            this.hasErrorInCurrentRound = true;
+
             const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
             this.mascot.setEmotion('sad', msg, 2000);
@@ -187,7 +217,10 @@ export class AdditionComponent implements OnInit {
 
     finishGame() {
         this.isFinished = true;
-        const durationSeconds = Math.round((Date.now() - this.startTime) / 1000);
+
+        // Stop timer and get duration
+        const durationSeconds = this.lessonTimer.stopTimer();
+        this.completionDuration = durationSeconds;
 
         // Increment daily completion count
         this.dailyProgress.incrementCompletion('addition');
@@ -204,6 +237,19 @@ export class AdditionComponent implements OnInit {
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
+
+                // Show completion stats after 2 seconds
+                setTimeout(() => {
+                    this.showCompletionStats = true;
+                }, 2000);
+
+                // Check if achievement was earned
+                if (response.achievement) {
+                    this.earnedAchievement = response.achievement;
+                    setTimeout(() => {
+                        this.showAchievement = true;
+                    }, 5000); // Show achievement after stats
+                }
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
@@ -213,6 +259,14 @@ export class AdditionComponent implements OnInit {
         });
     }
 
+    closeAchievement() {
+        this.showAchievement = false;
+    }
+
+    closeCompletionStats() {
+        this.showCompletionStats = false;
+    }
+
 
     goBack() {
         this.router.navigate(['/math']);
@@ -220,5 +274,11 @@ export class AdditionComponent implements OnInit {
 
     getArray(n: number) {
         return Array(n).fill(0);
+    }
+
+    formatDuration(seconds: number): string {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 }

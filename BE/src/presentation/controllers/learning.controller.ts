@@ -15,4 +15,12 @@ export class LearningController {
     async getDailyCompletions(@Query('userId') userId: string) {
         return this.learningService.getTodayCompletions(userId);
     }
+
+    @Get('completion-time')
+    async getCompletionTime(
+        @Query('userId') userId: string,
+        @Query('levelId') levelId?: string
+    ) {
+        return this.learningService.getExerciseCompletionTime(userId, levelId);
+    }
 }
