@@ -15,7 +15,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
 @Component({
   selector: 'app-comparison',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
+  imports: [CommonModule, KidButtonComponent, LessonTimerComponent],
   templateUrl: './comparison.component.html',
   styles: [`
     @keyframes pop-in {
