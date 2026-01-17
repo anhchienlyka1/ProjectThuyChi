@@ -7,6 +7,7 @@ import { UserProgressSchema } from '../infrastructure/database/schemas/user-prog
 import { UserAchievementSchema } from '../infrastructure/database/schemas/user-achievement.schema';
 import { SubjectSchema } from '../infrastructure/database/schemas/subject.schema';
 import { LevelSchema } from '../infrastructure/database/schemas/level.schema';
+import { QuestionAttemptSchema } from '../infrastructure/database/schemas/question-attempt.schema';
 
 @Module({
     imports: [
@@ -15,7 +16,8 @@ import { LevelSchema } from '../infrastructure/database/schemas/level.schema';
             UserProgressSchema,
             UserAchievementSchema,
             SubjectSchema,
-            LevelSchema
+            LevelSchema,
+            QuestionAttemptSchema
         ])
     ],
     controllers: [DashboardController],

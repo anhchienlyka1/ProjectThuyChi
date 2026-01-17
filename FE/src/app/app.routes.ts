@@ -122,7 +122,12 @@ export const routes: Routes = [
       {
         path: 'exam-practice',
         title: 'Bé Luyện Thi',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('./features/exam-practice/exam-subject-selection.component').then(m => m.ExamSubjectSelectionComponent)
+      },
+      {
+        path: 'exam-practice/math',
+        title: 'Thi Toán Học',
+        loadComponent: () => import('./features/exam-practice/math/math-exam.component').then(m => m.MathExamComponent)
       },
       {
         path: 'fairy-tales',

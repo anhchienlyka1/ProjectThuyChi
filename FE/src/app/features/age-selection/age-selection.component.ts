@@ -44,10 +44,10 @@ import { AgeOption } from '../../core/models/age.model';
              (click)="selectAge(age)"
              (mouseenter)="onAgeHover(age)"
              (mouseleave)="onAgeLeave()">
-          
+
           <span class="age-number">{{ age.value }}</span>
           <span class="age-label">{{ age.label }}</span>
-          
+
           <!-- Decorative shine effect -->
           <div class="card-shine"></div>
         </div>
@@ -55,7 +55,7 @@ import { AgeOption } from '../../core/models/age.model';
 
       <!-- Bottom Animation Scene -->
       <div class="bottom-scene">
-        
+
         <!-- Moving Hills Background -->
         <div class="hills-container">
           <div class="hill hill-1"></div>
@@ -94,7 +94,7 @@ import { AgeOption } from '../../core/models/age.model';
   styles: [`
     .selection-container {
       min-height: 100vh;
-      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 60%, #7dd3fc 100%);
+      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 60%, #38bdf8 100%);
       padding: 40px 20px 0;
       display: flex;
       flex-direction: column;
@@ -125,7 +125,7 @@ import { AgeOption } from '../../core/models/age.model';
       opacity: 0.2;
       animation: float-gentle 6s ease-in-out infinite;
     }
-    
+
     .icon-1 { top: 15%; right: 10%; animation-delay: 0s; }
     .icon-2 { bottom: 40%; left: 10%; animation-delay: 2s; }
     .icon-3 { top: 25%; left: 20%; animation-delay: 1s; }
@@ -266,7 +266,7 @@ import { AgeOption } from '../../core/models/age.model';
       right: -20%;
       opacity: 0.6;
     }
-    
+
     .hill-3 {
       width: 80%;
       height: 120px;
@@ -286,7 +286,7 @@ import { AgeOption } from '../../core/models/age.model';
       background: #57534e;
       z-index: 2;
     }
-    
+
     .track::after {
         content: '';
         position: absolute;
@@ -318,7 +318,7 @@ import { AgeOption } from '../../core/models/age.model';
         margin-right: -10px; /* Connect them closer */
         animation: bounce 0.5s ease-in-out infinite alternate;
     }
-    
+
     .wagon:nth-child(even) { animation-delay: 0.1s; }
     .wagon:nth-child(odd) { animation-delay: 0.2s; }
 
@@ -357,7 +357,7 @@ import { AgeOption } from '../../core/models/age.model';
 
     .flower-1 { left: 30%; animation-delay: 0.5s; }
     .flower-2 { right: 35%; animation-delay: 1.5s; }
-    
+
     .animal {
         position: absolute;
         font-size: 3.5rem;
@@ -366,13 +366,13 @@ import { AgeOption } from '../../core/models/age.model';
         filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
     }
 
-    .animal-lion { 
-        left: 20%; 
+    .animal-lion {
+        left: 20%;
         animation: bounce 2s ease-in-out infinite alternate;
     }
-    
-    .animal-elephant { 
-        right: 25%; 
+
+    .animal-elephant {
+        right: 25%;
         animation: bounce 2.5s ease-in-out infinite alternate-reverse;
     }
 
@@ -390,12 +390,12 @@ import { AgeOption } from '../../core/models/age.model';
         0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
         100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
     }
-    
+
     @keyframes sway {
         0%, 100% { transform: rotate(-5deg); }
         50% { transform: rotate(5deg); }
     }
-    
+
     @keyframes peek {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-5px); }

@@ -9,61 +9,79 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="login-container">
-      <!-- Background decorations -->
-      <div class="bg-decoration circle-1"></div>
-      <div class="bg-decoration circle-2"></div>
-      <div class="bg-decoration circle-3"></div>
+    <div class="space-container">
+      <!-- Animated Space Background -->
+      <div class="stars-layer">
+        <div class="star" *ngFor="let star of stars" [style.left.%]="star.x" [style.top.%]="star.y" [style.animation-delay.s]="star.delay"></div>
+      </div>
 
-      <!-- Login Card -->
-      <div class="login-card">
-        <!-- Header with icon based on login type -->
-        <div class="login-header">
-          <div class="icon-wrapper" [class.student]="loginType === 'student'" [class.parent]="loginType === 'parent'">
-            <span class="type-icon">{{ loginType === 'student' ? '👦' : '👨‍👩‍👧' }}</span>
+      <!-- Floating Planets -->
+      <div class="planet planet-1">🪐</div>
+      <div class="planet planet-2">🌍</div>
+      <div class="planet planet-3">🌙</div>
+
+      <!-- Shooting Stars -->
+      <div class="shooting-star"></div>
+      <div class="shooting-star" style="animation-delay: 3s;"></div>
+
+      <!-- Login Spaceship Card -->
+      <div class="spaceship-card" [class.student-mode]="loginType === 'student'" [class.parent-mode]="loginType === 'parent'">
+        <!-- Rocket Mascot -->
+        <div class="mascot-container">
+          <div class="rocket-mascot">
+            <div class="rocket-body">🚀</div>
+            <div class="rocket-fire">🔥</div>
           </div>
-          <h1 class="login-title">
-            {{ loginType === 'student' ? 'Đăng nhập học sinh' : 'Đăng nhập phụ huynh' }}
+          <div class="mascot-speech-bubble" *ngIf="loginType === 'student'">
+            Sẵn sàng khám phá vũ trụ kiến thức chưa? 🌟
+          </div>
+        </div>
+
+        <!-- Title Section -->
+        <div class="title-section">
+          <h1 class="space-title">
+            <span class="title-emoji">{{ loginType === 'student' ? '🎮' : '👨‍👩‍👧' }}</span>
+            {{ loginType === 'student' ? 'Phi Hành Gia Nhí' : 'Trung Tâm Điều Khiển' }}
           </h1>
-          <p class="login-subtitle">
-            {{ loginType === 'student' ? 'Chào bé yêu! Hãy nhập thông tin để bắt đầu học nhé!' : 'Chào phụ huynh! Vui lòng đăng nhập để theo dõi con.' }}
+          <p class="space-subtitle">
+            {{ loginType === 'student' ? 'Nhập mã bí mật để bay vào vũ trụ học tập!' : 'Theo dõi hành trình khám phá của con' }}
           </p>
         </div>
 
         <!-- Login Form -->
-        <form class="login-form" (ngSubmit)="onSubmit()">
-          <!-- Username/Email Input - Hidden for Student Mode -->
-          <div class="form-group" *ngIf="loginType === 'parent'">
-            <label for="username" class="form-label">
-              <span class="label-icon">👤</span>
-              Email hoặc tên đăng nhập
-            </label>
-            <input
-              type="text"
-              id="username"
-              [(ngModel)]="credentials.username"
-              name="username"
-              class="form-input"
-              placeholder="Nhập email hoặc tên đăng nhập"
-              [required]="loginType === 'parent'"
-              autocomplete="username"
-            />
+        <form class="space-form" (ngSubmit)="onSubmit()">
+          <!-- Parent Username Field -->
+          <div class="input-group" *ngIf="loginType === 'parent'">
+            <div class="input-label">
+              <span class="label-emoji">👤</span>
+              <span class="label-text">Tên đăng nhập</span>
+            </div>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                [(ngModel)]="credentials.username"
+                name="username"
+                class="space-input"
+                placeholder="Nhập email hoặc tên đăng nhập"
+                [required]="loginType === 'parent'"
+                autocomplete="username"
+              />
+            </div>
           </div>
 
-          <!-- Password/PIN Input -->
-          <div class="form-group">
-            <label for="password" class="form-label">
-              <span class="label-icon">🔒</span>
-              Mã PIN
-            </label>
-            <div class="password-wrapper">
+          <!-- PIN Input -->
+          <div class="input-group">
+            <div class="input-label">
+              <span class="label-emoji">🔐</span>
+              <span class="label-text">Mã bí mật (PIN)</span>
+            </div>
+            <div class="input-wrapper">
               <input
                 [type]="loginType === 'student' || showPassword ? 'text' : 'password'"
-                id="password"
                 [(ngModel)]="credentials.pinCode"
                 name="pinCode"
-                class="form-input"
-                placeholder="Nhập mã PIN (6 số)"
+                class="space-input pin-input"
+                placeholder="⭐ ⭐ ⭐ ⭐ ⭐ ⭐"
                 required
                 maxlength="6"
                 autocomplete="current-password"
@@ -71,437 +89,700 @@ import { AuthService } from '../../core/services/auth.service';
               <button
                 *ngIf="loginType === 'parent'"
                 type="button"
-                class="toggle-password"
+                class="eye-button"
                 (click)="showPassword = !showPassword"
                 tabindex="-1"
               >
-                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+                {{ showPassword ? '👁️' : '🙈' }}
               </button>
             </div>
           </div>
 
-          <!-- Error Message -->
-          <div *ngIf="errorMessage" class="error-message">
-            <span class="error-icon">⚠️</span>
-            {{ errorMessage }}
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="error-alert">
+            <span class="alert-emoji">🛸</span>
+            <span class="alert-text">{{ errorMessage }}</span>
           </div>
 
-          <!-- Submit Button -->
+          <!-- Launch Button -->
           <button
             type="submit"
-            class="submit-button"
-            [class.student]="loginType === 'student'"
-            [class.parent]="loginType === 'parent'"
+            class="launch-button"
+            [class.launching]="isLoading"
             [disabled]="isLoading"
           >
-            <span *ngIf="!isLoading" class="button-content">
-              <span class="button-icon">{{ loginType === 'student' ? '🚀' : '✅' }}</span>
-              <span class="button-text">{{ loginType === 'student' ? 'Bắt đầu học' : 'Đăng nhập' }}</span>
+            <span *ngIf="!isLoading" class="button-inner">
+              <span class="button-emoji">{{ loginType === 'student' ? '🚀' : '✨' }}</span>
+              <span class="button-label">{{ loginType === 'student' ? 'Phóng Tên Lửa!' : 'Kết Nối' }}</span>
             </span>
-            <span *ngIf="isLoading" class="loading-spinner">
-              <span class="spinner"></span>
-              Đang xử lý...
+            <span *ngIf="isLoading" class="loading-state">
+              <span class="orbit-spinner"></span>
+              <span>Đang khởi động...</span>
             </span>
           </button>
 
-          <!-- Additional Actions -->
-          <div class="form-footer">
-            <button
-              type="button"
-              class="link-button"
-              (click)="goBack()"
-            >
-              ← Quay lại trang chủ
+          <!-- Footer Links -->
+          <div class="footer-links">
+            <button type="button" class="link-btn" (click)="goBack()">
+              ← Quay về trái đất
             </button>
-
             <button
               *ngIf="loginType === 'parent'"
               type="button"
-              class="link-button"
+              class="link-btn"
               (click)="forgotPassword()"
             >
-              Quên mã PIN?
+              Quên mã PIN? 🤔
             </button>
           </div>
         </form>
 
-        <!-- Switch Login Type -->
-        <div class="switch-type">
-          <p>
-            {{ loginType === 'student' ? 'Bạn là phụ huynh?' : 'Bạn là học sinh?' }}
-            <button
-              type="button"
-              class="switch-button"
-              (click)="switchLoginType()"
-            >
-              {{ loginType === 'student' ? 'Đăng nhập phụ huynh' : 'Đăng nhập học sinh' }}
-            </button>
+        <!-- Mode Switcher -->
+        <div class="mode-switcher">
+          <div class="switcher-divider"></div>
+          <p class="switcher-text">
+            {{ loginType === 'student' ? 'Bạn là người lớn?' : 'Bạn là phi hành gia nhí?' }}
           </p>
+          <button type="button" class="switch-mode-btn" (click)="switchLoginType()">
+            <span class="switch-emoji">{{ loginType === 'student' ? '👨‍👩‍👧' : '🎮' }}</span>
+            {{ loginType === 'student' ? 'Chuyển sang Phụ Huynh' : 'Chuyển sang Học Sinh' }}
+          </button>
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .login-container {
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    * {
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .space-container {
       min-height: 100vh;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      padding: 15px;
       position: relative;
       overflow: hidden;
     }
 
-    .bg-decoration {
+    /* Animated Stars */
+    .stars-layer {
       position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: white;
       border-radius: 50%;
-      opacity: 0.1;
-      animation: float 20s ease-in-out infinite;
+      animation: twinkle 2s ease-in-out infinite;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     }
 
-    .circle-1 {
-      width: 400px;
-      height: 400px;
-      background: white;
-      top: -100px;
-      left: -100px;
-      animation-delay: 0s;
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
     }
 
-    .circle-2 {
-      width: 300px;
-      height: 300px;
-      background: white;
-      bottom: -50px;
-      right: -50px;
-      animation-delay: 5s;
+    /* Floating Planets */
+    .planet {
+      position: absolute;
+      font-size: 4rem;
+      animation: orbit 30s linear infinite;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
     }
 
-    .circle-3 {
-      width: 200px;
-      height: 200px;
-      background: white;
-      top: 50%;
+    .planet-1 {
+      top: 10%;
+      left: 15%;
+      animation-duration: 25s;
+    }
+
+    .planet-2 {
+      bottom: 15%;
       right: 10%;
-      animation-delay: 10s;
+      animation-duration: 35s;
+      animation-direction: reverse;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(30px, -30px) scale(1.1); }
-      66% { transform: translate(-20px, 20px) scale(0.9); }
+    .planet-3 {
+      top: 60%;
+      left: 5%;
+      font-size: 3rem;
+      animation-duration: 20s;
     }
 
-    .login-card {
+    @keyframes orbit {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(30px, -30px) rotate(90deg); }
+      50% { transform: translate(0, -60px) rotate(180deg); }
+      75% { transform: translate(-30px, -30px) rotate(270deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    /* Shooting Stars */
+    .shooting-star {
+      position: absolute;
+      top: 20%;
+      right: -100px;
+      width: 2px;
+      height: 2px;
       background: white;
+      box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+      animation: shoot 5s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes shoot {
+      0% {
+        transform: translateX(0) translateY(0);
+        opacity: 1;
+      }
+      70% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-1000px) translateY(500px);
+        opacity: 0;
+      }
+    }
+
+    /* Spaceship Card */
+    .spaceship-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: 32px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-      padding: 48px;
+      box-shadow:
+        0 50px 100px rgba(0, 0, 0, 0.5),
+        0 0 80px rgba(59, 130, 246, 0.3),
+        inset 0 2px 20px rgba(255, 255, 255, 0.8);
+      padding: 30px 35px;
       max-width: 480px;
+      max-height: 95vh;
+      overflow-y: auto;
       width: 100%;
       position: relative;
       z-index: 10;
-      animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: floatIn 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 3px solid rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes slideUp {
-      from {
+    .spaceship-card.student-mode {
+      box-shadow:
+        0 50px 100px rgba(0, 0, 0, 0.5),
+        0 0 80px rgba(249, 115, 22, 0.4),
+        inset 0 2px 20px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes floatIn {
+      0% {
         opacity: 0;
-        transform: translateY(40px);
+        transform: translateY(100px) scale(0.8);
       }
-      to {
+      100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
-    .login-header {
+    /* Rocket Mascot */
+    .mascot-container {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
+      position: relative;
     }
 
-    .icon-wrapper {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 24px;
-      border-radius: 50%;
+    .rocket-mascot {
+      display: inline-block;
+      position: relative;
+      animation: rocketHover 3s ease-in-out infinite;
+    }
+
+    .rocket-body {
+      font-size: 3.5rem;
+      filter: drop-shadow(0 10px 30px rgba(249, 115, 22, 0.4));
+      animation: rocketRotate 4s ease-in-out infinite;
+    }
+
+    .rocket-fire {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      animation: fireFlicker 0.3s ease-in-out infinite;
+    }
+
+    @keyframes rocketHover {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes rocketRotate {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    @keyframes fireFlicker {
+      0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.7; transform: translateX(-50%) scale(1.2); }
+    }
+
+    .mascot-speech-bubble {
+      margin-top: 12px;
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      padding: 10px 16px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #92400e;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
+      animation: bubblePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s backwards;
+    }
+
+    .mascot-speech-bubble::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #fef3c7;
+    }
+
+    @keyframes bubblePop {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Title Section */
+    .title-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .space-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 12px 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
-      animation: bounce 2s ease-in-out infinite;
+      gap: 12px;
+      animation: titleShine 3s ease-in-out infinite;
     }
 
-    .icon-wrapper.student {
-      background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+    .parent-mode .space-title {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .icon-wrapper.parent {
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    @keyframes titleShine {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.2); }
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .type-icon {
-      font-size: 3.5rem;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-    }
-
-    .login-title {
+    .title-emoji {
       font-size: 2rem;
-      font-weight: 900;
-      color: #1f2937;
-      margin: 0 0 12px 0;
+      animation: emojiSpin 2s ease-in-out infinite;
     }
 
-    .login-subtitle {
-      font-size: 1rem;
-      color: #6b7280;
+    @keyframes emojiSpin {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-10deg) scale(1.1); }
+      75% { transform: rotate(10deg) scale(1.1); }
+    }
+
+    .space-subtitle {
+      font-size: 0.95rem;
+      color: #475569;
+      font-weight: 600;
       margin: 0;
       line-height: 1.6;
     }
 
-    .login-form {
+    /* Form Styling */
+    .space-form {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 18px;
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .input-group {
+      animation: slideInLeft 0.6s ease-out backwards;
     }
 
-    .form-label {
+    .input-group:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .input-label {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .label-emoji {
+      font-size: 1.3rem;
+    }
+
+    .label-text {
       font-size: 0.95rem;
-      font-weight: 700;
-      color: #374151;
+      font-weight: 800;
+      color: #1e293b;
     }
 
-    .label-icon {
-      font-size: 1.2rem;
-    }
-
-    .form-input {
-      padding: 16px 20px;
-      font-size: 1rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 16px;
-      outline: none;
-      transition: all 0.3s ease;
-      font-family: inherit;
-    }
-
-    .form-input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    }
-
-    .password-wrapper {
+    .input-wrapper {
       position: relative;
     }
 
-    .toggle-password {
+    .space-input {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 3px solid #cbd5e1;
+      border-radius: 20px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: white;
+      color: #1e293b;
+      box-sizing: border-box;
+    }
+
+    .space-input:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.15);
+      transform: scale(1.02);
+    }
+
+    .parent-mode .space-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.15);
+    }
+
+    .space-input::placeholder {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .pin-input {
+      letter-spacing: 6px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .eye-button {
       position: absolute;
-      right: 16px;
+      right: 18px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       cursor: pointer;
-      padding: 4px;
-      opacity: 0.6;
-      transition: opacity 0.3s ease;
-    }
-
-    .toggle-password:hover {
-      opacity: 1;
-    }
-
-    .error-message {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      background: #fee2e2;
-      border: 2px solid #fca5a5;
-      border-radius: 12px;
-      color: #dc2626;
-      font-size: 0.9rem;
-      font-weight: 600;
-      animation: shake 0.5s ease;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-    }
-
-    .error-icon {
-      font-size: 1.2rem;
-    }
-
-    .submit-button {
-      padding: 18px 32px;
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: white;
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
+      padding: 5px;
       transition: all 0.3s ease;
-      margin-top: 8px;
-      position: relative;
-      overflow: hidden;
     }
 
-    .submit-button.student {
-      background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
-      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+    .eye-button:hover {
+      transform: translateY(-50%) scale(1.2);
     }
 
-    .submit-button.parent {
-      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-    }
-
-    .submit-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-    }
-
-    .submit-button:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .submit-button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .button-content {
+    /* Error Alert */
+    .error-alert {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      gap: 10px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      border: 3px solid #f87171;
+      border-radius: 20px;
+      animation: alertShake 0.6s ease;
     }
 
-    .button-icon {
-      font-size: 1.5rem;
+    @keyframes alertShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-15px); }
+      75% { transform: translateX(15px); }
     }
 
-    .loading-spinner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+    .alert-emoji {
+      font-size: 1.8rem;
+      animation: alertSpin 0.5s ease;
     }
 
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
+    @keyframes alertSpin {
+      from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
-    .form-footer {
+    .alert-text {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #dc2626;
+    }
+
+    /* Launch Button */
+    .launch-button {
+      padding: 16px 32px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow:
+        0 15px 35px rgba(249, 115, 22, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      animation: buttonPulse 2s ease-in-out infinite;
+    }
+
+    .parent-mode .launch-button {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #38bdf8 100%);
+      box-shadow:
+        0 15px 35px rgba(59, 130, 246, 0.4),
+        0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes buttonPulse {
+      0%, 100% { box-shadow: 0 15px 35px rgba(249, 115, 22, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2); }
+      50% { box-shadow: 0 20px 45px rgba(249, 115, 22, 0.6), 0 8px 20px rgba(0, 0, 0, 0.3); }
+    }
+
+    .launch-button:hover:not(:disabled) {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow:
+        0 25px 50px rgba(249, 115, 22, 0.6),
+        0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .launch-button:active:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .launch-button:disabled {
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+
+    .launch-button.launching {
+      animation: launching 1s ease-in-out infinite;
+    }
+
+    @keyframes launching {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .button-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .button-emoji {
+      font-size: 1.5rem;
+      animation: buttonEmojiFloat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes buttonEmojiFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .loading-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .orbit-spinner {
+      width: 24px;
+      height: 24px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: orbitSpin 1s linear infinite;
+    }
+
+    @keyframes orbitSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer Links */
+    .footer-links {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 8px;
+      gap: 15px;
       flex-wrap: wrap;
-      gap: 12px;
+      margin-top: 10px;
     }
 
-    .link-button {
+    .link-btn {
       background: none;
       border: none;
-      color: #667eea;
-      font-size: 0.9rem;
-      font-weight: 600;
+      color: #64748b;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 8px 12px;
       transition: all 0.3s ease;
+      border-radius: 12px;
     }
 
-    .link-button:hover {
-      color: #764ba2;
-      text-decoration: underline;
+    .link-btn:hover {
+      color: #f97316;
+      background: rgba(249, 115, 22, 0.1);
+      transform: translateX(-3px);
     }
 
-    .switch-type {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 2px solid #f3f4f6;
+    .parent-mode .link-btn:hover {
+      color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Mode Switcher */
+    .mode-switcher {
+      margin-top: 20px;
       text-align: center;
     }
 
-    .switch-type p {
-      margin: 0;
-      color: #6b7280;
-      font-size: 0.95rem;
+    .switcher-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+      margin-bottom: 20px;
     }
 
-    .switch-button {
-      background: none;
-      border: none;
-      color: #667eea;
-      font-weight: 700;
+    .switcher-text {
+      margin: 0 0 10px 0;
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .switch-mode-btn {
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      border: 2px solid #cbd5e1;
+      color: #1e293b;
       font-size: 0.95rem;
+      font-weight: 800;
+      padding: 10px 20px;
+      border-radius: 18px;
       cursor: pointer;
-      padding: 0;
-      margin-left: 4px;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .switch-button:hover {
-      color: #764ba2;
-      text-decoration: underline;
+    .switch-mode-btn:hover {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-color: #fbbf24;
+      color: #92400e;
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
     }
 
+    .switch-emoji {
+      font-size: 1.3rem;
+    }
+
+    /* Responsive Design */
     @media (max-width: 640px) {
-      .login-card {
-        padding: 32px 24px;
+      .spaceship-card {
+        padding: 35px 25px;
+        border-radius: 30px;
       }
 
-      .login-title {
-        font-size: 1.5rem;
+      .rocket-body {
+        font-size: 4rem;
       }
 
-      .login-subtitle {
+      .space-title {
+        font-size: 1.7rem;
+      }
+
+      .title-emoji {
+        font-size: 2rem;
+      }
+
+      .space-subtitle {
+        font-size: 0.95rem;
+      }
+
+      .mascot-speech-bubble {
         font-size: 0.9rem;
+        padding: 12px 16px;
       }
 
-      .icon-wrapper {
-        width: 80px;
-        height: 80px;
+      .space-input {
+        padding: 16px 18px;
+        font-size: 1rem;
       }
 
-      .type-icon {
-        font-size: 2.5rem;
+      .launch-button {
+        padding: 18px 32px;
+        font-size: 1.2rem;
       }
 
-      .form-footer {
+      .footer-links {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+      }
+
+      .link-btn {
+        text-align: center;
+      }
+
+      .planet {
+        font-size: 3rem;
       }
     }
   `]
@@ -520,6 +801,13 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   returnUrl: string | null = null;
+
+  // Generate random stars for background
+  stars = Array.from({ length: 50 }, () => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 2
+  }));
 
   ngOnInit() {
     // Get login type and returnUrl from query params

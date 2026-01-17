@@ -64,4 +64,36 @@ export class DashboardController {
             offset: offset ? Number(offset) : undefined
         });
     }
+
+    /**
+     * GET /dashboard/detailed-history
+     * Get detailed learning history with question-level data
+     * Query params:
+     * - userId: string (required)
+     * - subject: string (optional) - filter by subject title
+     * - timeRange: 'all' | 'today' | 'week' | 'month' (optional)
+     * - result: 'excellent' | 'good' | 'average' | 'needs-improvement' (optional)
+     * - limit: number (optional)
+     * - offset: number (optional)
+     */
+    @Get('detailed-history')
+    async getDetailedHistory(
+        @Query('userId') userId: string,
+        @Query('subject') subject?: string,
+        @Query('timeRange') timeRange?: 'all' | 'today' | 'week' | 'month',
+        @Query('result') result?: 'excellent' | 'good' | 'average' | 'needs-improvement',
+        @Query('limit') limit?: number,
+        @Query('offset') offset?: number
+    ) {
+        if (!userId) {
+            throw new Error('userId is required');
+        }
+        return this.dashboardService.getDetailedLearningHistory(userId, {
+            subject,
+            timeRange,
+            result,
+            limit: limit ? Number(limit) : undefined,
+            offset: offset ? Number(offset) : undefined
+        });
+    }
 }

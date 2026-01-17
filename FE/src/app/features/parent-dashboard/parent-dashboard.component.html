@@ -1,193 +1,352 @@
-<div class="max-w-7xl mx-auto space-y-6 pt-12">
+<div class="min-h-screen bg-slate-50/50 pb-20 pt-6 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-7xl mx-auto space-y-8">
 
-  <!-- Student Profile Card (Hồ Sơ Của Bé) -->
-  @if (selectedStudent()) {
-  <app-student-profile-card [studentId]="selectedStudent()!.id"></app-student-profile-card>
-  }
-
-  <!-- Welcome Header -->
-  <div class="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 rounded-3xl p-8 text-white shadow-xl">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold mb-2">👋 Xin chào, Phụ Huynh!</h1>
-        <p class="text-white/90 text-lg">
-          @if (selectedStudent()) {
-          Hôm nay <strong>{{ selectedStudent()?.name }}</strong> đã học được {{ todayStats().lessonsCompleted
-          }} bài và đạt {{ todayStats().averageScore }}% điểm trung bình
-          } @else {
-          Hôm nay bé đã học được {{ todayStats().lessonsCompleted }} bài và đạt {{ todayStats().averageScore
-          }}% điểm trung bình
-          }
-        </p>
-      </div>
-      <div class="hidden md:block">
-        <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center">
-          <div class="text-4xl font-bold">{{ todayStats().totalMinutes }}</div>
-          <div class="text-sm text-white/80">Phút học hôm nay</div>
-        </div>
-      </div>
+    <!-- Student Profile Card Section -->
+    @if (selectedStudent()) {
+    <div class="transform hover:scale-[1.01] transition-transform duration-300">
+      <app-student-profile-card [studentId]="selectedStudent()!.id"></app-student-profile-card>
     </div>
-  </div>
+    }
 
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Total Learning Time -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-      <div class="flex items-center justify-between mb-4">
-        <div class="bg-blue-100 rounded-xl p-3">
-          <span class="text-3xl">⏰</span>
-        </div>
-        <span class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Tuần này</span>
-      </div>
-      <!-- Updated to use totalTime string from backend -->
-      <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().totalTime }}</div>
-      <div class="text-sm text-gray-500">Tổng thời gian học</div>
-      <div class="mt-3 flex items-center text-xs text-green-600">
-        <span class="mr-1">↗</span>
-        <span>{{ weekStats().timeTrend }} so với tuần trước</span>
-      </div>
-    </div>
+    <!-- Premium Welcome Header -->
+    <div
+      class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 shadow-2xl shadow-indigo-200">
+      <!-- Decorative circles -->
+      <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl"></div>
 
-    <!-- Completed Lessons -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-      <div class="flex items-center justify-between mb-4">
-        <div class="bg-green-100 rounded-xl p-3">
-          <span class="text-3xl">✅</span>
-        </div>
-        <span class="text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">Tuần này</span>
-      </div>
-      <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().completedLessons }}</div>
-      <div class="text-sm text-gray-500">Bài học hoàn thành</div>
-      <div class="mt-3 flex items-center text-xs text-green-600">
-        <span class="mr-1">↗</span>
-        <span>{{ weekStats().lessonsTrend }} bài so với tuần trước</span>
-      </div>
-    </div>
-
-    <!-- Average Score -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-      <div class="flex items-center justify-between mb-4">
-        <div class="bg-yellow-100 rounded-xl p-3">
-          <span class="text-3xl">⭐</span>
-        </div>
-        <span class="text-sm font-semibold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full">Tuần này</span>
-      </div>
-      <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().averageScore }}</div>
-      <div class="text-sm text-gray-500">Điểm trung bình</div>
-      <div class="mt-3 flex items-center text-xs text-green-600">
-        <span class="mr-1">↗</span>
-        <span>{{ weekStats().scoreTrend }} so với tuần trước</span>
-      </div>
-    </div>
-
-    <!-- Achievements -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-      <div class="flex items-center justify-between mb-4">
-        <div class="bg-purple-100 rounded-xl p-3">
-          <span class="text-3xl">🏆</span>
-        </div>
-        <span class="text-sm font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Tổng cộng</span>
-      </div>
-      <!-- Updated to use badges count from weekStats -->
-      <div class="text-3xl font-bold text-gray-800 mb-1">{{ weekStats().badges }}</div>
-      <div class="text-sm text-gray-500">Phiếu Bé Ngoan đạt được</div>
-      <div class="mt-3 flex items-center text-xs text-purple-600">
-        <span class="mr-1">🎉</span>
-        <span>+{{ weekStats().badgesNew }} phiếu mới tuần này</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Subject Progress -->
-  <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">📚 Tiến độ theo môn học</h2>
-      <button class="text-sm text-blue-600 hover:text-blue-700 font-semibold">Xem chi tiết →</button>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (subject of subjectProgress(); track subject.subject) {
-      <div class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="text-4xl" [style.filter]="'hue-rotate(' + subject.color + 'deg)'">{{ subject.icon }}
+      <div class="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="text-white space-y-4 max-w-2xl">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-sm font-medium">
+            <span class="animate-pulse w-2 h-2 bg-green-400 rounded-full"></span>
+            Hệ thống đang hoạt động
           </div>
-          <div class="flex-1">
-            <h3 class="font-bold text-gray-800">{{ subject.subject }}</h3>
-            <p class="text-xs text-gray-500">{{ subject.completedLessons }}/{{ subject.totalLessons }} bài
-            </p>
-          </div>
-          <div class="text-2xl font-bold" [style.color]="getProgressColor(subject.progress)">
-            {{ subject.progress }}%
-          </div>
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+            Xin chào,
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-100">Phụ Huynh!</span>
+          </h1>
+          <p class="text-indigo-100 text-lg md:text-xl font-light leading-relaxed">
+            @if (selectedStudent()) {
+            Hôm nay <strong class="text-white font-bold">{{ selectedStudent()?.name }}</strong> đã hoàn thành
+            <span class="inline-block px-2 py-0.5 rounded bg-white/20 font-bold mx-1">{{ todayStats().lessonsCompleted
+              }}</span>
+            bài học với điểm trung bình
+            <span class="inline-block px-2 py-0.5 rounded bg-white/20 font-bold mx-1">{{ todayStats().averageScore
+              }}%</span>.
+            } @else {
+            Theo dõi tiến độ học tập và sự phát triển của con bạn ngay hôm nay.
+            }
+          </p>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-500" [style.width.%]="subject.progress"
-            [style.background]="getProgressGradient(subject.progress)">
+        <!-- Right Side Stat -->
+        <div class="hidden md:block">
+          <div
+            class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform rotate-3 hover:rotate-0 transition-transform duration-300">
+            <div class="text-5xl font-black text-white mb-2">{{ todayStats().totalMinutes }}</div>
+            <div class="text-indigo-200 font-medium tracking-wide text-sm uppercase">Phút học hôm nay</div>
           </div>
         </div>
       </div>
-      }
-    </div>
-  </div>
-
-  <!-- Recent Activities & Achievements -->
-  <!-- Recent Activities -->
-  <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">📝 Hoạt động học tập gần đây</h2>
-      <button class="text-sm text-blue-600 hover:text-blue-700 font-semibold">Xem tất cả →</button>
     </div>
 
-    <div class="space-y-4">
-      @for (activity of recentActivities(); track activity.id) {
-      <div class="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100">
-        <div class="rounded-xl p-3 text-3xl" [style.background]="activity.color + '20'">
-          {{ activity.icon }}
-        </div>
-        <div class="flex-1">
-          <h3 class="font-bold text-gray-800">{{ activity.module }}</h3>
-          <p class="text-sm text-gray-500">{{ activity.subject }} • {{ formatTime(activity.timestamp) }}</p>
-        </div>
-        <div class="text-right">
-          <div class="font-bold text-lg" [class]="getScoreClass(activity.score, activity.totalQuestions)">
-            {{ activity.score }}/{{ activity.totalQuestions }}
+    <!-- Stats Overview Grid (Bento Style) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Total Time -->
+      <div
+        class="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        <div class="flex items-start justify-between mb-6">
+          <div
+            class="p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
           </div>
-          <div class="text-xs text-gray-500">{{ activity.duration }} phút</div>
+          <span
+            class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full uppercase tracking-wider">Tuần
+            này</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-slate-500 font-medium text-sm">Tổng thời gian</h3>
+          <div class="text-3xl font-bold text-slate-800">{{ weekStats().totalTime }}</div>
+        </div>
+        <div class="mt-4 flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+          <span class="font-semibold">{{ weekStats().timeTrend }}</span>
         </div>
       </div>
-      }
+
+      <!-- Lessons -->
+      <div
+        class="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        <div class="flex items-start justify-between mb-6">
+          <div
+            class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <span
+            class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full uppercase tracking-wider">Tuần
+            này</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-slate-500 font-medium text-sm">Bài học hoàn thành</h3>
+          <div class="text-3xl font-bold text-slate-800">{{ weekStats().completedLessons }}</div>
+        </div>
+        <div class="mt-4 flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+          <span class="font-semibold">{{ weekStats().lessonsTrend }} bài</span>
+        </div>
+      </div>
+
+      <!-- Score -->
+      <div
+        class="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        <div class="flex items-start justify-between mb-6">
+          <div
+            class="p-3 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <span
+            class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full uppercase tracking-wider">Tuần
+            này</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-slate-500 font-medium text-sm">Điểm trung bình</h3>
+          <div class="text-3xl font-bold text-slate-800">{{ weekStats().averageScore }}</div>
+        </div>
+        <div class="mt-4 flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+          <span class="font-semibold">{{ weekStats().scoreTrend }}</span>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div
+        class="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+        <div class="flex items-start justify-between mb-6">
+          <div
+            class="p-3 bg-rose-50 text-rose-600 rounded-2xl group-hover:bg-rose-500 group-hover:text-white transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+          </div>
+          <span
+            class="px-3 py-1 bg-slate-50 text-slate-500 text-xs font-bold rounded-full uppercase tracking-wider">Tổng
+            cộng</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-slate-500 font-medium text-sm">Phiếu Bé Ngoan</h3>
+          <div class="text-3xl font-bold text-slate-800">{{ weekStats().badges }}</div>
+        </div>
+        <div class="mt-4 flex items-center gap-2 text-sm text-rose-600 bg-rose-50 w-fit px-2 py-1 rounded-lg">
+          <span class="font-bold">+{{ weekStats().badgesNew }}</span>
+          <span class="font-medium">mới tuần này</span>
+        </div>
+      </div>
+
     </div>
-  </div>
 
-  <!-- Quick Actions -->
-  <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">⚡ Thao tác nhanh</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Main Content Section: Progress & Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-      <button
-        class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-        <div class="text-4xl mb-3">⏱️</div>
-        <h3 class="font-bold text-lg text-gray-800 mb-1">Cài đặt thời gian</h3>
-        <p class="text-sm text-gray-500">Quản lý thời gian học mỗi ngày</p>
-      </button>
+      <!-- Subject Progress (Left 2 Columns) -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-slate-800">Tiến độ môn học</h2>
+            </div>
+            <button
+              class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2 hover:bg-indigo-50 rounded-full transition-colors">Xem
+              chi tiết &rarr;</button>
+          </div>
 
-      <button
-        class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-        <div class="text-4xl mb-3">📊</div>
-        <h3 class="font-bold text-lg text-gray-800 mb-1">Báo cáo chi tiết</h3>
-        <p class="text-sm text-gray-500">Xem báo cáo tiến độ đầy đủ</p>
-      </button>
+          <div class="grid grid-cols-1 gap-6">
+            @for (subject of subjectProgress(); track subject.subject) {
+            <div
+              class="group relative bg-[#F8FAFC] p-6 rounded-2xl hover:bg-white hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-100">
+              <div class="flex items-center gap-5 mb-4">
+                <div
+                  class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300"
+                  [style.filter]="'hue-rotate(' + subject.color + 'deg)'">
+                  {{ subject.icon }}
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-slate-800 text-lg group-hover:text-indigo-700 transition-colors">{{
+                    subject.subject }}</h3>
+                  <div
+                    class="flex items-center gap-2 mt-1 bg-white px-2 py-0.5 rounded-md w-fit text-xs text-slate-500 border border-slate-100">
+                    <span>{{ subject.completedLessons }}/{{ subject.totalLessons }} bài</span>
+                  </div>
+                </div>
+                <div class="text-2xl font-black text-slate-300 group-hover:text-indigo-600 transition-colors">
+                  {{ subject.progress }}%
+                </div>
+              </div>
 
-      <button
-        class="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:scale-105 text-left border border-gray-100">
-        <div class="text-4xl mb-3">🎯</div>
-        <h3 class="font-bold text-lg text-gray-800 mb-1">Đặt mục tiêu</h3>
-        <p class="text-sm text-gray-500">Thiết lập mục tiêu học tập</p>
-      </button>
+              <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                  [style.width.%]="subject.progress" [style.background]="getProgressGradient(subject.progress)">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Quick Actions (Moved Inside Layout Flow) -->
+        <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-[2rem] p-8 border border-indigo-100">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2 bg-white rounded-lg text-indigo-600 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800">Thao tác nhanh</h2>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <button
+              class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left border border-indigo-50 hover:border-indigo-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h3 class="font-bold text-slate-800">Cài đặt thời gian</h3>
+              <p class="text-sm text-slate-500 mt-1">Quản lý giới hạn</p>
+            </button>
+
+            <button
+              class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left border border-indigo-50 hover:border-indigo-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+              <h3 class="font-bold text-slate-800">Báo cáo chi tiết</h3>
+              <p class="text-sm text-slate-500 mt-1">Xem thống kê</p>
+            </button>
+
+            <button
+              class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-left border border-indigo-50 hover:border-indigo-200 group">
+              <div
+                class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </div>
+              <h3 class="font-bold text-slate-800">Đặt mục tiêu</h3>
+              <p class="text-sm text-slate-500 mt-1">Thiết lập lộ trình</p>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recent Activity (Right Column) -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 h-full">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-slate-800">Hoạt động gần đây</h2>
+            <button class="text-xs font-semibold text-slate-400 hover:text-indigo-600">Xem tất cả</button>
+          </div>
+
+          <div class="relative pl-4 border-l-2 border-slate-100 space-y-8">
+            @for (activity of recentActivities(); track activity.id) {
+            <div class="relative group">
+              <!-- Timeline Dot -->
+              <div class="absolute -left-[25px] top-1 w-4 h-4 rounded-full border-4 border-white shadow-sm"
+                [style.background-color]="activity.color"></div>
+
+              <div
+                class="bg-slate-50 rounded-xl p-4 group-hover:bg-white group-hover:shadow-md transition-all duration-300 border border-slate-100 group-hover:border-indigo-100">
+                <div class="flex items-start justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xl">{{ activity.icon }}</span>
+                    <span
+                      class="text-xs font-bold px-2 py-0.5 rounded-full bg-white border border-slate-100 text-slate-500">{{
+                      activity.subject }}</span>
+                  </div>
+                  <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{{
+                    formatTime(activity.timestamp) }}</span>
+                </div>
+
+                <h4 class="font-bold text-slate-800 mb-2 truncate">{{ activity.module }}</h4>
+
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-1.5 text-slate-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {{ activity.duration }} phút
+                  </div>
+                  <div class="font-bold" [class]="getScoreClass(activity.score, activity.totalQuestions)">
+                    {{ activity.score }}/{{ activity.totalQuestions }} câu đúng
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+            @if (recentActivities().length === 0) {
+            <div class="text-center py-10 text-slate-400 italic">Chưa có hoạt động nào</div>
+            }
+          </div>
+        </div>
+      </div>
 
     </div>
-  </div>
 
+  </div>
 </div>

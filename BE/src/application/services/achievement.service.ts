@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { AchievementSchema } from '../../infrastructure/database/schemas/achievement.schema';
 import { UserAchievementSchema } from '../../infrastructure/database/schemas/user-achievement.schema';
 import { LevelSchema } from '../../infrastructure/database/schemas/level.schema';
@@ -37,7 +37,7 @@ export class AchievementService {
         const completedProgress = await this.progressRepo.count({
             where: {
                 userId,
-                levelId: levelIds as any,
+                levelId: In(levelIds),
                 status: 'COMPLETED',
                 isDeleted: false
             }
@@ -61,18 +61,23 @@ export class AchievementService {
             return null;
         }
 
-        // Check if user already has this achievement
-        const existing = await this.userAchievementRepo.findOne({
-            where: {
-                userId,
-                achievementId: achievement.id,
-                isDeleted: false
-            }
-        });
+        // For improvement certificates, allow multiple awards (each improvement gets a new certificate)
+        const allowMultiple = achievementId === 'improvement-certificate';
 
-        if (existing) {
-            // Already earned
-            return null;
+        if (!allowMultiple) {
+            // Check if user already has this achievement
+            const existing = await this.userAchievementRepo.findOne({
+                where: {
+                    userId,
+                    achievementId: achievement.id,
+                    isDeleted: false
+                }
+            });
+
+            if (existing) {
+                // Already earned
+                return null;
+            }
         }
 
         // Award the achievement

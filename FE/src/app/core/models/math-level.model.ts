@@ -9,4 +9,5 @@ export interface MathLevel {
     route: string;
     isLocked: boolean;
     stars: number;
+    colorRgb?: string; // For CSS variables requiring RGB format (e.g. 255, 99, 71)
 }

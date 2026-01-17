@@ -6,6 +6,7 @@ import { UserProgressSchema } from '../../infrastructure/database/schemas/user-p
 import { UserAchievementSchema } from '../../infrastructure/database/schemas/user-achievement.schema';
 import { SubjectSchema } from '../../infrastructure/database/schemas/subject.schema';
 import { LevelSchema } from '../../infrastructure/database/schemas/level.schema';
+import { QuestionAttemptSchema } from '../../infrastructure/database/schemas/question-attempt.schema';
 
 @Injectable()
 export class DashboardService {
@@ -20,6 +21,8 @@ export class DashboardService {
         private subjectRepo: Repository<SubjectSchema>,
         @InjectRepository(LevelSchema)
         private levelRepo: Repository<LevelSchema>,
+        @InjectRepository(QuestionAttemptSchema)
+        private questionAttemptRepo: Repository<QuestionAttemptSchema>,
     ) { }
 
     async getOverview(userId: string) {
@@ -77,7 +80,7 @@ export class DashboardService {
         const todaySessions = await this.sessionRepo.find({
             where: {
                 userId: childId,
-                startedAt: Between(todayStart, todayEnd),
+                completedAt: Between(todayStart, todayEnd), // Use completedAt instead of startedAt
                 completed: true,
                 isDeleted: false
             }
@@ -119,7 +122,7 @@ export class DashboardService {
         const thisWeekSessions = await this.sessionRepo.find({
             where: {
                 userId: childId,
-                startedAt: Between(thisWeekStart, new Date()), // Up to now
+                completedAt: Between(thisWeekStart, new Date()), // Use completedAt instead of startedAt
                 completed: true,
                 isDeleted: false
             }
@@ -128,7 +131,7 @@ export class DashboardService {
         const lastWeekSessions = await this.sessionRepo.find({
             where: {
                 userId: childId,
-                startedAt: Between(lastWeekStart, lastWeekEnd),
+                completedAt: Between(lastWeekStart, lastWeekEnd), // Use completedAt instead of startedAt
                 completed: true,
                 isDeleted: false
             }
@@ -309,6 +312,132 @@ export class DashboardService {
             certificates,
             total,
             hasMore: options?.limit ? (options.offset || 0) + certificates.length < total : false
+        };
+    }
+
+    /**
+     * Get detailed learning history with question-level data
+     * Supports filtering by subject, time range, and performance
+     */
+    async getDetailedLearningHistory(
+        userId: string,
+        filters?: {
+            subject?: string;
+            timeRange?: 'all' | 'today' | 'week' | 'month';
+            result?: 'excellent' | 'good' | 'average' | 'needs-improvement';
+            limit?: number;
+            offset?: number;
+        }
+    ) {
+        // Build query for sessions
+        let queryBuilder = this.sessionRepo.createQueryBuilder('session')
+            .leftJoinAndSelect('session.level', 'level')
+            .leftJoinAndSelect('level.subject', 'subject')
+            .where('session.userId = :userId', { userId })
+            .andWhere('session.completed = :completed', { completed: true })
+            .andWhere('session.isDeleted = :isDeleted', { isDeleted: false });
+
+        // Filter by subject
+        if (filters?.subject) {
+            queryBuilder.andWhere('subject.title = :subjectTitle', { subjectTitle: filters.subject });
+        }
+
+        // Filter by time range
+        if (filters?.timeRange && filters.timeRange !== 'all') {
+            const now = new Date();
+            let startDate: Date;
+
+            switch (filters.timeRange) {
+                case 'today':
+                    startDate = new Date(now.setHours(0, 0, 0, 0));
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+            }
+
+            queryBuilder.andWhere('session.startedAt >= :startDate', { startDate });
+        }
+
+        // Apply pagination
+        if (filters?.limit) {
+            queryBuilder.take(filters.limit);
+        }
+        if (filters?.offset) {
+            queryBuilder.skip(filters.offset);
+        }
+
+        // Order by most recent first
+        queryBuilder.orderBy('session.startedAt', 'DESC');
+
+        // Execute query
+        let sessions = await queryBuilder.getMany();
+
+        // Filter by result/performance (client-side since it's percentage-based)
+        if (filters?.result) {
+            sessions = sessions.filter(session => {
+                const percentage = session.accuracyPercentage;
+                switch (filters.result) {
+                    case 'excellent': return percentage >= 90;
+                    case 'good': return percentage >= 70 && percentage < 90;
+                    case 'average': return percentage >= 50 && percentage < 70;
+                    case 'needs-improvement': return percentage < 50;
+                    default: return true;
+                }
+            });
+        }
+
+        // Fetch question attempts for each session
+        const detailedActivities = await Promise.all(sessions.map(async (session) => {
+            const questionAttempts = await this.questionAttemptRepo.find({
+                where: {
+                    sessionId: session.id,
+                    isDeleted: false
+                },
+                order: { questionNumber: 'ASC' }
+            });
+
+            return {
+                id: session.id,
+                date: session.startedAt,
+                subject: session.level?.subject?.title || 'Unknown',
+                module: session.level?.title || 'Unknown Module',
+                totalDuration: Math.round(session.durationSeconds / 60), // Convert to minutes
+                score: session.score,
+                totalQuestions: session.totalQuestions,
+                accuracyPercentage: session.accuracyPercentage,
+                questions: questionAttempts.map(qa => ({
+                    questionNumber: qa.questionNumber,
+                    question: qa.questionText || '',
+                    userAnswer: qa.userAnswer || '',
+                    correctAnswer: qa.correctAnswer || '',
+                    isCorrect: qa.isCorrect,
+                    timeSpent: qa.timeSpentSeconds
+                }))
+            };
+        }));
+
+        // Get total count for pagination
+        const totalQuery = this.sessionRepo.createQueryBuilder('session')
+            .leftJoin('session.level', 'level')
+            .leftJoin('level.subject', 'subject')
+            .where('session.userId = :userId', { userId })
+            .andWhere('session.completed = :completed', { completed: true })
+            .andWhere('session.isDeleted = :isDeleted', { isDeleted: false });
+
+        if (filters?.subject) {
+            totalQuery.andWhere('subject.title = :subjectTitle', { subjectTitle: filters.subject });
+        }
+
+        const total = await totalQuery.getCount();
+
+        return {
+            activities: detailedActivities,
+            total,
+            hasMore: filters?.limit ? (filters.offset || 0) + detailedActivities.length < total : false
         };
     }
 }

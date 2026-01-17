@@ -45,6 +45,21 @@ interface SubjectProgress {
     :host {
       display: block;
     }
+    /* Premium Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
   `]
 })
 // Trigger rebuild
@@ -175,12 +190,12 @@ export class ParentDashboardComponent implements OnInit {
   }
 
   getScoreClass(score: number, total: number): string {
-    if (total === 0) return 'text-gray-600';
+    if (total === 0) return 'text-slate-500';
     const percentage = (score / total) * 100;
-    if (percentage >= 90) return 'text-green-600';
-    if (percentage >= 70) return 'text-blue-600';
-    if (percentage >= 50) return 'text-yellow-600';
-    return 'text-red-600';
+    if (percentage >= 90) return 'text-emerald-600';
+    if (percentage >= 70) return 'text-indigo-600';
+    if (percentage >= 50) return 'text-amber-600';
+    return 'text-rose-600';
   }
 
   getProgressColor(progress: number): string {
@@ -191,10 +206,10 @@ export class ParentDashboardComponent implements OnInit {
   }
 
   getProgressGradient(progress: number): string {
-    if (progress >= 80) return 'linear-gradient(90deg, #10B981, #059669)';
-    if (progress >= 60) return 'linear-gradient(90deg, #3B82F6, #2563EB)';
-    if (progress >= 40) return 'linear-gradient(90deg, #F59E0B, #D97706)';
-    return 'linear-gradient(90deg, #EF4444, #DC2626)';
+    if (progress >= 80) return 'linear-gradient(90deg, #10B981, #34D399)'; // Emerald
+    if (progress >= 60) return 'linear-gradient(90deg, #6366F1, #818CF8)'; // Indigo
+    if (progress >= 40) return 'linear-gradient(90deg, #F59E0B, #FBBF24)'; // Amber
+    return 'linear-gradient(90deg, #F43F5E, #FB7185)'; // Rose
   }
 
   getAchievementBorderClass(rarity: string): string {

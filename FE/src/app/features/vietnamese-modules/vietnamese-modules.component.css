@@ -2,17 +2,16 @@
 .math-container {
     /* Loại bỏ min-height để tránh bị cắt trên màn hình nhỏ */
     background: linear-gradient(135deg,
-            #E0F7FA 0%,
-            #FFF9C4 25%,
-            #F8BBD0 50%,
-            #E1BEE7 75%,
-            #C5CAE9 100%);
+            #bae6fd 0%,
+            #7dd3fc 50%,
+            #38bdf8 100%) !important;
+    background-size: 200% 200% !important;
     padding: 1.5rem 2rem 10rem 2rem;
     /* Tăng bottom padding lên 10rem để đảm bảo luôn có space */
     position: relative;
     /* Loại bỏ overflow-y để parent container xử lý scroll */
-    animation: backgroundShift 20s ease-in-out infinite;
 }
+
 
 @keyframes backgroundShift {
 
@@ -438,7 +437,8 @@
     font-size: 1.75rem;
     /* Giảm từ 2.2rem */
     font-weight: 900;
-    color: var(--card-color);
+    color: #2563EB;
+    /* Changed from var(--card-color) to deep blue for better readability */
     margin: 0.75rem 0 0.4rem;
     text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.05);
 }

@@ -34,6 +34,23 @@ export class LearningService {
         else if (accuracy >= 70) stars = 2;
         else if (accuracy >= 50) stars = 1;
 
+        // 1b. Get previous session for comparison (BEFORE saving current session)
+        const previousSession = await this.sessionRepo.findOne({
+            where: {
+                userId: userId,
+                levelId: dto.levelId,
+                completed: true,
+                isDeleted: false
+            },
+            order: { completedAt: 'DESC' }
+        });
+
+        console.log('🔍 Previous session:', previousSession ? {
+            score: previousSession.score,
+            duration: previousSession.durationSeconds,
+            completedAt: previousSession.completedAt
+        } : 'No previous session found');
+
         // 2. Save Session
         const session = this.sessionRepo.create({
             userId: userId,
@@ -108,6 +125,82 @@ export class LearningService {
 
         await this.progressRepo.save(progress);
 
+        // 4. Check for Improvement Achievement (Phiếu Bé Ngoan)
+        let improvementAchievement: any = null;
+        if (previousSession && stars >= 1) {
+            // Check if improved: Priority is correct answers, then time
+            const currentCorrect = dto.score;
+            const previousCorrect = previousSession.score;
+            const currentTime = dto.durationSeconds;
+            const previousTime = previousSession.durationSeconds;
+
+            console.log('📊 Comparing sessions:', {
+                current: { score: currentCorrect, time: currentTime },
+                previous: { score: previousCorrect, time: previousTime }
+            });
+
+            let hasImproved = false;
+
+            // Priority 1: More correct answers
+            if (currentCorrect > previousCorrect) {
+                hasImproved = true;
+                console.log('✅ Improved by score:', currentCorrect, '>', previousCorrect);
+            }
+            // Priority 2: Same correct answers but faster time
+            else if (currentCorrect === previousCorrect && currentTime < previousTime) {
+                hasImproved = true;
+                console.log('✅ Improved by time:', currentTime, '<', previousTime);
+            } else {
+                console.log('❌ No improvement detected');
+            }
+
+            if (hasImproved) {
+                console.log('🎖️ Awarding improvement certificate...');
+                const awardedImprovement = await this.achievementService.awardAchievement(
+                    userId,
+                    'improvement-certificate',
+                    {
+                        levelId: dto.levelId,
+                        previousScore: previousCorrect,
+                        currentScore: currentCorrect,
+                        previousTime: previousTime,
+                        currentTime: currentTime,
+                        improvementType: currentCorrect > previousCorrect ? 'score' : 'time'
+                    }
+                );
+
+                if (awardedImprovement) {
+                    console.log('✨ Improvement achievement awarded!');
+                    const fullAchievement = await this.achievementService.getUserAchievements(userId);
+                    const earned = fullAchievement.find(a => a.id === awardedImprovement.id);
+                    if (earned) {
+                        improvementAchievement = {
+                            id: earned.achievement.achievementId,
+                            title: earned.achievement.title,
+                            description: earned.achievement.description,
+                            icon: earned.achievement.icon,
+                            rarity: earned.achievement.rarity,
+                            points: earned.achievement.points,
+                            isImprovement: true,
+                            previousScore: previousCorrect,
+                            currentScore: currentCorrect,
+                            previousTime: previousTime,
+                            currentTime: currentTime
+                        };
+                    }
+                } else {
+                    console.log('⚠️ Failed to award improvement achievement');
+                }
+            }
+        } else {
+            if (!previousSession) {
+                console.log('ℹ️ No previous session to compare');
+            }
+            if (stars < 1) {
+                console.log('ℹ️ Not enough stars to check for improvement (need at least 1 star)');
+            }
+        }
+
         // 5. Check for Subject Completion Achievement
         let achievement: any = null;
         if (stars >= 1) {
@@ -144,7 +237,8 @@ export class LearningService {
             accuracy: accuracy,
             sessionId: session.id,
             completed: stars >= 1,
-            achievement: achievement // Include achievement if earned
+            achievement: achievement, // Include subject completion achievement if earned
+            improvementAchievement: improvementAchievement // Include improvement achievement if earned
         };
     }
 

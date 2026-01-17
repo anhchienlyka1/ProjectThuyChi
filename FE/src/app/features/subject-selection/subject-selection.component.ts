@@ -59,6 +59,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       <div class="cards-grid">
         <div *ngFor="let subject of subjects$ | async"
              class="subject-card"
+             [class.disabled]="isDisabled(subject.id)"
              [style.background]="subject.gradient"
              (click)="selectSubject(subject)"
              (mouseenter)="onCardHover(subject)"
@@ -66,6 +67,9 @@ import { GamificationStore } from '../../core/store/gamification.store';
 
           <div class="card-icon">{{ subject.icon }}</div>
           <h2 class="card-title">{{ subject.title }}</h2>
+
+          <!-- Coming Soon Badge for disabled subjects -->
+          <div class="coming-soon-badge" *ngIf="isDisabled(subject.id)">Sắp ra mắt</div>
 
           <!-- Decorative shine effect -->
           <div class="card-shine"></div>
@@ -83,7 +87,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
   styles: [`
     .selection-container {
       min-height: 100vh;
-      background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%);
+      background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 50%, #38bdf8 100%);
       padding: 30px 20px 60px 20px;
       display: flex;
       flex-direction: column;
@@ -254,13 +258,27 @@ import { GamificationStore } from '../../core/store/gamification.store';
       will-change: transform;
     }
 
-    .subject-card:hover {
+    .subject-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+    }
+
+    .subject-card.disabled::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1;
+    }
+
+    .subject-card:not(.disabled):hover {
       transform: translateY(-8px) scale(1.02);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
       border-color: rgba(255, 255, 255, 0.8);
     }
 
-    .subject-card:active {
+    .subject-card:not(.disabled):active {
       transform: translateY(-6px) scale(1.02);
     }
 
@@ -285,6 +303,21 @@ import { GamificationStore } from '../../core/store/gamification.store';
       z-index: 2;
     }
 
+    .coming-soon-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #f59e0b;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+      border: 2px solid #fbbf24;
+    }
+
     .card-shine {
       position: absolute;
       inset: 0;
@@ -293,7 +326,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       transition: transform 0.6s ease;
     }
 
-    .subject-card:hover .card-shine {
+    .subject-card:not(.disabled):hover .card-shine {
       transform: translateX(100%);
     }
 
@@ -364,7 +397,20 @@ export class SubjectSelectionComponent {
 
   subjects$ = this.subjectService.getSubjects();
 
+  // List of temporarily disabled subjects
+  private disabledSubjects = ['fairy-tales', 'english'];
+
+  isDisabled(subjectId: string): boolean {
+    return this.disabledSubjects.includes(subjectId);
+  }
+
   selectSubject(subject: SubjectCard) {
+    // Prevent navigation if subject is disabled
+    if (this.isDisabled(subject.id)) {
+      this.mascot.setEmotion('thinking', 'Môn này sắp ra mắt nhé bé! Chọn môn khác đi!', 2000);
+      return;
+    }
+
     this.mascot.setEmotion('happy', `Tuyệt vời! Cùng học ${subject.title} nhé!`, 2000);
     setTimeout(() => {
       this.router.navigate([subject.route]);
@@ -372,6 +418,11 @@ export class SubjectSelectionComponent {
   }
 
   onCardHover(subject: SubjectCard) {
+    if (this.isDisabled(subject.id)) {
+      this.mascot.setEmotion('thinking', 'Môn này sắp có thôi bé nhé!', 1500);
+      return;
+    }
+
     const messages = [
       'Bé thích môn này à?',
       'Chọn đi bé!',

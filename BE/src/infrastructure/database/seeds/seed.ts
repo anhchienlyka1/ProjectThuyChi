@@ -249,6 +249,8 @@ async function seed() {
             { achievementId: 'first-steps', title: 'Khởi Đầu Mới', description: 'Hoàn thành bài học đầu tiên', icon: '🌱', rarity: 'common', points: 10, category: 'learning' },
             { achievementId: 'speed-racer', title: 'Tay Đua Tốc Độ', description: 'Hoàn thành bài học dưới 1 phút', icon: '🏎️', rarity: 'rare', points: 30, category: 'speed' },
             { achievementId: 'perfect-10', title: 'Điểm 10 Tròn Trĩnh', description: 'Đạt 100% chính xác trong 1 bài', icon: '💯', rarity: 'common', points: 20, category: 'perfect_score' },
+            // Improvement Achievement (Phiếu Bé Ngoan for improvement)
+            { achievementId: 'improvement-certificate', title: 'Phiếu Bé Ngoan', description: 'Hoàn thành bài tập tốt hơn lần trước!', icon: '⭐', rarity: 'common', points: 10, category: 'improvement' },
             // Subject Completion Achievements (Phiếu Bé Ngoan)
             { achievementId: 'math-completion', title: 'Phiếu Bé Ngoan - Toán Học', description: 'Hoàn thành tất cả bài tập Toán Học', icon: '🎖️', rarity: 'epic', points: 100, category: 'subject_completion' },
             { achievementId: 'vietnamese-completion', title: 'Phiếu Bé Ngoan - Tiếng Việt', description: 'Hoàn thành tất cả bài tập Tiếng Việt', icon: '🎖️', rarity: 'epic', points: 100, category: 'subject_completion' },
