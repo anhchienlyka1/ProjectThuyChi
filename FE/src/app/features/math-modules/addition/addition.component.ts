@@ -7,7 +7,7 @@ import { AdditionService } from '../../../core/services/addition.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
-import { AchievementNotificationComponent } from '../../../shared/components/achievement-notification/achievement-notification.component';
+import { CertificatePopupComponent } from '../../../shared/components/certificate-popup.component';
 import { LessonTimerService } from '../../../core/services/lesson-timer.service';
 import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
 import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
@@ -16,7 +16,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
 @Component({
     selector: 'app-addition',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent, AchievementNotificationComponent, LessonTimerComponent, LessonCompletionStatsComponent],
+    imports: [CommonModule, KidButtonComponent, CertificatePopupComponent, LessonTimerComponent, LessonCompletionStatsComponent],
     templateUrl: './addition.component.html',
     styles: [`
     @keyframes float {
@@ -85,9 +85,13 @@ export class AdditionComponent implements OnInit, OnDestroy {
     // Completion stats
     showCompletionStats = false;
     completionDuration = 0;
+    previousFastestTime = 0; // Track previous record for comparison
 
 
     ngOnInit() {
+        // Fetch previous fastest time before starting
+        this.loadPreviousFastestTime();
+
         this.additionService.getConfig().subscribe(config => {
             this.config = config;
             this.items = config.items;
@@ -100,6 +104,20 @@ export class AdditionComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // Stop timer when leaving component
         this.lessonTimer.stopTimer();
+    }
+
+    loadPreviousFastestTime() {
+        this.learningService.getCompletionTime('addition').subscribe({
+            next: (data) => {
+                if (data && data.fastestTimeSeconds > 0) {
+                    this.previousFastestTime = data.fastestTimeSeconds;
+                }
+            },
+            error: (err) => {
+                console.log('No previous record found, this might be first attempt');
+                this.previousFastestTime = 0;
+            }
+        });
     }
 
     startGame() {
@@ -146,8 +164,7 @@ export class AdditionComponent implements OnInit, OnDestroy {
     }
 
     readQuestion() {
-        // "Có [firstNumber] quả [itemName], thêm [secondNumber] quả nữa. Hỏi tất cả có bao nhiêu quả?"
-        // Or simpler: "[firstNumber] cộng [secondNumber] bằng bao nhiêu?"
+        // "[firstNumber] cộng [secondNumber] bằng bao nhiêu?"
         const text = `${this.firstNumber} cộng ${this.secondNumber} bằng bao nhiêu?`;
         this.audioService.speak(text);
     }
@@ -216,11 +233,14 @@ export class AdditionComponent implements OnInit, OnDestroy {
     }
 
     finishGame() {
-        this.isFinished = true;
+        // DON'T set isFinished=true immediately - wait until we show results
 
         // Stop timer and get duration
         const durationSeconds = this.lessonTimer.stopTimer();
         this.completionDuration = durationSeconds;
+
+        // Check if this is a new record
+        const isNewRecord = this.previousFastestTime === 0 || durationSeconds < this.previousFastestTime;
 
         // Increment daily completion count
         this.dailyProgress.incrementCompletion('addition');
@@ -238,29 +258,70 @@ export class AdditionComponent implements OnInit, OnDestroy {
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
 
-                // Show completion stats after 2 seconds
-                setTimeout(() => {
-                    this.showCompletionStats = true;
-                }, 2000);
-
-                // Check if achievement was earned
-                if (response.achievement) {
-                    this.earnedAchievement = response.achievement;
+                // Check if math lesson achievement was earned (improvementAchievement)
+                if (response.improvementAchievement) {
+                    // Show achievement FIRST
+                    this.earnedAchievement = {
+                        ...response.improvementAchievement,
+                        date: new Date().toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        })
+                    };
                     setTimeout(() => {
                         this.showAchievement = true;
-                    }, 5000); // Show achievement after stats
+                    }, 300); // Reduced delay to 300ms
+                } else if (response.achievement) {
+                    // Fallback to old achievement if exists
+                    this.earnedAchievement = {
+                        ...response.achievement,
+                        date: new Date().toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        })
+                    };
+                    setTimeout(() => {
+                        this.showAchievement = true;
+                    }, 300);
+                } else {
+                    // No achievement - check if new record to show stats popup
+                    this.isFinished = true;
+                    if (isNewRecord) {
+                        setTimeout(() => {
+                            this.showCompletionStats = true;
+                        }, 1500);
+                    }
                 }
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
                 const completionCount = this.dailyProgress.getTodayCompletionCount('addition');
                 this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+                // Show results even on error - only if new record
+                this.isFinished = true;
+                if (isNewRecord) {
+                    setTimeout(() => {
+                        this.showCompletionStats = true;
+                    }, 1500);
+                }
             }
         });
     }
 
     closeAchievement() {
         this.showAchievement = false;
+        // After closing achievement, check if new record to show stats
+        this.isFinished = true;
+
+        // Check if this was a new record
+        const isNewRecord = this.previousFastestTime === 0 || this.completionDuration < this.previousFastestTime;
+        if (isNewRecord) {
+            setTimeout(() => {
+                this.showCompletionStats = true;
+            }, 300);
+        }
     }
 
     closeCompletionStats() {

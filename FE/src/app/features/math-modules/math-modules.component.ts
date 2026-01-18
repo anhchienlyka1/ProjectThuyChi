@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MascotService } from '../../core/services/mascot.service';
@@ -21,6 +21,23 @@ export class MathModulesComponent implements OnInit {
     private mathLevelService = inject(MathLevelService);
     dailyProgress = inject(DailyProgressService);
     mascot = inject(MascotService);
+
+    @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+
+    scroll(direction: 'left' | 'right') {
+        if (this.scrollContainer) {
+            const container = this.scrollContainer.nativeElement;
+            const scrollAmount = container.clientWidth * 0.8; // Scroll 80% of view width
+            const targetScroll = direction === 'left'
+                ? container.scrollLeft - scrollAmount
+                : container.scrollLeft + scrollAmount;
+
+            container.scrollTo({
+                left: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+    }
 
     levels$ = this.mathLevelService.getLevels();
 

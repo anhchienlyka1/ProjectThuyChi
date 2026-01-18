@@ -57,97 +57,121 @@
         </div>
 
         <!-- Levels List (Horizontal Scroll) -->
-        <div class="flex overflow-x-auto snap-x snap-mandatory py-12 gap-6 px-4 scrollbar-hide mask-image-scroll"
-            style="scrollbar-width: none; -ms-overflow-style: none; overflow-y: visible;">
+        <div class="relative group">
 
-            <!-- Level Card -->
-            <div *ngFor="let level of levels$ | async" (click)="selectLevel(level)"
-                class="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[420px] lg:w-[450px]">
-                <div [class.opacity-70]="level.isLocked" [class.cursor-pointer]="!level.isLocked"
-                    [class.cursor-not-allowed]="level.isLocked"
-                    class="group relative h-full bg-gradient-to-br from-white/40 via-sky-50/50 to-blue-100/40 rounded-[2.5rem] p-8 border-4 border-white/60 hover:border-white/80 hover:shadow-2xl hover:shadow-blue-300/40 hover:-translate-y-2 active:translate-y-0 transition-all duration-500 flex flex-col items-center text-center shadow-xl overflow-hidden touch-manipulation min-h-[380px] justify-between backdrop-blur-lg"
-                    [style.--card-color]="level.color" [style.--card-rgb]="level.colorRgb || '0, 0, 0'"
-                    style="box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;">
+            <!-- Prev Button -->
+            <button (click)="scroll('left')"
+                class="absolute left-2 lg:-left-24 top-1/2 -translate-y-1/2 z-40 bg-white/40 hover:bg-white text-sky-600 p-3 lg:p-4 rounded-full shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 border-4 border-white/50 hover:shadow-sky-200 hidden md:flex items-center justify-center cursor-pointer"
+                aria-label="Previous">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
+                    stroke="currentColor" class="w-6 h-6 lg:w-8 lg:h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+            </button>
 
-                    <!-- Animated Gradient Background -->
-                    <div
-                        class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                        <div [style.background]="'linear-gradient(135deg, ' + level.color + '10 0%, ' + level.color + '20 100%)'"
-                            class="absolute inset-0"></div>
-                    </div>
+            <div #scrollContainer
+                class="flex overflow-x-auto snap-x snap-mandatory py-12 gap-6 px-4 scrollbar-hide mask-image-scroll scroll-smooth"
+                style="scrollbar-width: none; -ms-overflow-style: none; overflow-y: visible;">
 
-                    <!-- Lock Overlay -->
-                    <div *ngIf="level.isLocked"
-                        class="absolute inset-0 bg-gradient-to-br from-gray-100/90 to-gray-200/90 z-20 flex flex-col items-center justify-center backdrop-blur-md rounded-[2.5rem]">
-                        <div class="bg-white/90 p-6 rounded-full mb-4 shadow-xl">
-                            <span class="text-5xl">🔒</span>
+                <!-- Level Card -->
+                <div *ngFor="let level of levels$ | async" (click)="selectLevel(level)"
+                    class="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[420px] lg:w-[450px]">
+                    <div [class.opacity-70]="level.isLocked" [class.cursor-pointer]="!level.isLocked"
+                        [class.cursor-not-allowed]="level.isLocked"
+                        class="group relative h-full bg-gradient-to-br from-white/40 via-sky-50/50 to-blue-100/40 rounded-[2.5rem] p-8 border-4 border-white/60 hover:border-white/80 hover:shadow-2xl hover:shadow-blue-300/40 hover:-translate-y-2 active:translate-y-0 transition-all duration-500 flex flex-col items-center text-center shadow-xl overflow-hidden touch-manipulation min-h-[380px] justify-between backdrop-blur-lg"
+                        [style.--card-color]="level.color" [style.--card-rgb]="level.colorRgb || '0, 0, 0'"
+                        style="box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.3) inset;">
+
+                        <!-- Animated Gradient Background -->
+                        <div
+                            class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                            <div [style.background]="'linear-gradient(135deg, ' + level.color + '10 0%, ' + level.color + '20 100%)'"
+                                class="absolute inset-0"></div>
                         </div>
-                        <span
-                            class="font-black text-gray-600 uppercase tracking-wider text-sm bg-white/90 px-6 py-2 rounded-full shadow-lg">Chưa
-                            mở khóa</span>
-                    </div>
 
-                    <!-- Icon Circle with Glow -->
-                    <div class="relative mb-6 z-10">
-                        <div [style.background]="'linear-gradient(135deg, ' + level.color + '15 0%, ' + level.color + '30 100%)'"
-                            class="w-36 h-36 rounded-full flex items-center justify-center relative group-hover:scale-110 transition-all duration-500 shadow-lg"
-                            [style.box-shadow]="'0 10px 40px ' + level.color + '30'">
+                        <!-- Lock Overlay -->
+                        <div *ngIf="level.isLocked"
+                            class="absolute inset-0 bg-gradient-to-br from-gray-100/90 to-gray-200/90 z-20 flex flex-col items-center justify-center backdrop-blur-md rounded-[2.5rem]">
+                            <div class="bg-white/90 p-6 rounded-full mb-4 shadow-xl">
+                                <span class="text-5xl">🔒</span>
+                            </div>
                             <span
-                                class="text-7xl drop-shadow-lg select-none transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110">{{
-                                level.icon }}</span>
+                                class="font-black text-gray-600 uppercase tracking-wider text-sm bg-white/90 px-6 py-2 rounded-full shadow-lg">Chưa
+                                mở khóa</span>
+                        </div>
 
-                            <!-- Pulsing Glow Effect -->
-                            <div [style.background]="level.color"
-                                class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 blur-2xl transition-all duration-500 animate-pulse">
+                        <!-- Icon Circle with Glow -->
+                        <div class="relative mb-6 z-10">
+                            <div [style.background]="'linear-gradient(135deg, ' + level.color + '15 0%, ' + level.color + '30 100%)'"
+                                class="w-36 h-36 rounded-full flex items-center justify-center relative group-hover:scale-110 transition-all duration-500 shadow-lg"
+                                [style.box-shadow]="'0 10px 40px ' + level.color + '30'">
+                                <span
+                                    class="text-7xl drop-shadow-lg select-none transform transition-all duration-500 group-hover:rotate-12 group-hover:scale-110">{{
+                                    level.icon }}</span>
+
+                                <!-- Pulsing Glow Effect -->
+                                <div [style.background]="level.color"
+                                    class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 blur-2xl transition-all duration-500 animate-pulse">
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Content -->
-                    <div class="w-full z-10 flex-1 flex flex-col">
-                        <h3 class="level-title text-3xl font-black mb-3 transition-all duration-300">
-                            {{ level.title }}
-                        </h3>
+                        <!-- Content -->
+                        <div class="w-full z-10 flex-1 flex flex-col">
+                            <h3 class="level-title text-3xl font-black mb-3 transition-all duration-300">
+                                {{ level.title }}
+                            </h3>
 
-                        <p class="text-gray-600 font-semibold text-base leading-relaxed px-2 mb-4">
-                            {{ level.subtitle }}
-                        </p>
-                    </div>
-
-                    <!-- Completion Count Badge Area -->
-                    <div class="flex justify-center z-10 min-h-[40px] items-center">
-                        <div *ngIf="dailyProgress.getTodayCompletionCount(level.id) > 0"
-                            class="flex items-center gap-1 font-black">
-                            <span class="text-3xl">🔥</span>
-                            <span class="text-xl text-orange-500">{{ dailyProgress.getTodayCompletionCount(level.id)
-                                }}</span>
+                            <p class="text-gray-600 font-semibold text-base leading-relaxed px-2 mb-4">
+                                {{ level.subtitle }}
+                            </p>
                         </div>
-                    </div>
 
-                    <!-- Badge Number with Gradient -->
-                    <div [style.background]="'linear-gradient(135deg, ' + level.color + ' 0%, ' + level.color + 'DD 100%)'"
-                        class="absolute top-5 right-5 w-14 h-14 rounded-full flex items-center justify-center text-white font-black shadow-xl border-3 border-white transform rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-all duration-300 z-10"
-                        [style.box-shadow]="'0 8px 20px ' + level.color + '50'">
-                        <span class="text-2xl drop-shadow-md">{{ level.levelNumber }}</span>
-                    </div>
+                        <!-- Completion Count Badge Area -->
+                        <div class="flex justify-center z-10 min-h-[40px] items-center">
+                            <div *ngIf="dailyProgress.getTodayCompletionCount(level.id) > 0"
+                                class="flex items-center gap-1 font-black">
+                                <span class="text-3xl">🔥</span>
+                                <span class="text-xl text-orange-500">{{ dailyProgress.getTodayCompletionCount(level.id)
+                                    }}</span>
+                            </div>
+                        </div>
 
-                    <!-- Today's Completion Badge (Top Left) -->
-                    <div *ngIf="dailyProgress.isCompletedToday(level.id)"
-                        class="absolute top-5 left-5 bg-gradient-to-br from-green-400 to-green-600 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl border-4 border-white animate-bounce-slow z-30"
-                        style="box-shadow: 0 0 30px rgba(34, 197, 94, 0.7), 0 8px 16px rgba(0, 0, 0, 0.2);">
-                        <span class="text-4xl font-bold drop-shadow-md">✓</span>
+                        <!-- Badge Number with Gradient -->
+                        <div [style.background]="'linear-gradient(135deg, ' + level.color + ' 0%, ' + level.color + 'DD 100%)'"
+                            class="absolute top-5 right-5 w-14 h-14 rounded-full flex items-center justify-center text-white font-black shadow-xl border-3 border-white transform rotate-12 group-hover:rotate-0 group-hover:scale-110 transition-all duration-300 z-10"
+                            [style.box-shadow]="'0 8px 20px ' + level.color + '50'">
+                            <span class="text-2xl drop-shadow-md">{{ level.levelNumber }}</span>
+                        </div>
+
+                        <!-- Today's Completion Badge (Top Left) -->
+                        <div *ngIf="dailyProgress.isCompletedToday(level.id)"
+                            class="absolute top-5 left-5 bg-gradient-to-br from-green-400 to-green-600 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl border-4 border-white animate-bounce-slow z-30"
+                            style="box-shadow: 0 0 30px rgba(34, 197, 94, 0.7), 0 8px 16px rgba(0, 0, 0, 0.2);">
+                            <span class="text-4xl font-bold drop-shadow-md">✓</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Mascot Encouragement -->
-        <div class="text-center">
-            <div class="inline-block bg-white rounded-full px-10 py-5 shadow-xl border-4 border-kid-accent">
-                <p class="text-2xl font-black text-kid-text">
-                    🐰 Chọn một bài học để bắt đầu nhé! 🐰
-                </p>
-            </div>
+            <!-- Next Button -->
+            <button (click)="scroll('right')"
+                class="absolute right-2 lg:-right-24 top-1/2 -translate-y-1/2 z-40 bg-white/40 hover:bg-white text-sky-600 p-3 lg:p-4 rounded-full shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 border-4 border-white/50 hover:shadow-sky-200 hidden md:flex items-center justify-center cursor-pointer"
+                aria-label="Next">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
+                    stroke="currentColor" class="w-6 h-6 lg:w-8 lg:h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mascot Encouragement -->
+    <div class="text-center">
+        <div class="inline-block bg-white rounded-full px-10 py-5 shadow-xl border-4 border-kid-accent">
+            <p class="text-2xl font-black text-kid-text">
+                🐰 Chọn một bài học để bắt đầu nhé! 🐰
+            </p>
         </div>
     </div>
 </div>

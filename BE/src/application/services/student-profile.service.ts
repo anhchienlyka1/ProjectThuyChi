@@ -93,7 +93,7 @@ export class StudentProfileService {
     /**
      * Get student's achievements (Phiếu Bé Ngoan)
      */
-    async getStudentAchievements(userId: string, limit?: number) {
+    async getStudentAchievements(userId: string, page: number = 1, limit: number = 10) {
         const query = this.userAchievementRepo
             .createQueryBuilder('ua')
             .leftJoinAndSelect('ua.achievement', 'achievement')
@@ -101,13 +101,12 @@ export class StudentProfileService {
             .andWhere('ua.isDeleted = :isDeleted', { isDeleted: false })
             .orderBy('ua.earnedAt', 'DESC');
 
-        if (limit) {
-            query.take(limit);
-        }
+        const [data, total] = await query
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
 
-        const userAchievements = await query.getMany();
-
-        return userAchievements.map(ua => ({
+        const achievements = data.map(ua => ({
             id: ua.id,
             achievementId: ua.achievement.achievementId,
             title: ua.achievement.title,
@@ -117,6 +116,16 @@ export class StudentProfileService {
             earnedAt: ua.earnedAt,
             earnedContext: ua.earnedContext
         }));
+
+        return {
+            data: achievements,
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
     }
 
     /**

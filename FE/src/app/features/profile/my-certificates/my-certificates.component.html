@@ -74,6 +74,18 @@
       <app-certificate-card [certificate]="cert"></app-certificate-card>
       }
     </div>
+
+    @if (hasMore()) {
+    <div class="mt-8 flex justify-center pb-8">
+      <kid-button (click)="onLoadMore()" variant="primary" size="lg" [disabled]="isLoadingMore()">
+        @if (isLoadingMore()) {
+        Đang tải...
+        } @else {
+        Xem thêm
+        }
+      </kid-button>
+    </div>
+    }
     }
   </div>
 </div>

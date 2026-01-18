@@ -26,7 +26,6 @@ export interface Certificate {
   standalone: true,
   imports: [
     CommonModule,
-    KidCardComponent,
     KidAvatarComponent,
     KidProgressBarComponent,
     KidButtonComponent
@@ -80,6 +79,11 @@ export class ProfileComponent {
       const profile = await this.studentProfileService.getStudentProfile(userId);
       this.profileData.set(profile);
 
+      // Sync with Gamification Store
+      if (profile.student) {
+        this.gameStore.syncProfile(profile.student);
+      }
+
       // Update today's stats from API
       if (profile.todayStats) {
         this.todayStats.set({
@@ -89,8 +93,9 @@ export class ProfileComponent {
         });
       }
 
-      // Fetch achievements (limit to 4 for profile preview)
-      const achievementsData = await this.studentProfileService.getStudentAchievements(userId, 4);
+      // Fetch achievements (limit to 6 for profile preview)
+      const response = await this.studentProfileService.getStudentAchievements(userId, 1, 6);
+      const achievementsData = response.data;
       this.achievements.set(achievementsData);
 
       // Map achievements to certificates format

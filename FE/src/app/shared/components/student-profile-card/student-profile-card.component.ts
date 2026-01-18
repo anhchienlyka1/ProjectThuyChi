@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { StudentProfileService, StudentProfileResponse, Achievement, WeeklyAchievement } from '../../../core/services/student-profile.service';
 
 @Component({
-    selector: 'app-student-profile-card',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-student-profile-card',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="max-w-7xl mx-auto space-y-6">
       <!-- Student Profile Card -->
       @if (profileData()) {
@@ -113,65 +113,65 @@ import { StudentProfileService, StudentProfileResponse, Achievement, WeeklyAchie
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     :host {
       display: block;
     }
   `]
 })
 export class StudentProfileCardComponent implements OnInit {
-    private studentProfileService = inject(StudentProfileService);
+  private studentProfileService = inject(StudentProfileService);
 
-    // Input: student ID
-    studentId = input.required<string>();
+  // Input: student ID
+  studentId = input.required<string>();
 
-    // Signals
-    profileData = signal<StudentProfileResponse | null>(null);
-    weeklyAchievements = signal<WeeklyAchievement[]>([]);
-    allAchievements = signal<Achievement[]>([]);
-    loading = signal(true);
+  // Signals
+  profileData = signal<StudentProfileResponse | null>(null);
+  weeklyAchievements = signal<WeeklyAchievement[]>([]);
+  allAchievements = signal<Achievement[]>([]);
+  loading = signal(true);
 
-    async ngOnInit() {
-        await this.loadProfileData();
+  async ngOnInit() {
+    await this.loadProfileData();
+  }
+
+  async loadProfileData() {
+    this.loading.set(true);
+    try {
+      const userId = this.studentId();
+
+      // Load profile and weekly achievements in parallel
+      const [profile, weekly] = await Promise.all([
+        this.studentProfileService.getStudentProfile(userId),
+        this.studentProfileService.getWeeklyAchievements(userId)
+      ]);
+
+      this.profileData.set(profile);
+      this.weeklyAchievements.set(weekly);
+    } catch (error: any) {
+      console.error('Failed to load student profile:', error);
+    } finally {
+      this.loading.set(false);
     }
+  }
 
-    async loadProfileData() {
-        this.loading.set(true);
-        try {
-            const userId = this.studentId();
-
-            // Load profile and weekly achievements in parallel
-            const [profile, weekly] = await Promise.all([
-                this.studentProfileService.getStudentProfile(userId),
-                this.studentProfileService.getWeeklyAchievements(userId)
-            ]);
-
-            this.profileData.set(profile);
-            this.weeklyAchievements.set(weekly);
-        } catch (error: any) {
-            console.error('Failed to load student profile:', error);
-        } finally {
-            this.loading.set(false);
-        }
+  async viewAllAchievements() {
+    // Load all achievements when user clicks "View All"
+    try {
+      const response = await this.studentProfileService.getStudentAchievements(this.studentId());
+      this.allAchievements.set(response.data);
+      // TODO: Open modal or navigate to achievements page
+      console.log('All achievements:', response.data);
+    } catch (error: any) {
+      console.error('Failed to load all achievements:', error);
     }
+  }
 
-    async viewAllAchievements() {
-        // Load all achievements when user clicks "View All"
-        try {
-            const achievements = await this.studentProfileService.getStudentAchievements(this.studentId());
-            this.allAchievements.set(achievements);
-            // TODO: Open modal or navigate to achievements page
-            console.log('All achievements:', achievements);
-        } catch (error: any) {
-            console.error('Failed to load all achievements:', error);
-        }
-    }
-
-    formatDate(date: Date): string {
-        return new Intl.DateTimeFormat('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        }).format(new Date(date));
-    }
+  formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(new Date(date));
+  }
 }

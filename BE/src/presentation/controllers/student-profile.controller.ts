@@ -1,7 +1,9 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { StudentProfileService } from '../../application/services/student-profile.service';
+import { JwtAuthGuard } from '../../infrastructure/auth/jwt-auth.guard';
 
 @Controller('student-profile')
+@UseGuards(JwtAuthGuard) // Protect all routes in this controller
 export class StudentProfileController {
     constructor(
         private readonly studentProfileService: StudentProfileService
@@ -62,9 +64,10 @@ export class StudentProfileController {
     @Get(':userId/achievements')
     async getStudentAchievements(
         @Param('userId') userId: string,
-        @Query('limit') limit?: number
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10
     ) {
-        return this.studentProfileService.getStudentAchievements(userId, limit);
+        return this.studentProfileService.getStudentAchievements(userId, +page, +limit);
     }
 
     /**

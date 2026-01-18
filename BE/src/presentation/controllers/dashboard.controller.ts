@@ -1,7 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { DashboardService } from '../../application/services/dashboard.service';
+import { JwtAuthGuard } from '../../infrastructure/auth/jwt-auth.guard';
 
 @Controller('dashboard')
+@UseGuards(JwtAuthGuard) // Protect all dashboard routes
 export class DashboardController {
     constructor(private readonly dashboardService: DashboardService) { }
 
@@ -96,4 +98,38 @@ export class DashboardController {
             offset: offset ? Number(offset) : undefined
         });
     }
+
+    /**
+     * GET /dashboard/subject-achievements
+     * Get detailed subject achievements for parent dashboard
+     * Returns per-subject stats including time spent, average score, strengths and weaknesses
+     * Query params:
+     * - childId: string (required) - the student's ID
+     */
+    @Get('subject-achievements')
+    async getSubjectAchievements(@Query('childId') childId: string) {
+        if (!childId) {
+            throw new Error('childId is required');
+        }
+        return this.dashboardService.getSubjectAchievements(childId);
+    }
+
+    /**
+     * GET /dashboard/daily-activities
+     * Get daily learning activities for chart display in learning report
+     * Query params:
+     * - childId: string (required) - the student's ID
+     * - timeRange: 'week' | 'month' | 'year' (optional, default: 'week')
+     */
+    @Get('daily-activities')
+    async getDailyActivities(
+        @Query('childId') childId: string,
+        @Query('timeRange') timeRange?: 'week' | 'month' | 'year'
+    ) {
+        if (!childId) {
+            throw new Error('childId is required');
+        }
+        return this.dashboardService.getDailyActivities(childId, timeRange || 'week');
+    }
 }
+

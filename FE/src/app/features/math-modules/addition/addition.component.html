@@ -1,8 +1,8 @@
 <div
   class="min-h-screen bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
 
-  <!-- Game Finished Overlay -->
-  <div *ngIf="isFinished"
+  <!-- Game Finished Overlay (Hidden when showing achievement) -->
+  <div *ngIf="isFinished && !showAchievement"
     class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
     <div
       class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-yellow-400 relative overflow-hidden">
@@ -198,10 +198,10 @@
 </div>
 
 <!-- Achievement Notification -->
-<app-achievement-notification [show]="showAchievement" [achievement]="earnedAchievement" (close)="closeAchievement()">
-</app-achievement-notification>
+<app-certificate-popup *ngIf="showAchievement" [certificate]="earnedAchievement" (close)="closeAchievement()">
+</app-certificate-popup>
 
-<!-- Completion Stats Modal -->
+<!-- Completion Stats Modal (Only shows for new records) -->
 <app-lesson-completion-stats *ngIf="showCompletionStats" [levelId]="'addition'" [currentDuration]="completionDuration"
-  (close)="closeCompletionStats()">
+  [previousFastestTime]="previousFastestTime" (close)="closeCompletionStats()">
 </app-lesson-completion-stats>

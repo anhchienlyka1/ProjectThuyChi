@@ -241,7 +241,7 @@ export class DashboardService {
 
             order: { startedAt: 'DESC' },
             take: 20,
-            relations: ['level']
+            relations: ['level', 'level.subject']
         });
     }
 
@@ -438,6 +438,280 @@ export class DashboardService {
             activities: detailedActivities,
             total,
             hasMore: filters?.limit ? (filters.offset || 0) + detailedActivities.length < total : false
+        };
+    }
+
+    /**
+     * Get detailed subject achievements for parent dashboard
+     * Returns per-subject stats including time spent, average score, strengths and weaknesses
+     */
+    async getSubjectAchievements(childId: string) {
+        // Get all subjects
+        const subjects = await this.subjectRepo.find({
+            where: { active: true, isDeleted: false },
+            order: { sortOrder: 'ASC' }
+        });
+
+        const subjectAchievements = await Promise.all(subjects.map(async subject => {
+            // Get all levels for this subject
+            const levels = await this.levelRepo.find({
+                where: { subjectId: subject.id, isDeleted: false }
+            });
+
+            // Get completed sessions for this subject
+            const sessions = await this.sessionRepo.createQueryBuilder('session')
+                .leftJoinAndSelect('session.level', 'level')
+                .where('session.userId = :userId', { userId: childId })
+                .andWhere('session.completed = :completed', { completed: true })
+                .andWhere('session.isDeleted = :isDeleted', { isDeleted: false })
+                .andWhere('level.subjectId = :subjectId', { subjectId: subject.id })
+                .getMany();
+
+            // Calculate total time in minutes
+            const totalTimeMinutes = Math.round(sessions.reduce((sum, s) => sum + s.durationSeconds, 0) / 60);
+
+            // Calculate average score
+            const avgScore = sessions.length > 0
+                ? Math.round(sessions.reduce((sum, s) => sum + s.accuracyPercentage, 0) / sessions.length)
+                : 0;
+
+            // Count completed lessons (unique levels)
+            const completedLevelIds = [...new Set(sessions.map(s => s.levelId))];
+            const completedLessons = completedLevelIds.length;
+
+            // Calculate per-level performance for strengths/weaknesses
+            const levelPerformance: { levelId: string; levelTitle: string; avgScore: number; count: number }[] = [];
+
+            for (const level of levels) {
+                const levelSessions = sessions.filter(s => s.levelId === level.id);
+                if (levelSessions.length > 0) {
+                    const levelAvgScore = Math.round(
+                        levelSessions.reduce((sum, s) => sum + s.accuracyPercentage, 0) / levelSessions.length
+                    );
+                    levelPerformance.push({
+                        levelId: level.id,
+                        levelTitle: level.title,
+                        avgScore: levelAvgScore,
+                        count: levelSessions.length
+                    });
+                }
+            }
+
+            // Sort by avgScore to find strengths (high scores) and weaknesses (low scores)
+            const sortedByScore = [...levelPerformance].sort((a, b) => b.avgScore - a.avgScore);
+
+            // Strengths: levels with score >= 80%
+            const strengths = sortedByScore
+                .filter(l => l.avgScore >= 80)
+                .slice(0, 3)
+                .map(l => l.levelTitle);
+
+            // Needs improvement: levels with score < 70% (but at least 1 attempt)
+            const needsImprovement = sortedByScore
+                .filter(l => l.avgScore < 70)
+                .sort((a, b) => a.avgScore - b.avgScore) // Lowest first
+                .slice(0, 3)
+                .map(l => l.levelTitle);
+
+            // Get subject theme color
+            const themeColors: { [key: string]: { bgGradient: string; headerGradient: string; textColor: string } } = {
+                'math': {
+                    bgGradient: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)',
+                    headerGradient: 'linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%)',
+                    textColor: '#1565C0'
+                },
+                'vietnamese': {
+                    bgGradient: 'linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%)',
+                    headerGradient: 'linear-gradient(135deg, #EC407A 0%, #D81B60 100%)',
+                    textColor: '#AD1457'
+                },
+                'english': {
+                    bgGradient: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
+                    headerGradient: 'linear-gradient(135deg, #66BB6A 0%, #43A047 100%)',
+                    textColor: '#2E7D32'
+                }
+            };
+
+            const colors = themeColors[subject.id] || {
+                bgGradient: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
+                headerGradient: 'linear-gradient(135deg, #AB47BC 0%, #8E24AA 100%)',
+                textColor: '#6A1B9A'
+            };
+
+            return {
+                subjectId: subject.id,
+                subjectName: subject.title,
+                icon: this.getSubjectIcon(subject.id),
+                completedLessons,
+                totalLevels: levels.length,
+                totalTimeMinutes,
+                avgScore,
+                strengths,
+                needsImprovement,
+                colors
+            };
+        }));
+
+        return { subjectAchievements };
+    }
+
+    private getSubjectIcon(subjectId: string): string {
+        switch (subjectId) {
+            case 'math': return '🔢';
+            case 'vietnamese': return '📝';
+            case 'english': return '🔤';
+            default: return '📚';
+        }
+    }
+
+    /**
+     * Get daily activities for learning report chart
+     * Returns aggregated data per day based on time range
+     * @param childId - Student ID
+     * @param timeRange - 'week' | 'month' | 'year'
+     */
+    async getDailyActivities(childId: string, timeRange: 'week' | 'month' | 'year' = 'week') {
+        const now = new Date();
+        let startDate: Date;
+        let groupBy: 'day' | 'week' | 'month';
+
+        switch (timeRange) {
+            case 'week':
+                // Get start of current week (Monday)
+                startDate = new Date(now);
+                const dayOfWeek = startDate.getDay();
+                const diff = startDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                startDate = new Date(startDate.setDate(diff));
+                startDate.setHours(0, 0, 0, 0);
+                groupBy = 'day';
+                break;
+            case 'month':
+                // Get start of current month
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                startDate.setHours(0, 0, 0, 0);
+                groupBy = 'day';
+                break;
+            case 'year':
+                // Get start of current year
+                startDate = new Date(now.getFullYear(), 0, 1);
+                startDate.setHours(0, 0, 0, 0);
+                groupBy = 'month';
+                break;
+            default:
+                startDate = new Date(now);
+                startDate.setDate(startDate.getDate() - 7);
+                groupBy = 'day';
+        }
+
+        // Fetch all completed sessions in the time range
+        const sessions = await this.sessionRepo.find({
+            where: {
+                userId: childId,
+                completedAt: Between(startDate, now),
+                completed: true,
+                isDeleted: false
+            },
+            order: { completedAt: 'ASC' }
+        });
+
+        // Generate date range based on time range
+        const activities: Array<{
+            date: string;
+            totalMinutes: number;
+            lessonsCompleted: number;
+            averageScore: number;
+        }> = [];
+
+        if (groupBy === 'day') {
+            const current = new Date(startDate);
+            while (current <= now) {
+                // Use local date string format YYYY-MM-DD
+                const year = current.getFullYear();
+                const month = String(current.getMonth() + 1).padStart(2, '0');
+                const day = String(current.getDate()).padStart(2, '0');
+                const dateStr = `${year}-${month}-${day}`;
+
+                const daySessions = sessions.filter(s => {
+                    if (!s.completedAt) return false;
+                    const sDate = new Date(s.completedAt);
+                    const sYear = sDate.getFullYear();
+                    const sMonth = String(sDate.getMonth() + 1).padStart(2, '0');
+                    const sDay = String(sDate.getDate()).padStart(2, '0');
+                    const sDateStr = `${sYear}-${sMonth}-${sDay}`;
+                    return sDateStr === dateStr;
+                });
+
+                const totalMinutes = Math.round(daySessions.reduce((sum, s) => sum + s.durationSeconds, 0) / 60);
+                const lessonsCompleted = daySessions.length;
+                const averageScore = daySessions.length > 0
+                    ? Math.round(daySessions.reduce((sum, s) => sum + s.accuracyPercentage, 0) / daySessions.length)
+                    : 0;
+
+                activities.push({
+                    date: dateStr,
+                    totalMinutes,
+                    lessonsCompleted,
+                    averageScore
+                });
+
+                current.setDate(current.getDate() + 1);
+            }
+        } else if (groupBy === 'month') {
+            // Group by month for yearly view
+            for (let month = 0; month <= now.getMonth(); month++) {
+                const monthStart = new Date(now.getFullYear(), month, 1);
+                const monthEnd = new Date(now.getFullYear(), month + 1, 0, 23, 59, 59);
+
+                const monthSessions = sessions.filter(s => {
+                    if (!s.completedAt) return false;
+                    const completedDate = new Date(s.completedAt);
+                    return completedDate >= monthStart && completedDate <= monthEnd;
+                });
+
+                const totalMinutes = Math.round(monthSessions.reduce((sum, s) => sum + s.durationSeconds, 0) / 60);
+                const lessonsCompleted = monthSessions.length;
+                const averageScore = monthSessions.length > 0
+                    ? Math.round(monthSessions.reduce((sum, s) => sum + s.accuracyPercentage, 0) / monthSessions.length)
+                    : 0;
+
+                activities.push({
+                    date: monthStart.toISOString().split('T')[0],
+                    totalMinutes,
+                    lessonsCompleted,
+                    averageScore
+                });
+            }
+        }
+
+        // Calculate summary stats
+        const totalMinutes = activities.reduce((sum, a) => sum + a.totalMinutes, 0);
+        const totalLessons = activities.reduce((sum, a) => sum + a.lessonsCompleted, 0);
+        const avgScore = sessions.length > 0
+            ? Math.round(sessions.reduce((sum, s) => sum + s.accuracyPercentage, 0) / sessions.length)
+            : 0;
+
+        // Calculate streak (consecutive days with learning)
+        let streak = 0;
+        const sortedActivities = [...activities].reverse();
+        for (const activity of sortedActivities) {
+            if (activity.lessonsCompleted > 0) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+
+        return {
+            activities,
+            summary: {
+                totalMinutes,
+                totalLessons,
+                averageScore: avgScore,
+                streak,
+                improvement: 0 // TODO: Calculate improvement compared to previous period
+            },
+            timeRange,
+            groupBy
         };
     }
 }

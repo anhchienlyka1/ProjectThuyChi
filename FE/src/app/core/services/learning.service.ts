@@ -28,6 +28,14 @@ export interface LearningResponse {
     rarity: string;
     points: number;
   };
+  improvementAchievement?: {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: string;
+    points: number;
+  };
 }
 
 export interface CompletionTimeSession {

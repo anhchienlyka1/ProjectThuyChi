@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { StudentGuard } from './core/guards/student.guard';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./layouts/child-layout/child-layout.component').then(m => m.ChildLayoutComponent),
+    canActivate: [StudentGuard], // Protect all child routes
     children: [
       {
         path: '',
@@ -73,6 +75,11 @@ export const routes: Routes = [
         path: 'math/sorting',
         title: 'Sắp Xếp',
         loadComponent: () => import('./features/math-modules/sorting/sorting.component').then(m => m.SortingComponent)
+      },
+      {
+        path: 'math/geometry',
+        title: 'Hình Học',
+        loadComponent: () => import('./features/math-modules/geometry/geometry.component').then(m => m.GeometryComponent)
       },
       {
         path: 'math',
@@ -151,16 +158,6 @@ export const routes: Routes = [
         path: '',
         title: 'Tổng quan - Góc Phụ Huynh',
         loadComponent: () => import('./features/parent-dashboard/parent-dashboard.component').then(m => m.ParentDashboardComponent)
-      },
-      {
-        path: 'history',
-        title: 'Lịch sử học tập - Góc Phụ Huynh',
-        loadComponent: () => import('./features/parent-dashboard/learning-history.component').then(m => m.LearningHistoryComponent)
-      },
-      {
-        path: 'settings',
-        title: 'Cài đặt - Góc Phụ Huynh',
-        loadComponent: () => import('./features/parent-dashboard/parent-settings.component').then(m => m.ParentSettingsComponent)
       },
       {
         path: 'reports',

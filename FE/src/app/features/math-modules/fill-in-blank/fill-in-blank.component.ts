@@ -60,6 +60,7 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
     startTime: number = 0;
     showCompletionStats = false;
     completionDuration = 0;
+    previousFastestTime = 0;
 
     // Track if current question has been answered incorrectly (no score if retry)
     hasErrorInCurrentRound = false;
@@ -69,6 +70,8 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
     questionType: 'sequence' | 'equation' = 'sequence';
 
     ngOnInit() {
+        this.loadPreviousFastestTime();
+
         this.service.getConfig().subscribe(config => {
             this.config = config;
             this.totalQuestions = config.totalQuestions;
@@ -79,6 +82,19 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.lessonTimer.stopTimer();
+    }
+
+    loadPreviousFastestTime() {
+        this.learningService.getCompletionTime('fill-in-blank').subscribe({
+            next: (data) => {
+                if (data && data.fastestTimeSeconds > 0) {
+                    this.previousFastestTime = data.fastestTimeSeconds;
+                }
+            },
+            error: () => {
+                this.previousFastestTime = 0;
+            }
+        });
     }
 
     startGame() {
@@ -242,7 +258,8 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
         const durationSeconds = this.lessonTimer.stopTimer();
         this.completionDuration = durationSeconds;
 
-        // Increment daily completion count
+        const isNewRecord = this.previousFastestTime === 0 || durationSeconds < this.previousFastestTime;
+
         this.dailyProgress.incrementCompletion('fill-in-blank');
 
         this.learningService.completeSession({
@@ -258,14 +275,19 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
 
-                setTimeout(() => {
-                    this.showCompletionStats = true;
-                }, 2000);
+                if (isNewRecord) {
+                    setTimeout(() => {
+                        this.showCompletionStats = true;
+                    }, 1500);
+                }
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
-                const completionCount = this.dailyProgress.getTodayCompletionCount('fill-in-blank');
-                this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+                if (isNewRecord) {
+                    setTimeout(() => {
+                        this.showCompletionStats = true;
+                    }, 1500);
+                }
             }
         });
     }

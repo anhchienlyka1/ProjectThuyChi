@@ -123,4 +123,12 @@ export class AudioService {
     const audio = new Audio(path);
     audio.play().catch(err => console.error('Error playing sound:', err));
   }
+
+  playCorrectSound(): void {
+    this.playSound('/assets/sounds/correct.mp3');
+  }
+
+  playWrongSound(): void {
+    this.playSound('/assets/sounds/wrong.mp3');
+  }
 }

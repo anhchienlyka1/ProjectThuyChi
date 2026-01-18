@@ -28,43 +28,76 @@ export class MyCertificatesComponent {
     earnedCount = signal(0);
     totalCount = signal(0);
 
+    // Pagination signals
+    currentPage = signal(1);
+    pageSize = 12;
+    hasMore = signal(false);
+    isLoadingMore = signal(false);
+
     constructor() {
         this.loadCertificates();
     }
 
-    async loadCertificates() {
+    async loadCertificates(isLoadMore = false) {
         try {
-            this.isLoading.set(true);
             const userId = this.authService.getUserId();
 
             if (!userId) {
                 console.error('No user ID found');
-                this.isLoading.set(false);
                 return;
             }
 
-            // Fetch all achievements (no limit)
-            const achievementsData = await this.studentProfileService.getStudentAchievements(userId);
+            if (!isLoadMore) {
+                this.isLoading.set(true);
+                this.currentPage.set(1);
+            } else {
+                this.isLoadingMore.set(true);
+            }
+
+            // Fetch achievements with pagination
+            const response = await this.studentProfileService.getStudentAchievements(
+                userId,
+                this.currentPage(),
+                this.pageSize
+            );
+
+            const { data, meta } = response;
 
             // Map achievements to certificates format
             const themes: Array<'pink' | 'blue' | 'yellow' | 'green'> = ['pink', 'blue', 'yellow', 'green'];
-            const certs: Certificate[] = achievementsData.map((achievement, index) => ({
+            const startIdx = (this.currentPage() - 1) * this.pageSize;
+
+            const newCerts: Certificate[] = data.map((achievement, index) => ({
                 id: achievement.id.toString(),
                 name: achievement.title,
                 description: achievement.description,
                 date: new Date(achievement.earnedAt).toLocaleDateString('vi-VN'),
-                unlocked: true, // All fetched achievements are earned
-                theme: themes[index % themes.length]
+                unlocked: true,
+                theme: themes[(startIdx + index) % themes.length]
             }));
 
-            this.certificates.set(certs);
-            this.earnedCount.set(certs.length);
-            this.totalCount.set(certs.length); // For now, total = earned (we only show earned achievements)
+            if (isLoadMore) {
+                this.certificates.update(current => [...current, ...newCerts]);
+            } else {
+                this.certificates.set(newCerts);
+            }
+
+            this.earnedCount.set(meta.total);
+            this.totalCount.set(meta.total);
+            this.hasMore.set(this.currentPage() < meta.totalPages);
 
         } catch (error) {
             console.error('Error loading certificates:', error);
         } finally {
             this.isLoading.set(false);
+            this.isLoadingMore.set(false);
+        }
+    }
+
+    onLoadMore() {
+        if (this.hasMore() && !this.isLoadingMore()) {
+            this.currentPage.update(p => p + 1);
+            this.loadCertificates(true);
         }
     }
 

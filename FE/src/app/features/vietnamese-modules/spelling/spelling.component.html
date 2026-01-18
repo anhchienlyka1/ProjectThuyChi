@@ -176,7 +176,7 @@
     </div>
 </div>
 
-<!-- Completion Stats Modal -->
+<!-- Completion Stats Modal (Only shows for new records) -->
 <app-lesson-completion-stats *ngIf="showCompletionStats" [levelId]="'spelling'" [currentDuration]="completionDuration"
-    (close)="closeCompletionStats()">
+    [previousFastestTime]="previousFastestTime" (close)="closeCompletionStats()">
 </app-lesson-completion-stats>

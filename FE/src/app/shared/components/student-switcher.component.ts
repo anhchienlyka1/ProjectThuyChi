@@ -27,7 +27,7 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
                 </div>
               </div>
               <div class="trigger-text">
-                <span class="label">Tiến độ của:</span>
+
                 <span class="name">{{ selectedStudent()?.name }}</span>
               </div>
               <svg class="chevron" width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
@@ -82,7 +82,7 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
             </div>
           </div>
           <div class="trigger-text">
-            <span class="label">Tiến độ của:</span>
+
             <span class="name">{{ selectedStudent()?.name }}</span>
           </div>
         </div>
@@ -100,28 +100,29 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     }
 
     .switcher-trigger {
-      background: white;
-      border: 1.5px solid #E9D5FF;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
       padding: 6px 14px 6px 6px;
       border-radius: 99px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.05);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
       display: flex;
       align-items: center;
     }
 
     .switcher-trigger:hover {
-      border-color: #A855F7;
+      border-color: rgba(59, 130, 246, 0.5);
       transform: translateY(-1px);
-      box-shadow: 0 10px 20px -5px rgba(168, 85, 247, 0.15);
-      background: #FAF5FF;
+      box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.25);
+      background: rgba(255, 255, 255, 0.9);
     }
 
     .switcher-trigger.active {
-      border-color: #A855F7;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+      border-color: rgba(59, 130, 246, 0.6);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
 
     .trigger-content {
@@ -133,7 +134,7 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     .mini-avatar-wrapper {
       position: relative;
       padding: 2px;
-      background: linear-gradient(135deg, #A855F7, #EC4899);
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -164,8 +165,8 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
       justify-content: center;
       font-size: 12px;
       font-weight: 800;
-      color: #7E22CE;
-      background: #F3E8FF;
+      color: #1e40af;
+      background: #dbeafe;
     }
 
     .trigger-text {
@@ -185,8 +186,8 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
 
     .trigger-text .name {
       font-size: 14px;
-      font-weight: 700;
-      color: #374151;
+      font-weight: 800;
+      color: #1e40af;
       max-width: 120px;
       white-space: nowrap;
       overflow: hidden;
@@ -194,7 +195,7 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     }
 
     .chevron {
-      color: #A855F7;
+      color: #3b82f6;
       transition: transform 0.3s ease;
       margin-left: 4px;
     }
@@ -208,11 +209,11 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
       top: calc(100% + 12px);
       left: 0;
       width: 260px;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(20px);
       border-radius: 20px;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-      border: 1px solid white;
+      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.6);
       padding: 12px;
       z-index: 100;
       transform-origin: top left;
@@ -255,15 +256,15 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     }
 
     .dropdown-item:hover {
-      background: white;
-      border-color: #F1F5F9;
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(59, 130, 246, 0.2);
       transform: translateX(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
     }
 
     .dropdown-item.selected {
-      background: linear-gradient(to right, #FAF5FF, white);
-      border-color: #E9D5FF;
+      background: linear-gradient(to right, rgba(219, 234, 254, 0.5), rgba(255, 255, 255, 0.8));
+      border-color: rgba(59, 130, 246, 0.3);
     }
 
     .item-avatar-wrapper {
@@ -275,7 +276,7 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     }
 
     .dropdown-item.selected .item-avatar-wrapper {
-      background: linear-gradient(135deg, #A855F7, #EC4899);
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
     }
 
     .item-avatar {
@@ -299,30 +300,31 @@ import { StudentSwitcherService, Student } from '../../core/services/student-swi
     }
 
     .dropdown-item.selected .item-name {
-      color: #7E22CE;
+      color: #1e40af;
     }
 
     .check-badge {
       width: 22px;
       height: 22px;
-      background: #A855F7;
+      background: #3b82f6;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3);
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
     }
 
     .single-student-fixed {
       display: flex;
       align-items: center;
       gap: 12px;
-      background: white;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
       padding: 6px 16px 6px 6px;
       border-radius: 99px;
-      border: 1.5px solid #E9D5FF;
-      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
   `]
 })

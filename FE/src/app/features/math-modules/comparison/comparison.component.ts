@@ -7,6 +7,7 @@ import { ComparisonService } from '../../../core/services/comparison.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { CertificatePopupComponent } from '../../../shared/components/certificate-popup.component';
 import { LessonTimerService } from '../../../core/services/lesson-timer.service';
 import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
 import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
@@ -15,7 +16,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
 @Component({
   selector: 'app-comparison',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent, LessonTimerComponent],
+  imports: [CommonModule, KidButtonComponent, CertificatePopupComponent, LessonTimerComponent],
   templateUrl: './comparison.component.html',
   styles: [`
     @keyframes pop-in {
@@ -74,6 +75,10 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   startTime: number = 0;
   showCompletionStats = false;
   completionDuration = 0;
+
+  // Achievement notification
+  showAchievement = false;
+  earnedAchievement: any = null;
 
   // Track if current question has been answered incorrectly (no score if retry)
   hasErrorInCurrentRound = false;
@@ -206,7 +211,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
   }
 
   finishGame() {
-    this.isFinished = true;
+    // DON'T set isFinished=true immediately - wait until we show results
     const durationSeconds = this.lessonTimer.stopTimer();
     this.completionDuration = durationSeconds;
 
@@ -226,16 +231,48 @@ export class ComparisonComponent implements OnInit, OnDestroy {
           : `Bé hãy cố gắng hơn lần sau nhé!`;
         this.mascot.setEmotion('celebrating', starMessage, 5000);
 
-        setTimeout(() => {
-          this.showCompletionStats = true;
-        }, 2000);
+        // Check if achievement was earned (improvementAchievement contains math lesson certificate)
+        if (response.improvementAchievement) {
+          // Show achievement FIRST (don't show results yet)
+          this.earnedAchievement = {
+            ...response.improvementAchievement,
+            date: new Date().toLocaleDateString('vi-VN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
+          };
+          setTimeout(() => {
+            this.showAchievement = true;
+          }, 300); // Reduced delay to 300ms for snappier feel
+        } else {
+          // No achievement, show results directly
+          this.isFinished = true;
+          setTimeout(() => {
+            this.showCompletionStats = true;
+          }, 2000);
+        }
       },
       error: (err) => {
         console.error('Failed to save progress', err);
         const completionCount = this.dailyProgress.getTodayCompletionCount('comparison');
         this.mascot.setEmotion('celebrating', `Chúc mừng bé hoàn thành bài học! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+        // Show results even on error
+        this.isFinished = true;
+        setTimeout(() => {
+          this.showCompletionStats = true;
+        }, 2000);
       }
     });
+  }
+
+  closeAchievement() {
+    this.showAchievement = false;
+    // After closing achievement, show results
+    this.isFinished = true;
+    setTimeout(() => {
+      this.showCompletionStats = true;
+    }, 300);
   }
 
   closeCompletionStats() {

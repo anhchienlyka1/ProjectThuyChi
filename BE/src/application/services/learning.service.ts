@@ -26,6 +26,7 @@ export class LearningService {
 
     async completeSession(dto: CreateLearningSessionDto) {
         const userId = dto.userId;
+        
 
         // 1. Calculate accuracy & stars
         const accuracy = dto.totalQuestions > 0 ? (dto.score / dto.totalQuestions) * 100 : 0;
@@ -33,23 +34,6 @@ export class LearningService {
         if (accuracy >= 90) stars = 3;
         else if (accuracy >= 70) stars = 2;
         else if (accuracy >= 50) stars = 1;
-
-        // 1b. Get previous session for comparison (BEFORE saving current session)
-        const previousSession = await this.sessionRepo.findOne({
-            where: {
-                userId: userId,
-                levelId: dto.levelId,
-                completed: true,
-                isDeleted: false
-            },
-            order: { completedAt: 'DESC' }
-        });
-
-        console.log('🔍 Previous session:', previousSession ? {
-            score: previousSession.score,
-            duration: previousSession.durationSeconds,
-            completedAt: previousSession.completedAt
-        } : 'No previous session found');
 
         // 2. Save Session
         const session = this.sessionRepo.create({
@@ -125,79 +109,45 @@ export class LearningService {
 
         await this.progressRepo.save(progress);
 
-        // 4. Check for Improvement Achievement (Phiếu Bé Ngoan)
-        let improvementAchievement: any = null;
-        if (previousSession && stars >= 1) {
-            // Check if improved: Priority is correct answers, then time
-            const currentCorrect = dto.score;
-            const previousCorrect = previousSession.score;
-            const currentTime = dto.durationSeconds;
-            const previousTime = previousSession.durationSeconds;
-
-            console.log('📊 Comparing sessions:', {
-                current: { score: currentCorrect, time: currentTime },
-                previous: { score: previousCorrect, time: previousTime }
-            });
-
-            let hasImproved = false;
-
-            // Priority 1: More correct answers
-            if (currentCorrect > previousCorrect) {
-                hasImproved = true;
-                console.log('✅ Improved by score:', currentCorrect, '>', previousCorrect);
-            }
-            // Priority 2: Same correct answers but faster time
-            else if (currentCorrect === previousCorrect && currentTime < previousTime) {
-                hasImproved = true;
-                console.log('✅ Improved by time:', currentTime, '<', previousTime);
-            } else {
-                console.log('❌ No improvement detected');
-            }
-
-            if (hasImproved) {
-                console.log('🎖️ Awarding improvement certificate...');
-                const awardedImprovement = await this.achievementService.awardAchievement(
+        // 4. Award Math Lesson Completion Certificate (Green Phiếu Bé Ngoan - Toán Học)
+        let mathLessonAchievement: any = null;
+        if (stars >= 1) {
+            // Check if this is a math level
+            const level = await this.levelRepo.findOne({ where: { id: dto.levelId } });
+            if (level && level.subjectId === 'math') {
+                console.log('🎖️ Awarding math lesson completion certificate...');
+                const awardedMathLesson = await this.achievementService.awardAchievement(
                     userId,
-                    'improvement-certificate',
+                    'math-lesson-completion',
                     {
                         levelId: dto.levelId,
-                        previousScore: previousCorrect,
-                        currentScore: currentCorrect,
-                        previousTime: previousTime,
-                        currentTime: currentTime,
-                        improvementType: currentCorrect > previousCorrect ? 'score' : 'time'
+                        score: dto.score,
+                        totalQuestions: dto.totalQuestions,
+                        accuracy: accuracy,
+                        stars: stars
                     }
                 );
 
-                if (awardedImprovement) {
-                    console.log('✨ Improvement achievement awarded!');
+                if (awardedMathLesson) {
+                    console.log('✨ Math lesson achievement awarded!');
                     const fullAchievement = await this.achievementService.getUserAchievements(userId);
-                    const earned = fullAchievement.find(a => a.id === awardedImprovement.id);
+                    const earned = fullAchievement.find(a => a.id === awardedMathLesson.id);
                     if (earned) {
-                        improvementAchievement = {
+                        mathLessonAchievement = {
                             id: earned.achievement.achievementId,
                             title: earned.achievement.title,
                             description: earned.achievement.description,
                             icon: earned.achievement.icon,
                             rarity: earned.achievement.rarity,
                             points: earned.achievement.points,
-                            isImprovement: true,
-                            previousScore: previousCorrect,
-                            currentScore: currentCorrect,
-                            previousTime: previousTime,
-                            currentTime: currentTime
+                            levelId: dto.levelId,
+                            score: dto.score,
+                            accuracy: accuracy
                         };
                     }
                 } else {
-                    console.log('⚠️ Failed to award improvement achievement');
+                    console.log('⚠️ Failed to award math lesson achievement');
                 }
-            }
-        } else {
-            if (!previousSession) {
-                console.log('ℹ️ No previous session to compare');
-            }
-            if (stars < 1) {
-                console.log('ℹ️ Not enough stars to check for improvement (need at least 1 star)');
             }
         }
 
@@ -238,7 +188,7 @@ export class LearningService {
             sessionId: session.id,
             completed: stars >= 1,
             achievement: achievement, // Include subject completion achievement if earned
-            improvementAchievement: improvementAchievement // Include improvement achievement if earned
+            improvementAchievement: mathLessonAchievement // Include math lesson achievement if earned
         };
     }
 

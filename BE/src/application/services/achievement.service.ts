@@ -74,10 +74,10 @@ export class AchievementService {
                 }
             });
 
-            if (existing) {
-                // Already earned
-                return null;
-            }
+            // if (existing) {
+            //     // Already earned
+            //     return null;
+            // }
         }
 
         // Award the achievement

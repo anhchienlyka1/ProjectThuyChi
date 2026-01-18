@@ -5,11 +5,12 @@ import { trigger, transition, style, animate } from '@angular/animations';
 
 interface Question {
   id: number;
-  type: 'addition' | 'subtraction' | 'comparison';
+  type: 'addition' | 'subtraction' | 'comparison' | 'fill-in-blank' | 'counting' | 'even-odd' | 'number-sequence';
   question: string;
   options: (number | string)[];
   correctAnswer: number | string;
   userAnswer?: number | string;
+  emoji?: string; // For counting questions
 }
 
 @Component({
@@ -60,7 +61,7 @@ interface Question {
               <span class="info-icon">📊</span>
               <div class="info-content">
                 <div class="info-label">Số câu hỏi</div>
-                <div class="info-value">10 câu</div>
+                <div class="info-value">15 câu</div>
               </div>
             </div>
 
@@ -68,7 +69,7 @@ interface Question {
               <span class="info-icon">⏰</span>
               <div class="info-content">
                 <div class="info-label">Thời gian</div>
-                <div class="info-value">15 phút</div>
+                <div class="info-value">20 phút</div>
               </div>
             </div>
 
@@ -76,7 +77,7 @@ interface Question {
               <span class="info-icon">🎯</span>
               <div class="info-content">
                 <div class="info-label">Điểm đạt</div>
-                <div class="info-value">7/10</div>
+                <div class="info-value">10/15</div>
               </div>
             </div>
           </div>
@@ -114,9 +115,9 @@ interface Question {
         <!-- Question Card -->
         <div class="question-card" *ngIf="currentQuestion" [@questionAnimation]>
           <div class="question-number">Câu hỏi {{currentQuestionIndex + 1}}</div>
-          <div class="question-text">{{currentQuestion.question}}</div>
+          <div class="question-text" [style.white-space]="'pre-line'">{{currentQuestion.question}}</div>
 
-          <div class="options-grid">
+          <div class="options-grid" [class.two-options]="currentQuestion.options.length === 2">
             <button
               *ngFor="let option of currentQuestion.options"
               class="option-button"
@@ -143,7 +144,11 @@ interface Question {
         <div class="results-overlay"></div>
         <div class="results-content">
           <div class="trophy-section">
-            <div class="trophy-animation" [class.gold]="score >= 9" [class.silver]="score >= 7 && score < 9" [class.bronze]="score < 7">
+            <div class="trophy-animation"
+                 [class.gold]="score >= 13"
+                 [class.silver]="score >= 10 && score < 13"
+                 [class.bronze]="score >= 7 && score < 10"
+                 [class.star]="score < 7">
               <span class="trophy-icon">{{getTrophyIcon()}}</span>
             </div>
             <div class="header-text">
@@ -185,7 +190,7 @@ interface Question {
             <div class="stat-item time">
               <div class="stat-icon-wrapper">⏱️</div>
               <div class="stat-info">
-                <span class="stat-val">{{formatTime(900 - timeLeft)}}</span>
+                <span class="stat-val">{{formatTime(1200 - timeLeft)}}</span>
                 <span class="stat-lbl">Thời gian</span>
               </div>
             </div>
@@ -358,10 +363,16 @@ interface Question {
     }
     .question-text {
       font-size: 2.2rem; font-weight: 900; color: #1e293b;
-      margin-bottom: 30px; text-align: center;
+      margin-bottom: 30px; text-align: center; line-height: 1.4;
     }
     .options-grid {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;
+    }
+    .options-grid.two-options {
+      grid-template-columns: 1fr 1fr;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .option-button {
       background: white; border: 2px solid #cbd5e1; border-radius: 16px;
@@ -373,6 +384,36 @@ interface Question {
     .option-button.selected {
       background: #3b82f6; border-color: #2563eb; color: white;
       box-shadow: 0 4px 0 #1d4ed8;
+    }
+
+    .submit-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .submit-button {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+      border-radius: 16px;
+      padding: 15px 40px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      transition: all 0.3s ease;
+    }
+    .submit-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+    }
+    .submit-icon {
+      font-size: 1.5rem;
+    }
+    .submit-text {
+      font-weight: 800;
     }
 
     /* Results Screen - Compact Redesign */
@@ -466,7 +507,7 @@ export class MathExamComponent implements OnInit, OnDestroy {
   showResults = false;
   questions: Question[] = [];
   currentQuestionIndex = 0;
-  timeLeft = 900; // 15 minutes in seconds
+  timeLeft = 1200; // 20 minutes in seconds
   timerInterval: any;
   score = 0;
   correctAnswers = 0;
@@ -491,32 +532,70 @@ export class MathExamComponent implements OnInit, OnDestroy {
 
   generateQuestions() {
     this.questions = [];
-    const types: ('addition' | 'subtraction' | 'comparison')[] = ['addition', 'subtraction', 'comparison'];
+    const types: ('addition' | 'subtraction' | 'comparison' | 'fill-in-blank' | 'counting' | 'even-odd' | 'number-sequence')[] =
+      ['addition', 'subtraction', 'comparison', 'fill-in-blank', 'counting', 'even-odd', 'number-sequence'];
 
-    for (let i = 0; i < 10; i++) {
-      const type = types[Math.floor(Math.random() * types.length)];
-      this.questions.push(this.generateQuestion(i + 1, type));
+    // Generate 15 questions with progressive difficulty
+    for (let i = 0; i < 15; i++) {
+      // First 5 questions: easier types (counting, comparison, simple addition)
+      // Next 5 questions: medium difficulty (addition, subtraction, fill-in-blank)
+      // Last 5 questions: harder types (all types mixed)
+      let type: any;
+      if (i < 5) {
+        const easyTypes = ['counting', 'comparison', 'addition'];
+        type = easyTypes[Math.floor(Math.random() * easyTypes.length)];
+      } else if (i < 10) {
+        const mediumTypes = ['addition', 'subtraction', 'fill-in-blank', 'even-odd'];
+        type = mediumTypes[Math.floor(Math.random() * mediumTypes.length)];
+      } else {
+        type = types[Math.floor(Math.random() * types.length)];
+      }
+      this.questions.push(this.generateQuestion(i + 1, type, i));
     }
   }
 
-  generateQuestion(id: number, type: 'addition' | 'subtraction' | 'comparison'): Question {
+  generateQuestion(id: number, type: 'addition' | 'subtraction' | 'comparison' | 'fill-in-blank' | 'counting' | 'even-odd' | 'number-sequence', difficultyIndex: number): Question {
     let question = '';
     let correctAnswer: number | string = 0;
     let options: (number | string)[] = [];
+    let emoji = '';
+
+    // Adjust difficulty based on question index (0-14)
+    const maxNumber = difficultyIndex < 5 ? 10 : difficultyIndex < 10 ? 15 : 20;
 
     if (type === 'addition') {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
+      const a = Math.floor(Math.random() * maxNumber) + 1;
+      const b = Math.floor(Math.random() * (maxNumber - a)) + 1;
       correctAnswer = a + b;
       question = `${a} + ${b} = ?`;
+
+      options = [correctAnswer as number];
+      while (options.length < 4) {
+        const option = Math.max(0, (correctAnswer as number) + Math.floor(Math.random() * 6) - 3);
+        if (!options.includes(option) && option >= 0) {
+          options.push(option);
+        }
+      }
+      options.sort(() => Math.random() - 0.5);
+
     } else if (type === 'subtraction') {
-      const a = Math.floor(Math.random() * 10) + 5;
+      const a = Math.floor(Math.random() * maxNumber) + 5;
       const b = Math.floor(Math.random() * a);
       correctAnswer = a - b;
       question = `${a} - ${b} = ?`;
-    } else {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
+
+      options = [correctAnswer as number];
+      while (options.length < 4) {
+        const option = Math.max(0, (correctAnswer as number) + Math.floor(Math.random() * 6) - 3);
+        if (!options.includes(option) && option >= 0) {
+          options.push(option);
+        }
+      }
+      options.sort(() => Math.random() - 0.5);
+
+    } else if (type === 'comparison') {
+      const a = Math.floor(Math.random() * maxNumber) + 1;
+      const b = Math.floor(Math.random() * maxNumber) + 1;
       if (a > b) {
         correctAnswer = '>';
         question = `${a} __ ${b}`;
@@ -527,24 +606,80 @@ export class MathExamComponent implements OnInit, OnDestroy {
         correctAnswer = '=';
         question = `${a} __ ${b}`;
       }
-    }
-
-    // Generate options
-    if (type === 'comparison') {
-      options = ['>', '<', '=', '≠'];
+      options = ['>', '<', '='];
       options.sort(() => Math.random() - 0.5);
-    } else {
+
+    } else if (type === 'fill-in-blank') {
+      const position = Math.random() > 0.5 ? 'first' : 'second';
+      if (position === 'first') {
+        // ? + b = c
+        const b = Math.floor(Math.random() * (maxNumber / 2)) + 1;
+        const c = Math.floor(Math.random() * maxNumber) + b + 1;
+        correctAnswer = c - b;
+        question = `? + ${b} = ${c}`;
+      } else {
+        // a + ? = c
+        const a = Math.floor(Math.random() * (maxNumber / 2)) + 1;
+        const c = Math.floor(Math.random() * maxNumber) + a + 1;
+        correctAnswer = c - a;
+        question = `${a} + ? = ${c}`;
+      }
+
       options = [correctAnswer as number];
       while (options.length < 4) {
-        const option = Math.max(0, (correctAnswer as number) + Math.floor(Math.random() * 10) - 5);
-        if (!options.includes(option)) {
+        const option = Math.max(0, (correctAnswer as number) + Math.floor(Math.random() * 6) - 3);
+        if (!options.includes(option) && option >= 0) {
+          options.push(option);
+        }
+      }
+      options.sort(() => Math.random() - 0.5);
+
+    } else if (type === 'counting') {
+      const emojis = ['🍎', '⭐', '🌸', '🎈', '🐱', '🚗', '🎁', '🍭'];
+      emoji = emojis[Math.floor(Math.random() * emojis.length)];
+      const count = Math.floor(Math.random() * Math.min(10, maxNumber)) + 1;
+      correctAnswer = count;
+      question = `Đếm có bao nhiêu ${emoji}?\n${emoji.repeat(count)}`;
+
+      options = [correctAnswer as number];
+      while (options.length < 4) {
+        const option = Math.max(1, (correctAnswer as number) + Math.floor(Math.random() * 6) - 3);
+        if (!options.includes(option) && option > 0 && option <= 15) {
+          options.push(option);
+        }
+      }
+      options.sort(() => Math.random() - 0.5);
+
+    } else if (type === 'even-odd') {
+      const num = Math.floor(Math.random() * maxNumber) + 1;
+      const isEven = num % 2 === 0;
+      correctAnswer = isEven ? 'Chẵn' : 'Lẻ';
+      question = `Số ${num} là số chẵn hay số lẻ?`;
+      options = ['Chẵn', 'Lẻ'];
+
+    } else if (type === 'number-sequence') {
+      const num = Math.floor(Math.random() * (maxNumber - 2)) + 2;
+      const sequenceType = Math.random() > 0.5 ? 'before' : 'after';
+
+      if (sequenceType === 'before') {
+        correctAnswer = num - 1;
+        question = `Số nào đứng trước số ${num}?`;
+      } else {
+        correctAnswer = num + 1;
+        question = `Số nào đứng sau số ${num}?`;
+      }
+
+      options = [correctAnswer as number];
+      while (options.length < 4) {
+        const option = Math.max(1, (correctAnswer as number) + Math.floor(Math.random() * 6) - 3);
+        if (!options.includes(option) && option > 0 && option <= maxNumber + 2) {
           options.push(option);
         }
       }
       options.sort(() => Math.random() - 0.5);
     }
 
-    return { id, type, question, options, correctAnswer };
+    return { id, type, question, options, correctAnswer, emoji };
   }
 
   startExam() {
@@ -604,22 +739,23 @@ export class MathExamComponent implements OnInit, OnDestroy {
   }
 
   getTrophyIcon(): string {
-    if (this.score >= 9) return '🏆';
-    if (this.score >= 7) return '🥈';
-    return '🥉';
+    if (this.score >= 13) return '🏆'; // 13-15: Gold trophy
+    if (this.score >= 10) return '🥈'; // 10-12: Silver trophy
+    if (this.score >= 7) return '🥉'; // 7-9: Bronze trophy
+    return '🌟'; // Below 7: Star for encouragement
   }
 
   getResultMessage(): string {
-    if (this.score >= 9) return 'Xuất Sắc!';
-    if (this.score >= 7) return 'Giỏi Lắm!';
-    if (this.score >= 5) return 'Khá Tốt!';
+    if (this.score >= 13) return 'Xuất Sắc!';
+    if (this.score >= 10) return 'Giỏi Lắm!';
+    if (this.score >= 7) return 'Khá Tốt!';
     return 'Cố Gắng Lên!';
   }
 
   getResultSubtitle(): string {
-    if (this.score >= 9) return 'Bé thật tuyệt vời! Tiếp tục phát huy nhé! 🌟';
-    if (this.score >= 7) return 'Bé đã làm rất tốt! Cố gắng thêm nữa nhé! 💪';
-    if (this.score >= 5) return 'Bé đã cố gắng! Luyện tập thêm sẽ giỏi hơn!';
+    if (this.score >= 13) return 'Bé thật tuyệt vời! Tiếp tục phát huy nhé! 🌟';
+    if (this.score >= 10) return 'Bé đã làm rất tốt! Cố gắng thêm nữa nhé! 💪';
+    if (this.score >= 7) return 'Bé đã cố gắng! Luyện tập thêm sẽ giỏi hơn!';
     return 'Đừng nản chí! Hãy thử lại, bé sẽ làm được!';
   }
 
@@ -627,7 +763,7 @@ export class MathExamComponent implements OnInit, OnDestroy {
     this.examStarted = false;
     this.showResults = false;
     this.currentQuestionIndex = 0;
-    this.timeLeft = 900;
+    this.timeLeft = 1200;
     this.score = 0;
     this.correctAnswers = 0;
     this.generateQuestions();

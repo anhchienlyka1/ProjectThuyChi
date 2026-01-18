@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { LearningService } from '../../application/services/learning.service';
 import { CreateLearningSessionDto } from '../../application/dtos/create-learning-session.dto';
+import { JwtAuthGuard } from '../../infrastructure/auth/jwt-auth.guard';
 
 @Controller('learning')
+@UseGuards(JwtAuthGuard) // Protect all learning routes
 export class LearningController {
     constructor(private readonly learningService: LearningService) { }
 

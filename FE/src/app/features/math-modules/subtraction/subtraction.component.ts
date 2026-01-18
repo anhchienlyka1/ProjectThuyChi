@@ -7,6 +7,7 @@ import { SubtractionService } from '../../../core/services/subtraction.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { LearningService } from '../../../core/services/learning.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
+import { CertificatePopupComponent } from '../../../shared/components/certificate-popup.component';
 import { LessonTimerService } from '../../../core/services/lesson-timer.service';
 import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
 import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
@@ -15,7 +16,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
 @Component({
     selector: 'app-subtraction',
     standalone: true,
-    imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
+    imports: [CommonModule, KidButtonComponent, CertificatePopupComponent, LessonTimerComponent, LessonCompletionStatsComponent],
     templateUrl: './subtraction.component.html',
     styles: [`
     @keyframes float {
@@ -76,11 +77,18 @@ export class SubtractionComponent implements OnInit, OnDestroy {
     // Track if current question has been answered incorrectly (no score if retry)
     hasErrorInCurrentRound = false;
 
+    // Achievement notification
+    showAchievement = false;
+    earnedAchievement: any = null;
+
     showCompletionStats = false;
     completionDuration = 0;
+    previousFastestTime = 0;
 
 
     ngOnInit() {
+        this.loadPreviousFastestTime();
+
         this.subtractionService.getConfig().subscribe(config => {
             this.config = config;
             this.items = config.items;
@@ -92,6 +100,19 @@ export class SubtractionComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.lessonTimer.stopTimer();
+    }
+
+    loadPreviousFastestTime() {
+        this.learningService.getCompletionTime('subtraction').subscribe({
+            next: (data) => {
+                if (data && data.fastestTimeSeconds > 0) {
+                    this.previousFastestTime = data.fastestTimeSeconds;
+                }
+            },
+            error: () => {
+                this.previousFastestTime = 0;
+            }
+        });
     }
 
     startGame() {
@@ -205,11 +226,11 @@ export class SubtractionComponent implements OnInit, OnDestroy {
     }
 
     finishGame() {
-        this.isFinished = true;
         const durationSeconds = this.lessonTimer.stopTimer();
         this.completionDuration = durationSeconds;
 
-        // Increment daily completion count
+        const isNewRecord = this.previousFastestTime === 0 || durationSeconds < this.previousFastestTime;
+
         this.dailyProgress.incrementCompletion('subtraction');
 
         this.learningService.completeSession({
@@ -225,16 +246,49 @@ export class SubtractionComponent implements OnInit, OnDestroy {
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
                 this.mascot.setEmotion('celebrating', starMessage, 5000);
 
-                setTimeout(() => {
-                    this.showCompletionStats = true;
-                }, 2000);
+                if (response.improvementAchievement) {
+                    this.earnedAchievement = {
+                        ...response.improvementAchievement,
+                        date: new Date().toLocaleDateString('vi-VN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        })
+                    };
+                    setTimeout(() => {
+                        this.showAchievement = true;
+                    }, 300);
+                } else {
+                    this.isFinished = true;
+                    if (isNewRecord) {
+                        setTimeout(() => {
+                            this.showCompletionStats = true;
+                        }, 1500);
+                    }
+                }
             },
             error: (err) => {
                 console.error('Failed to save progress', err);
-                const completionCount = this.dailyProgress.getTodayCompletionCount('subtraction');
-                this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
+                this.isFinished = true;
+                if (isNewRecord) {
+                    setTimeout(() => {
+                        this.showCompletionStats = true;
+                    }, 1500);
+                }
             }
         });
+    }
+
+    closeAchievement() {
+        this.showAchievement = false;
+        this.isFinished = true;
+
+        const isNewRecord = this.previousFastestTime === 0 || this.completionDuration < this.previousFastestTime;
+        if (isNewRecord) {
+            setTimeout(() => {
+                this.showCompletionStats = true;
+            }, 300);
+        }
     }
 
     closeCompletionStats() {

@@ -88,6 +88,21 @@ export class GamificationStore {
     this.saveToStorage();
   }
 
+  syncProfile(serverData: any) {
+    this.profile.update(p => ({
+      ...p,
+      level: serverData.level,
+      currentXp: serverData.xp?.current || 0,
+      nextLevelXp: serverData.xp?.xpNeededForNextLevel || 100,
+      // Keep existing name/avatar unless server provides them and we want to overwrite
+      // But typically server profile is truth
+      name: serverData.name || p.name,
+      avatar: serverData.avatar || p.avatar
+    }));
+    this.stars.set(serverData.totalStars);
+    this.saveToStorage();
+  }
+
   // Persistence
   private saveToStorage() {
     if (!isPlatformBrowser(this.platformId)) return;

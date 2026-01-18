@@ -178,8 +178,6 @@ async loadReportData(): Promise<void> {
 ## Các component liên quan
 
 - `parent-dashboard.component.ts`: Dashboard tổng quan
-- `learning-history.component.ts`: Lịch sử chi tiết từng bài
-- `parent-settings.component.ts`: Cài đặt
 - `student-switcher.component.ts`: Chuyển đổi học sinh
 
 ## Dependencies

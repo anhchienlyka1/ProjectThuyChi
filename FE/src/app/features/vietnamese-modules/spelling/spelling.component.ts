@@ -44,14 +44,29 @@ export class SpellingComponent implements OnInit, OnDestroy {
   showCompletionStats = false;
   completionDuration = 0;
   startTime = 0;
+  previousFastestTime = 0;
 
   ngOnInit(): void {
     this.mascot.setEmotion('happy', 'Chào con! Hãy chọn vần đúng nhé! 🗣️', 3000);
+    this.loadPreviousFastestTime();
     this.loadLevelsFromAPI();
   }
 
   ngOnDestroy() {
     this.lessonTimer.stopTimer();
+  }
+
+  loadPreviousFastestTime() {
+    this.learningService.getCompletionTime('spelling').subscribe({
+      next: (data) => {
+        if (data && data.fastestTimeSeconds > 0) {
+          this.previousFastestTime = data.fastestTimeSeconds;
+        }
+      },
+      error: () => {
+        this.previousFastestTime = 0;
+      }
+    });
   }
 
   loadLevelsFromAPI() {
@@ -140,6 +155,8 @@ export class SpellingComponent implements OnInit, OnDestroy {
           const durationSeconds = this.lessonTimer.stopTimer();
           this.completionDuration = durationSeconds;
 
+          const isNewRecord = this.previousFastestTime === 0 || durationSeconds < this.previousFastestTime;
+
           // Increment daily completion count
           this.dailyProgress.incrementCompletion('spelling');
 
@@ -154,15 +171,20 @@ export class SpellingComponent implements OnInit, OnDestroy {
               const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
               this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
 
-              // Show completion stats after 2 seconds
-              setTimeout(() => {
-                this.showCompletionStats = true;
-              }, 2000);
+              // Show completion stats only if new record
+              if (isNewRecord) {
+                setTimeout(() => {
+                  this.showCompletionStats = true;
+                }, 1500);
+              }
             },
             error: (err) => {
               console.error('Failed to save progress', err);
-              const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
-              this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
+              if (isNewRecord) {
+                setTimeout(() => {
+                  this.showCompletionStats = true;
+                }, 1500);
+              }
             }
           });
         }

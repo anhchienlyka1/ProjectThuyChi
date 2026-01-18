@@ -7,6 +7,7 @@ import {
     Put,
     HttpCode,
     HttpStatus,
+    UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '../../application/dtos/create-user.dto';
 import { UpdateUserDto } from '../../application/dtos/update-user.dto';
@@ -17,12 +18,14 @@ import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.u
 import { UpdateUserUseCase } from '../../application/use-cases/update-user.use-case';
 import { SetUserPinCodeUseCase } from '../../application/use-cases/set-user-pin-code.use-case';
 import { GetChildrenByParentUseCase } from '../../application/use-cases/get-children-by-parent.use-case';
+import { JwtAuthGuard } from '../../infrastructure/auth/jwt-auth.guard';
 
 /**
  * User Controller - Presentation Layer
  * Chỉ chịu trách nhiệm nhận request và gọi use case tương ứng
  */
 @Controller('users')
+@UseGuards(JwtAuthGuard) // Protect all user routes
 export class UserController {
     constructor(
         private readonly createUserUseCase: CreateUserUseCase,

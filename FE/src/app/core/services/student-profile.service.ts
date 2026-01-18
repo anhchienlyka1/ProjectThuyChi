@@ -63,13 +63,10 @@ export class StudentProfileService {
     /**
    * Get student's achievements (Phiếu Bé Ngoan)
    */
-    async getStudentAchievements(userId: string, limit?: number): Promise<Achievement[]> {
-        let url = `${this.apiUrl}/${userId}/achievements`;
-        if (limit) {
-            url += `?limit=${limit}`;
-        }
+    async getStudentAchievements(userId: string, page: number = 1, limit: number = 10): Promise<{ data: Achievement[], meta: any }> {
+        const url = `${this.apiUrl}/${userId}/achievements?page=${page}&limit=${limit}`;
         return firstValueFrom(
-            this.http.get<Achievement[]>(url)
+            this.http.get<{ data: Achievement[], meta: any }>(url)
         );
     }
 

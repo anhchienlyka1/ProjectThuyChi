@@ -8,11 +8,15 @@ import { User } from '../../domain/entities/user.entity';
  * Use Case - Login
  * Xử lý business logic đăng nhập cho Parent và Student
  */
+// ... imports
+import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class LoginUseCase {
     constructor(
         @Inject('IUserRepository')
         private readonly userRepository: IUserRepository,
+        private readonly jwtService: JwtService,
     ) { }
 
     async execute(loginDto: LoginDto): Promise<{ success: boolean; user?: UserResponseDto; message?: string; token?: string }> {
@@ -48,6 +52,7 @@ export class LoginUseCase {
                 throw new UnauthorizedException('Vui lòng nhập mã PIN');
             }
 
+            // Note: Verify logic here - assuming isPinCodeValid is a method on User entity
             if (!user.isPinCodeValid(loginDto.pinCode)) {
                 throw new UnauthorizedException('Mã PIN không đúng');
             }
@@ -58,8 +63,9 @@ export class LoginUseCase {
             throw new UnauthorizedException('Xác thực thất bại');
         }
 
-        // 3. Tạo token (Giả lập)
-        const token = 'mock-jwt-token-' + user.id;
+        // 3. Tạo token JWT
+        const payload = { sub: user.id, username: user.email || user.name, role: loginDto.type };
+        const token = this.jwtService.sign(payload);
 
         return {
             success: true,

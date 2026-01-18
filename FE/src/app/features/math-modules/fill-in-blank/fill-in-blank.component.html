@@ -125,7 +125,7 @@
 </div>
 
 
-<!-- Completion Stats Modal -->
+<!-- Completion Stats Modal (Only shows for new records) -->
 <app-lesson-completion-stats *ngIf="showCompletionStats" [levelId]="'fill-in-blank'"
-    [currentDuration]="completionDuration" (close)="closeCompletionStats()">
+    [currentDuration]="completionDuration" [previousFastestTime]="previousFastestTime" (close)="closeCompletionStats()">
 </app-lesson-completion-stats>
