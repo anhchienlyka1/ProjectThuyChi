@@ -7,6 +7,10 @@ export const environment = {
             const hostname = window.location.hostname;
             return `http://${hostname}:3000`;
         }
+        // SSR Context
+        if (typeof process !== 'undefined' && process.env && process.env['SSR_API_URL']) {
+            return process.env['SSR_API_URL'];
+        }
         return 'http://localhost:3000';
     }
 };

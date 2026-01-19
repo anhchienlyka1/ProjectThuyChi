@@ -1,0 +1,48 @@
+services:
+  # MySQL Database Service
+  mysql_db:
+    image: mysql:8.0
+    container_name: thuychi_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456@@"
+      MYSQL_DATABASE: ThuychiDatabase
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Backend Service (NestJS)
+  backend:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+    container_name: thuychi_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    # Load environment variables from BE/.env
+    env_file:
+      - ./BE/.env
+    # Override DB_HOST to point to the docker container name
+    environment:
+      DB_HOST: mysql_db
+    depends_on:
+      - mysql_db
+
+  # Frontend Service (Angular)
+  frontend:
+    build:
+      context: ./FE
+      dockerfile: Dockerfile
+    container_name: thuychi_frontend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - SSR_API_URL=http://backend:3000
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
