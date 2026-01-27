@@ -1,64 +1,24 @@
-# Project Thuy Chi
+# Cảnh Báo: Dự án đã được chuyển sang chế độ Frontend-Only
 
-Dự án ứng dụng học tập dành cho trẻ em.
+Thư mục **BE (Backend)** đã được loại bỏ khỏi dự án này.
 
-## Cấu trúc thư mục
+## Thông Tin
+- Dự án hiện chỉ chạy **frontend** với **mock data**
+- Không cần database, không cần backend server
+- Tất cả dữ liệu được lưu trong `FE/src/app/core/mock-data/`
 
-```
-ProjectThuyChi/
-├── FE/                 # Frontend Angular Application
-│   ├── src/           # Source code
-│   ├── public/        # Static assets
-│   ├── node_modules/  # Dependencies
-│   └── ...            # Configuration files
-├── docs/              # Documentation
-└── README.md          # This file
-```
+## Hướng dẫn chạy dự án
+Xem file `FE/README.md` để biết chi tiết cách chạy và sử dụng.
 
-## Hướng dẫn chạy Frontend
-
-### Yêu cầu
-- Node.js (phiên bản 18 trở lên)
-- npm
-
-### Cài đặt và chạy
-
-1. Di chuyển vào thư mục FE:
+## Di chuyển vào Frontend
 ```bash
 cd FE
-```
-
-2. Cài đặt dependencies (nếu chưa cài):
-```bash
 npm install
+npm start
 ```
 
-3. Chạy development server:
-```bash
-npm run dev
-```
+Sau đó truy cập: http://localhost:4200
 
-4. Mở trình duyệt và truy cập: `http://localhost:4200/`
+---
 
-### Các lệnh khác
-
-- Build production: `npm run build`
-- Run tests: `npm test`
-
-## Công nghệ sử dụng
-
-- **Framework**: Angular 19
-- **Styling**: Tailwind CSS
-- **Language**: TypeScript
-
-## Tính năng chính
-
-- Học toán cho trẻ em (3-7 tuổi)
-- Các module: Đếm số, So sánh, Cộng, Trừ, Điền vào chỗ trống, Hình học, Logic
-- Sắp xếp số và học thời gian
-- Giao diện thân thiện với trẻ em
-- Mascot hỗ trợ học tập
-
-## Liên hệ
-
-Để biết thêm thông tin, vui lòng xem tài liệu trong thư mục `docs/`.
+Nếu bạn cần khôi phục backend, vui lòng xem hướng dẫn trong `FE/README.md`.

@@ -92,6 +92,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center; /* Center vertically */
       position: relative;
       transform: translateZ(0);
     }
@@ -153,8 +154,6 @@ import { GamificationStore } from '../../core/store/gamification.store';
       margin-top: -8px;
     }
 
-    /* Removed old .back-button styles */
-
     .floating-decorations {
       position: absolute;
       inset: 0;
@@ -185,42 +184,35 @@ import { GamificationStore } from '../../core/store/gamification.store';
     .icon-12 { top: 60%; left: 30%; animation-delay: 2.8s; font-size: 3.2rem; }
 
     @keyframes float-gentle {
-      0%, 100% {
-        transform: translateY(0px) translateX(0px) rotate(0deg);
-      }
-      25% {
-        transform: translateY(-15px) translateX(10px) rotate(5deg);
-      }
-      50% {
-        transform: translateY(-25px) translateX(-5px) rotate(-3deg);
-      }
-      75% {
-        transform: translateY(-10px) translateX(8px) rotate(4deg);
-      }
+      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      25% { transform: translateY(-15px) translateX(10px) rotate(5deg); }
+      50% { transform: translateY(-25px) translateX(-5px) rotate(-3deg); }
+      75% { transform: translateY(-10px) translateX(8px) rotate(4deg); }
     }
 
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       width: 100%;
       max-width: 1200px;
+      z-index: 5;
     }
 
     .page-title {
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: 900;
       background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin: 0 0 8px 0;
+      margin: 0 0 10px 0;
       animation: fadeIn 0.6s ease-out;
     }
 
     .page-subtitle {
-      font-size: 1.125rem;
-      color: #a855f7;
-      font-weight: 600;
+      font-size: 1.25rem;
+      color: #7c3aed;
+      font-weight: 700;
       margin: 0;
       animation: fadeIn 0.6s ease-out 0.2s backwards;
     }
@@ -233,33 +225,33 @@ import { GamificationStore } from '../../core/store/gamification.store';
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 1200px;
+      gap: 40px;
+      max-width: 1400px;
       width: 100%;
       animation: fadeIn 0.8s ease-out 0.4s backwards;
+      margin-bottom: 40px;
+      z-index: 5;
     }
-
-
 
     .subject-card {
       position: relative;
-      padding: 30px 20px;
-      border-radius: 20px;
+      padding: 40px 30px;
+      border-radius: 30px;
       cursor: pointer;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 180px;
-      border: 4px solid rgba(255, 255, 255, 0.5);
+      min-height: 300px;
+      border: 6px solid rgba(255, 255, 255, 0.6);
       will-change: transform;
     }
 
     .subject-card.disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
       filter: grayscale(0.6);
     }
@@ -268,33 +260,34 @@ import { GamificationStore } from '../../core/store/gamification.store';
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
       z-index: 1;
     }
 
     .subject-card:not(.disabled):hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      border-color: rgba(255, 255, 255, 0.9);
+      z-index: 10;
     }
 
     .subject-card:not(.disabled):active {
-      transform: translateY(-6px) scale(1.02);
+      transform: translateY(-5px) scale(1.01);
     }
 
     .card-icon {
-      font-size: 4rem;
-      margin-bottom: 12px;
+      font-size: 6rem;
+      margin-bottom: 25px;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-      transition: transform 0.3s ease;
+      transition: transform 0.4s ease;
     }
 
     .subject-card:hover .card-icon {
-      transform: scale(1.15) rotate(5deg);
+      transform: scale(1.2) rotate(8deg);
     }
 
     .card-title {
-      font-size: 1.5rem;
+      font-size: 2.2rem;
       font-weight: 900;
       color: white;
       margin: 0;
@@ -305,13 +298,13 @@ import { GamificationStore } from '../../core/store/gamification.store';
 
     .coming-soon-badge {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 15px;
+      right: 15px;
       background: rgba(255, 255, 255, 0.95);
       color: #f59e0b;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       font-weight: 900;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 3;
@@ -321,9 +314,10 @@ import { GamificationStore } from '../../core/store/gamification.store';
     .card-shine {
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
       transform: translateX(-100%);
       transition: transform 0.6s ease;
+      pointer-events: none;
     }
 
     .subject-card:not(.disabled):hover .card-shine {
@@ -331,7 +325,10 @@ import { GamificationStore } from '../../core/store/gamification.store';
     }
 
     .mascot-message {
-      margin-top: 30px;
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -339,7 +336,10 @@ import { GamificationStore } from '../../core/store/gamification.store';
       padding: 14px 24px;
       border-radius: 9999px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      animation: slideUp 0.5s ease-out 0.8s backwards;
+      animation: slideUp 0.3s ease-out backwards;
+      z-index: 20;
+      white-space: nowrap;
+      pointer-events: none; /* Let clicks pass through */
     }
 
     .mascot-icon {
@@ -358,33 +358,31 @@ import { GamificationStore } from '../../core/store/gamification.store';
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @media (max-width: 1200px) {
+        .cards-grid {
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .subject-card {
+            min-height: 250px;
+        }
+    }
+
     @media (max-width: 768px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        gap: 20px;
+      }
       .page-title {
         font-size: 2rem;
       }
-
-      .page-subtitle {
-        font-size: 1rem;
-      }
-
-      .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-
-
       .subject-card {
         min-height: 180px;
-        padding: 30px 20px;
+        padding: 30px;
       }
-
       .card-icon {
         font-size: 4rem;
-      }
-
-      .card-title {
-        font-size: 1.5rem;
       }
     }
   `]
@@ -398,7 +396,7 @@ export class SubjectSelectionComponent {
   subjects$ = this.subjectService.getSubjects();
 
   // List of temporarily disabled subjects
-  private disabledSubjects = ['games', 'vietnamese', 'fairy-tales', 'english'];
+  private disabledSubjects = ['fairy-tales', 'english', 'vietnamese', 'games']; // Temporarily lock vietnamese and games
 
   isDisabled(subjectId: string): boolean {
     return this.disabledSubjects.includes(subjectId);

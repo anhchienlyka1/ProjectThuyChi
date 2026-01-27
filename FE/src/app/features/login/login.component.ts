@@ -25,14 +25,14 @@ import { AuthService } from '../../core/services/auth.service';
       <div class="shooting-star" style="animation-delay: 3s;"></div>
 
       <!-- Login Spaceship Card -->
-      <div class="spaceship-card" [class.student-mode]="loginType === 'student'" [class.parent-mode]="loginType === 'parent'">
+      <div class="spaceship-card student-mode">
         <!-- Rocket Mascot -->
         <div class="mascot-container">
           <div class="rocket-mascot">
             <div class="rocket-body">🚀</div>
             <div class="rocket-fire">🔥</div>
           </div>
-          <div class="mascot-speech-bubble" *ngIf="loginType === 'student'">
+          <div class="mascot-speech-bubble">
             Sẵn sàng khám phá vũ trụ kiến thức chưa? 🌟
           </div>
         </div>
@@ -40,35 +40,16 @@ import { AuthService } from '../../core/services/auth.service';
         <!-- Title Section -->
         <div class="title-section">
           <h1 class="space-title">
-            <span class="title-emoji">{{ loginType === 'student' ? '🎮' : '👨‍👩‍👧' }}</span>
-            {{ loginType === 'student' ? 'Phi Hành Gia Nhí' : 'Trung Tâm Điều Khiển' }}
+            <span class="title-emoji">🎮</span>
+            Phi Hành Gia Nhí
           </h1>
           <p class="space-subtitle">
-            {{ loginType === 'student' ? 'Nhập mã bí mật để bay vào vũ trụ học tập!' : 'Theo dõi hành trình khám phá của con' }}
+            Nhập mã bí mật để bay vào vũ trụ học tập!
           </p>
         </div>
 
         <!-- Login Form -->
         <form class="space-form" (ngSubmit)="onSubmit()">
-          <!-- Parent Username Field -->
-          <div class="input-group" *ngIf="loginType === 'parent'">
-            <div class="input-label">
-              <span class="label-emoji">👤</span>
-              <span class="label-text">Tên đăng nhập</span>
-            </div>
-            <div class="input-wrapper">
-              <input
-                type="text"
-                [(ngModel)]="credentials.username"
-                name="username"
-                class="space-input"
-                placeholder="Nhập email hoặc tên đăng nhập"
-                [required]="loginType === 'parent'"
-                autocomplete="username"
-              />
-            </div>
-          </div>
-
           <!-- PIN Input -->
           <div class="input-group">
             <div class="input-label">
@@ -77,7 +58,7 @@ import { AuthService } from '../../core/services/auth.service';
             </div>
             <div class="input-wrapper">
               <input
-                [type]="loginType === 'student' || showPassword ? 'text' : 'password'"
+                type="text"
                 [(ngModel)]="credentials.pinCode"
                 name="pinCode"
                 class="space-input pin-input"
@@ -86,15 +67,6 @@ import { AuthService } from '../../core/services/auth.service';
                 maxlength="6"
                 autocomplete="current-password"
               />
-              <button
-                *ngIf="loginType === 'parent'"
-                type="button"
-                class="eye-button"
-                (click)="showPassword = !showPassword"
-                tabindex="-1"
-              >
-                {{ showPassword ? '👁️' : '🙈' }}
-              </button>
             </div>
           </div>
 
@@ -112,8 +84,8 @@ import { AuthService } from '../../core/services/auth.service';
             [disabled]="isLoading"
           >
             <span *ngIf="!isLoading" class="button-inner">
-              <span class="button-emoji">{{ loginType === 'student' ? '🚀' : '✨' }}</span>
-              <span class="button-label">{{ loginType === 'student' ? 'Phóng Tên Lửa!' : 'Kết Nối' }}</span>
+              <span class="button-emoji">🚀</span>
+              <span class="button-label">Phóng Tên Lửa!</span>
             </span>
             <span *ngIf="isLoading" class="loading-state">
               <span class="orbit-spinner"></span>
@@ -126,28 +98,8 @@ import { AuthService } from '../../core/services/auth.service';
             <button type="button" class="link-btn" (click)="goBack()">
               ← Quay về trái đất
             </button>
-            <button
-              *ngIf="loginType === 'parent'"
-              type="button"
-              class="link-btn"
-              (click)="forgotPassword()"
-            >
-              Quên mã PIN? 🤔
-            </button>
           </div>
         </form>
-
-        <!-- Mode Switcher -->
-        <div class="mode-switcher">
-          <div class="switcher-divider"></div>
-          <p class="switcher-text">
-            {{ loginType === 'student' ? 'Bạn là người lớn?' : 'Bạn là phi hành gia nhí?' }}
-          </p>
-          <button type="button" class="switch-mode-btn" (click)="switchLoginType()">
-            <span class="switch-emoji">{{ loginType === 'student' ? '👨‍👩‍👧' : '🎮' }}</span>
-            {{ loginType === 'student' ? 'Chuyển sang Phụ Huynh' : 'Chuyển sang Học Sinh' }}
-          </button>
-        </div>
       </div>
     </div>
   `,
@@ -397,12 +349,7 @@ import { AuthService } from '../../core/services/auth.service';
       animation: titleShine 3s ease-in-out infinite;
     }
 
-    .parent-mode .space-title {
-      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #38bdf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+
 
     @keyframes titleShine {
       0%, 100% { filter: brightness(1); }
@@ -495,10 +442,7 @@ import { AuthService } from '../../core/services/auth.service';
       transform: scale(1.02);
     }
 
-    .parent-mode .space-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.15);
-    }
+
 
     .space-input::placeholder {
       color: #94a3b8;
@@ -581,12 +525,7 @@ import { AuthService } from '../../core/services/auth.service';
       animation: buttonPulse 2s ease-in-out infinite;
     }
 
-    .parent-mode .launch-button {
-      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #38bdf8 100%);
-      box-shadow:
-        0 15px 35px rgba(59, 130, 246, 0.4),
-        0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+
 
     @keyframes buttonPulse {
       0%, 100% { box-shadow: 0 15px 35px rgba(249, 115, 22, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2); }
@@ -683,12 +622,7 @@ import { AuthService } from '../../core/services/auth.service';
       transform: translateX(-3px);
     }
 
-    .parent-mode .link-btn:hover {
-      color: #3b82f6;
-      background: rgba(59, 130, 246, 0.1);
-    }
 
-    /* Mode Switcher */
     .mode-switcher {
       margin-top: 20px;
       text-align: center;
@@ -792,12 +726,9 @@ export class LoginComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
 
-  loginType: 'student' | 'parent' = 'student';
   credentials = {
-    username: '',
     pinCode: ''
   };
-  showPassword = false;
   isLoading = false;
   errorMessage = '';
   returnUrl: string | null = null;
@@ -810,14 +741,9 @@ export class LoginComponent implements OnInit {
   }));
 
   ngOnInit() {
-    // Get login type and returnUrl from query params
+    // Get returnUrl from query params
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || null;
-      if (params['type'] === 'parent') {
-        this.loginType = 'parent';
-      } else {
-        this.loginType = 'student';
-      }
     });
   }
 
@@ -827,24 +753,17 @@ export class LoginComponent implements OnInit {
 
     try {
       // Validate inputs
-      if (this.loginType === 'parent' && !this.credentials.username) {
-        this.errorMessage = 'Vui lòng nhập tên đăng nhập!';
-        this.isLoading = false;
-        return;
-      }
-
       if (!this.credentials.pinCode) {
         this.errorMessage = 'Vui lòng nhập mã PIN!';
         this.isLoading = false;
         return;
       }
 
-
-      // Call auth service to login
+      // Call auth service to login (student only)
       const result = await this.authService.login(
-        this.credentials.username,
+        '',
         this.credentials.pinCode,
-        this.loginType
+        'student'
       );
 
       if (result.success) {
@@ -854,12 +773,8 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        // Redirect based on login type
-        if (this.loginType === 'student') {
-          this.router.navigate(['/select-subject']);
-        } else {
-          this.router.navigate(['/parents']);
-        }
+        // Redirect to subject selection
+        this.router.navigate(['/select-subject']);
       } else {
         this.errorMessage = result.message || 'Đăng nhập thất bại. Vui lòng thử lại!';
       }
@@ -871,25 +786,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  switchLoginType() {
-    this.loginType = this.loginType === 'student' ? 'parent' : 'student';
-    this.credentials = { username: '', pinCode: '' };
-    this.errorMessage = '';
-
-    // Update URL query params
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { type: this.loginType },
-      queryParamsHandling: 'merge'
-    });
-  }
-
   goBack() {
     this.router.navigate(['/home']);
-  }
-
-  forgotPassword() {
-    // TODO: Implement forgot password functionality
-    alert('Chức năng lấy lại mã PIN đang được phát triển!');
   }
 }

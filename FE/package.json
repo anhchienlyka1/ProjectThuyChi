@@ -38,6 +38,7 @@
     "canvas-confetti": "^1.9.4",
     "express": "^5.1.0",
     "lucide-angular": "^0.562.0",
+    "or": "^0.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.16.0"

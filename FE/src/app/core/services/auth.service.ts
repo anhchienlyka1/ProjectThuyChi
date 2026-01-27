@@ -1,7 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { findUserByCredentials, getUserById } from '../mock-data/users.mock';
 
 export interface User {
     id: string;
@@ -25,7 +23,6 @@ export interface LoginResponse {
     providedIn: 'root'
 })
 export class AuthService {
-    private readonly API_URL = environment.apiUrl;
     private readonly STORAGE_KEY = 'thuyChi_user';
     private readonly TOKEN_KEY = 'thuyChi_token';
 
@@ -33,72 +30,65 @@ export class AuthService {
     currentUser = signal<User | null>(null);
     isAuthenticated = signal<boolean>(false);
 
-    constructor(private http: HttpClient) {
+    constructor() {
         // Load user from localStorage on service initialization
         this.loadUserFromStorage();
     }
 
     /**
-     * Login user (student or parent)
+     * Login user (student or parent) - Using Mock Data
      */
     async login(username: string, pinCode: string, type: 'student' | 'parent'): Promise<LoginResponse> {
         try {
-            // For student login, we use PIN code
-            // For parent login, we use PIN code
-            const endpoint = type === 'student'
-                ? `${this.API_URL}/auth/login/student`
-                : `${this.API_URL}/auth/login/parent`;
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 500));
 
-            const response = await firstValueFrom(
-                this.http.post<LoginResponse>(endpoint, {
-                    username,
-                    pinCode,
-                    type
-                })
-            );
+            // Find user in mock data
+            const mockUser = findUserByCredentials(username, pinCode);
 
-            if (response.success && response.user) {
-                // Map backend response to frontend user model
-                const backendUser = response.user as any;
-                const mappedUser: User = {
-                    id: backendUser.id,
-                    username: backendUser.email || username, // Use email from BE or input username
-                    fullName: backendUser.name || 'Người dùng', // Map name to fullName
-                    email: backendUser.email,
-                    role: type, // Set role based on login context
-                    avatarUrl: backendUser.avatarUrl,
-                    pinCode: backendUser.pinCode, // Might be undefined/protected
-                    gender: backendUser.gender
-                };
-
-                // Update response.user with mapped user
-                response.user = mappedUser;
-
-                // Save user to storage and update signals
-                this.setUser(mappedUser, response.token);
-            }
-
-            return response;
-        } catch (error: any) {
-            console.error('Login error:', error);
-
-            // Handle different error scenarios
-            if (error.status === 401) {
+            if (!mockUser) {
                 return {
                     success: false,
                     message: 'Tên đăng nhập hoặc mã PIN không đúng!'
                 };
-            } else if (error.status === 404) {
+            }
+
+            if (mockUser.role !== type) {
                 return {
                     success: false,
-                    message: 'Không tìm thấy tài khoản!'
-                };
-            } else {
-                return {
-                    success: false,
-                    message: 'Có lỗi xảy ra. Vui lòng thử lại sau!'
+                    message: 'Loại tài khoản không đúng!'
                 };
             }
+
+            // Create user object (without pinCode for security)
+            const user: User = {
+                id: mockUser.id,
+                username: mockUser.username,
+                fullName: mockUser.fullName,
+                email: mockUser.email,
+                role: mockUser.role,
+                avatarUrl: mockUser.avatarUrl,
+                gender: mockUser.gender
+            };
+
+            // Generate mock token
+            const token = 'mock-jwt-token-' + mockUser.id;
+
+            // Save user to storage and update signals
+            this.setUser(user, token);
+
+            return {
+                success: true,
+                message: 'Đăng nhập thành công!',
+                user,
+                token
+            };
+        } catch (error: any) {
+            console.error('Login error:', error);
+            return {
+                success: false,
+                message: 'Có lỗi xảy ra. Vui lòng thử lại sau!'
+            };
         }
     }
 
@@ -181,26 +171,21 @@ export class AuthService {
     }
 
     /**
-     * Update user profile
+     * Update user profile - Using Mock Data
      */
     async updateProfile(updates: Partial<User>): Promise<boolean> {
         try {
             const currentUser = this.currentUser();
             if (!currentUser) return false;
 
-            const response = await firstValueFrom(
-                this.http.put<{ success: boolean; user: User }>(
-                    `${this.API_URL}/users/${currentUser.id}`,
-                    updates
-                )
-            );
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            if (response.success && response.user) {
-                this.setUser(response.user);
-                return true;
-            }
+            // Update current user with new data
+            const updatedUser = { ...currentUser, ...updates };
+            this.setUser(updatedUser);
 
-            return false;
+            return true;
         } catch (error) {
             console.error('Update profile error:', error);
             return false;

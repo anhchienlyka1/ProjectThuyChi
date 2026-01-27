@@ -3,27 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
-export interface ParentOverviewResponse {
-    dailySummary: {
-        minutesLearned: number;
-        lessonsCompleted: number;
-        avgScore: number;
-    };
-    weeklyStats: {
-        totalTime: { value: string; trend: string };
-        lessonsCompleted: { value: number; trend: string };
-        avgScore: { value: string; trend: string };
-        badges: { value: number; newThisWeek: number };
-    };
-    subjectProgress: Array<{
-        subjectId: string;
-        subjectName: string;
-        totalLevels: number;
-        completedLevels: number;
-        percentage: number;
-        color: string;
-    }>;
-}
 
 @Injectable({
     providedIn: 'root'
@@ -31,12 +10,6 @@ export interface ParentOverviewResponse {
 export class DashboardService {
     private http = inject(HttpClient);
     private API_URL = environment.apiUrl;
-
-    async getParentOverview(childId: string): Promise<ParentOverviewResponse> {
-        return firstValueFrom(
-            this.http.get<ParentOverviewResponse>(`${this.API_URL}/dashboard/parent-overview?childId=${childId}`)
-        );
-    }
 
     async getRecentHistory(childId: string): Promise<any[]> {
         return firstValueFrom(

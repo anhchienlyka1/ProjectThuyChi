@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { saveLearningSession, getCompletionTimeStats } from '../mock-data/learning-sessions.mock';
 
 export interface LearningSessionResult {
   userId?: string;  // Optional - will be auto-filled from AuthService
@@ -65,9 +65,7 @@ export interface CompletionTimeResponse {
   providedIn: 'root'
 })
 export class LearningService {
-  private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/learning/complete`;
 
   completeSession(result: LearningSessionResult): Observable<LearningResponse> {
     console.log('result', result);
@@ -75,20 +73,20 @@ export class LearningService {
 
     if (!userId) {
       console.error('[LearningService] No user ID available');
-      return throwError(() => new Error('User not logged in'));
+      throw new Error('User not logged in');
     }
 
-    const payload = {
-      ...result,
-      userId
-    };
-
-    return this.http.post<LearningResponse>(this.apiUrl, payload).pipe(
-      catchError(error => {
-        console.error('Error saving learning session:', error);
-        throw error;
-      })
+    // Use mock data service to save session
+    const response = saveLearningSession(
+      userId,
+      result.levelId,
+      result.score,
+      result.totalQuestions,
+      result.durationSeconds
     );
+
+    // Return observable with simulated delay
+    return of(response).pipe(delay(500));
   }
 
   getCompletionTime(levelId?: string): Observable<CompletionTimeResponse> {
@@ -96,21 +94,28 @@ export class LearningService {
 
     if (!userId) {
       console.error('[LearningService] No user ID available');
-      return throwError(() => new Error('User not logged in'));
+      throw new Error('User not logged in');
     }
 
-    const url = `${environment.apiUrl}/learning/completion-time`;
-    const params: any = { userId };
+    // Get completion time stats from mock data
+    const stats = getCompletionTimeStats(userId, levelId);
 
-    if (levelId) {
-      params.levelId = levelId;
+    if (!stats) {
+      // Return empty stats if no sessions found
+      const emptyStats: CompletionTimeResponse = {
+        userId,
+        levelId: levelId || 'all',
+        totalSessions: 0,
+        averageTimeSeconds: 0,
+        fastestTimeSeconds: 0,
+        slowestTimeSeconds: 0,
+        totalTimeSeconds: 0,
+        recentSessions: []
+      };
+      return of(emptyStats).pipe(delay(300));
     }
 
-    return this.http.get<CompletionTimeResponse>(url, { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching completion time:', error);
-        throw error;
-      })
-    );
+    // Return observable with simulated delay
+    return of(stats).pipe(delay(300));
   }
 }

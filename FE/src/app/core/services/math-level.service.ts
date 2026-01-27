@@ -1,17 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of, map } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { MathLevel } from '../models/math-level.model';
-import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
+import { getLevelsBySubject } from '../mock-data/levels.mock';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MathLevelService {
-  private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/levels`;
 
   getLevels(subjectId: string = 'math'): Observable<MathLevel[]> {
     const userId = this.authService.getUserId();
@@ -20,16 +18,17 @@ export class MathLevelService {
       return of([]);
     }
 
-    return this.http.get<MathLevel[]>(`${this.apiUrl}?subjectId=${subjectId}&userId=${userId}`).pipe(
-      map(levels => levels.map(level => ({
-        ...level,
-        colorRgb: this.hexToRgb(level.color)
-      }))),
-      catchError(error => {
-        console.error('Error loading math levels:', error);
-        throw error;
-      })
-    );
+    // Get mock levels
+    const mockLevels = getLevelsBySubject(subjectId, userId);
+
+    // Map to MathLevel format
+    const levels: MathLevel[] = mockLevels.map(level => ({
+      ...level,
+      colorRgb: this.hexToRgb(level.color)
+    }));
+
+    // Return observable with simulated delay
+    return of(levels).pipe(delay(300));
   }
 
   private hexToRgb(hex: string): string {

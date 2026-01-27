@@ -1,12 +1,12 @@
 import { Injectable, inject, effect, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { ParentSettingsStore } from '../store/parent-settings.store';
+import { AppSettingsStore } from '../store/app-settings.store';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AudioEngineService {
-    private settingsStore = inject(ParentSettingsStore);
+    private settingsStore = inject(AppSettingsStore);
     private platformId = inject(PLATFORM_ID);
 
     private bgAudio: HTMLAudioElement | undefined;

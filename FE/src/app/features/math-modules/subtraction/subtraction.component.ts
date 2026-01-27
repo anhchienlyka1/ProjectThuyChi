@@ -135,11 +135,12 @@ export class SubtractionComponent implements OnInit, OnDestroy {
         const minNum = this.config.difficulty?.minNumber || 1;
         const maxNum = this.config.difficulty?.maxNumber || 20;
 
-        // Generate correctAnswer first (0 to 20)
-        this.correctAnswer = Math.floor(Math.random() * 21); // 0 to 20
+        // Generate correctAnswer first (0 to maxNum)
+        this.correctAnswer = Math.floor(Math.random() * (maxNum + 1));
 
         // Generate secondNumber (can be 0 to maxNum)
-        const maxSecondNumber = Math.min(maxNum, maxNum - this.correctAnswer);
+        // ensure correctAnswer + secondNumber <= maxNum
+        const maxSecondNumber = maxNum - this.correctAnswer;
         this.secondNumber = Math.floor(Math.random() * (maxSecondNumber + 1));
 
         // Calculate firstNumber to ensure it's within range

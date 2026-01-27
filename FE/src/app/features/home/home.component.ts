@@ -57,11 +57,6 @@ import { GamificationStore } from '../../core/store/gamification.store';
             <span class="button-arrow">→</span>
             <div class="button-ripple"></div>
           </button>
-
-          <button class="parent-button" (click)="goToParentCorner()">
-            <span class="parent-icon">👨‍👩‍👧</span>
-            <span class="parent-text">Góc Phụ Huynh</span>
-          </button>
         </div>
       </div>
     </div>
@@ -536,32 +531,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       transform: translateX(100%);
     }
 
-    .parent-button {
-      padding: 14px 32px;
-      background: linear-gradient(135deg, #ffffff 0%, #dbeafe 100%);
-      border: 3px solid #3b82f6;
-      border-radius: 20px;
-      color: #1e40af;
-      font-size: 1.1rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-      transition: all 0.3s ease;
-    }
 
-    .parent-button:hover {
-      transform: translateY(-3px);
-      background: #ffffff;
-      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
-    }
-
-    .parent-icon {
-      font-size: 1.5rem;
-    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -588,10 +558,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
         padding: 18px 32px;
       }
 
-      .parent-button {
-        font-size: 1rem;
-        padding: 12px 28px;
-      }
+
 
       .float-icon {
         font-size: 2.5rem;
@@ -615,10 +582,6 @@ export class HomeComponent implements OnInit {
   }
 
   startLearning() {
-    this.router.navigate(['/login'], { queryParams: { type: 'student' } });
-  }
-
-  goToParentCorner() {
-    this.router.navigate(['/login'], { queryParams: { type: 'parent' } });
+    this.router.navigate(['/login']);
   }
 }

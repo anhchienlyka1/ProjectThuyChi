@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { getUserById } from '../mock-data/users.mock';
+import { getAchievementsByUserId, getWeeklyAchievementsByUserId } from '../mock-data/achievements.mock';
+import { getTodayStats } from '../mock-data/learning-sessions.mock';
 
 export interface StudentProfileResponse {
     student: {
@@ -48,34 +48,62 @@ export interface WeeklyAchievement {
     providedIn: 'root'
 })
 export class StudentProfileService {
-    private http = inject(HttpClient);
-    private apiUrl = `${environment.apiUrl}/student-profile`;
-
     /**
-     * Get student profile overview
+     * Get student profile overview - Using Mock Data
      */
     async getStudentProfile(userId: string): Promise<StudentProfileResponse> {
-        return firstValueFrom(
-            this.http.get<StudentProfileResponse>(`${this.apiUrl}/${userId}`)
-        );
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const user = getUserById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Calculate XP progression
+        const xpPerLevel = 500;
+        const currentLevelProgress = user.xp % xpPerLevel;
+        const xpNeededForNextLevel = xpPerLevel;
+        const percentage = Math.round((currentLevelProgress / xpNeededForNextLevel) * 100);
+
+        // Get today's stats
+        const todayStats = getTodayStats(userId);
+
+        return {
+            student: {
+                id: user.id,
+                name: user.fullName,
+                avatar: user.avatarUrl || 'assets/avatars/default.png',
+                level: user.level,
+                totalStars: user.totalStars,
+                xp: {
+                    current: user.xp,
+                    currentLevelProgress,
+                    xpNeededForNextLevel,
+                    percentage
+                }
+            },
+            todayStats
+        };
     }
 
     /**
-   * Get student's achievements (Phiếu Bé Ngoan)
+   * Get student's achievements (Phiếu Bé Ngoan) - Using Mock Data
    */
     async getStudentAchievements(userId: string, page: number = 1, limit: number = 10): Promise<{ data: Achievement[], meta: any }> {
-        const url = `${this.apiUrl}/${userId}/achievements?page=${page}&limit=${limit}`;
-        return firstValueFrom(
-            this.http.get<{ data: Achievement[], meta: any }>(url)
-        );
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        return getAchievementsByUserId(userId, page, limit);
     }
 
     /**
-     * Get weekly achievements
+     * Get weekly achievements - Using Mock Data
      */
     async getWeeklyAchievements(userId: string): Promise<WeeklyAchievement[]> {
-        return firstValueFrom(
-            this.http.get<WeeklyAchievement[]>(`${this.apiUrl}/${userId}/weekly-achievements`)
-        );
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        return getWeeklyAchievementsByUserId(userId);
     }
 }

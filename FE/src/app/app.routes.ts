@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
 import { StudentGuard } from './core/guards/student.guard';
 
 export const routes: Routes = [
@@ -82,6 +81,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/math-modules/geometry/geometry.component').then(m => m.GeometryComponent)
       },
       {
+        path: 'math/mixed',
+        title: 'Toán Tổng Hợp',
+        loadComponent: () => import('./features/math-modules/mixed/mixed.component').then(m => m.MixedComponent)
+      },
+      {
         path: 'math',
         title: 'Toán Học',
         loadComponent: () => import('./features/math-modules/math-modules.component').then(m => m.MathModulesComponent)
@@ -141,30 +145,6 @@ export const routes: Routes = [
         title: 'Truyện Cổ Tích',
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       }
-    ]
-  },
-  {
-    path: 'parent-gate',
-    title: 'Xác thực Phụ Huynh',
-    loadComponent: () => import('./features/parent-gate/parent-gate.component').then(m => m.ParentGateComponent)
-  },
-  {
-    path: 'parents',
-    title: 'Phụ Huynh',
-    canActivate: [AuthGuard],
-    loadComponent: () => import('./layouts/parent-layout/parent-layout.component').then(m => m.ParentLayoutComponent),
-    children: [
-      {
-        path: '',
-        title: 'Tổng quan - Góc Phụ Huynh',
-        loadComponent: () => import('./features/parent-dashboard/parent-dashboard.component').then(m => m.ParentDashboardComponent)
-      },
-      {
-        path: 'reports',
-        title: 'Báo cáo - Góc Phụ Huynh',
-        loadComponent: () => import('./features/parent-dashboard/learning-report.component').then(m => m.LearningReportComponent)
-      },
-
     ]
   }
 ];

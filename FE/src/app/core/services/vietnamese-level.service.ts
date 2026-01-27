@@ -1,17 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { VietnameseLevel } from '../models/vietnamese-level.model';
-import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
+import { getLevelsBySubject } from '../mock-data/levels.mock';
 
 @Injectable({
     providedIn: 'root'
 })
 export class VietnameseLevelService {
-    private http = inject(HttpClient);
     private authService = inject(AuthService);
-    private apiUrl = `${environment.apiUrl}/levels`;
 
     getLevels(): Observable<VietnameseLevel[]> {
         const userId = this.authService.getUserId();
@@ -20,11 +18,10 @@ export class VietnameseLevelService {
             return of([]);
         }
 
-        return this.http.get<VietnameseLevel[]>(`${this.apiUrl}?subjectId=vietnamese&userId=${userId}`).pipe(
-            catchError(error => {
-                console.error('Error loading vietnamese levels:', error);
-                return of([]);
-            })
-        );
+        // Get mock levels
+        const mockLevels = getLevelsBySubject('vietnamese', userId);
+
+        // Return observable with simulated delay
+        return of(mockLevels as VietnameseLevel[]).pipe(delay(300));
     }
 }
