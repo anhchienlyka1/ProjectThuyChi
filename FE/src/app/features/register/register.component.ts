@@ -65,7 +65,7 @@ import { where } from 'firebase/firestore';
               <div class="input-group">
                 <div class="input-label">Mã bí mật (PIN)</div>
                 <div class="input-wrapper">
-                  <input [type]="showPin ? 'text' : 'password'" [(ngModel)]="formData.pinCode" name="pinCode" class="sky-input pin-input" placeholder="••••" required minlength="4" maxlength="6" pattern="[0-9]+" />
+                  <input [type]="showPin ? 'text' : 'password'" [(ngModel)]="formData.pinCode" name="pinCode" class="sky-input pin-input" placeholder="••••••" required minlength="6" maxlength="6" pattern="[0-9]+" />
                   <button type="button" class="eye-button" (click)="showPin = !showPin">{{ showPin ? '🙈' : '👁️' }}</button>
                 </div>
               </div>
@@ -359,8 +359,8 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    if (!/^[0-9]{4,6}$/.test(this.formData.pinCode)) {
-      this.errorMessage = 'Mã PIN phải là 4-6 chữ số!';
+    if (!/^[0-9]{6}$/.test(this.formData.pinCode)) {
+      this.errorMessage = 'Mã PIN phải là 6 chữ số!';
       return;
     }
 
@@ -375,6 +375,18 @@ export class RegisterComponent implements OnInit {
 
       if (existingUsers.length > 0) {
         this.errorMessage = 'Tên đăng nhập đã tồn tại! Vui lòng chọn tên khác.';
+        this.isLoading = false;
+        return;
+      }
+
+      // Check if PIN already exists
+      const existingPin = await this.db.queryDocuments(
+        'users',
+        where('pinCode', '==', this.formData.pinCode)
+      );
+
+      if (existingPin.length > 0) {
+        this.errorMessage = 'Mã PIN này đã có người sử dụng! Vui lòng chọn mã khác.';
         this.isLoading = false;
         return;
       }

@@ -1,7 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { FirestoreService } from './firestore.service';
 import { where } from 'firebase/firestore';
-import { findUserByCredentials, getUserById } from '../mock-data/users.mock';
 
 export interface User {
     id: string;
@@ -42,75 +41,55 @@ export class AuthService {
     }
 
     /**
-     * Login user (student or parent) - Uses Firestore first, falls back to Mock Data
+     * Login user (student or parent) - Uses Firestore ONLY
+     * Supports PIN-only login (Student) or Username+PIN login
      */
     async login(username: string, pinCode: string, type: 'student' | 'parent'): Promise<LoginResponse> {
         try {
-            console.log(`[AuthService] Attempting login for ${username}...`);
+            console.log(`[AuthService] Login request. Username: '${username}', Type: ${type}`);
 
-            // 1. Try to find user in Firestore
-            try {
-                const users = await this.db.queryDocuments(
+            let users: any[] = [];
+
+            if (username) {
+                // Login by Username + PIN
+                users = await this.db.queryDocuments(
                     'users',
                     where('username', '==', username.toLowerCase())
                 );
+            } else {
+                // Login by PIN only (Student flow)
+                users = await this.db.queryDocuments(
+                    'users',
+                    where('pinCode', '==', pinCode)
+                );
+            }
 
-                if (users.length > 0) {
-                    const firestoreUser = users[0] as User;
-                    console.log('[AuthService] User found in Firestore:', firestoreUser.username);
+            if (users.length > 0) {
+                const firestoreUser = users[0] as User;
 
-                    // Check PIN
-                    if (firestoreUser.pinCode !== pinCode) {
-                        return {
-                            success: false,
-                            message: 'Mã PIN không đúng!'
-                        };
-                    }
-
-                    // Check Role (if specified, though registration sets it to student)
-                    if (firestoreUser.role !== type) {
-                        return {
-                            success: false,
-                            message: 'Loại tài khoản không đúng!'
-                        };
-                    }
-
-                    // Login successful via Firestore
-                    return this.processSuccessfulLogin(firestoreUser);
+                // If matched by username, verify PIN
+                if (username && firestoreUser.pinCode !== pinCode) {
+                    return {
+                        success: false,
+                        message: 'Mã PIN không đúng!'
+                    };
                 }
-            } catch (firestoreError) {
-                console.warn('[AuthService] Firestore login failed, falling back to mock:', firestoreError);
+
+                // Check Role
+                if (firestoreUser.role !== type) {
+                    return {
+                        success: false,
+                        message: 'Loại tài khoản không đúng!'
+                    };
+                }
+
+                return this.processSuccessfulLogin(firestoreUser);
             }
 
-            // 2. Fallback to Mock Data if not found in Firestore or error
-            console.log('[AuthService] User not found in Firestore, checking mock data...');
-            const mockUser = findUserByCredentials(username, pinCode);
-
-            if (!mockUser) {
-                return {
-                    success: false,
-                    message: 'Tên đăng nhập hoặc mã PIN không đúng!'
-                };
-            }
-
-            if (mockUser.role !== type) {
-                return {
-                    success: false,
-                    message: 'Loại tài khoản không đúng!'
-                };
-            }
-
-            // Login successful via Mock Data
-            return this.processSuccessfulLogin({
-                id: mockUser.id,
-                username: mockUser.username,
-                fullName: mockUser.fullName,
-                email: mockUser.email,
-                role: mockUser.role,
-                avatarUrl: mockUser.avatarUrl,
-                gender: mockUser.gender,
-                pinCode: mockUser.pinCode // Keep pinCode internally for fallback logic consistency
-            });
+            return {
+                success: false,
+                message: username ? 'Tên đăng nhập không đúng!' : 'Mã PIN không đúng!'
+            };
 
         } catch (error: any) {
             console.error('Login error:', error);
@@ -122,10 +101,6 @@ export class AuthService {
     }
 
     private processSuccessfulLogin(user: User): LoginResponse {
-        // Create clean user object (remove sensitive data if strictly needed, but kept here for easy access)
-        // Ensure ID is present. Firestore query returns objects which might not have 'id' field inside the data, 
-        // effectively 'id' comes from the doc ID. FirestoreService queryDocuments adds 'id'.
-
         const token = 'jwt-token-' + (user.id || user.username);
 
         // Save user to storage and update signals
@@ -218,7 +193,7 @@ export class AuthService {
     }
 
     /**
-     * Update user profile - Saves to Firestore if logged in via Firestore
+     * Update user profile - Saves to Firestore
      */
     async updateProfile(updates: Partial<User>): Promise<boolean> {
         try {
@@ -230,7 +205,8 @@ export class AuthService {
                 await this.db.updateDocument('users', currentUser.id, updates);
                 console.log('[AuthService] Profile updated in Firestore');
             } catch (error) {
-                console.warn('[AuthService] Could not update Firestore (maybe mock user?), updating local only:', error);
+                console.error('[AuthService] Could not update Firestore:', error);
+                return false;
             }
 
             // Update local state

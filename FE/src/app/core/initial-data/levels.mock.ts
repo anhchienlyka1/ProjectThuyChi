@@ -39,21 +39,10 @@ export const MOCK_MATH_LEVELS: MathLevel[] = [
     isLocked: false,
     stars: 0
   },
-  {
-    id: 'math-4',
-    levelNumber: 4,
-    title: 'Hình Học',
-    subtitle: 'Nhận biết các hình cơ bản',
-    icon: '🔷',
-    color: '#FFEAA7',
-    gradient: 'linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%)',
-    route: '/math/geometry',
-    isLocked: false,
-    stars: 0
-  },
+
   {
     id: 'math-5',
-    levelNumber: 5,
+    levelNumber: 4,
     title: 'Toán Tổng Hợp',
     subtitle: 'Ôn tập tất cả các phép tính',
     icon: '🎓',

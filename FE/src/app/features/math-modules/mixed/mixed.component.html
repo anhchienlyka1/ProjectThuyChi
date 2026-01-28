@@ -1,17 +1,17 @@
 <div class="min-h-screen relative overflow-hidden font-sans">
-    <!-- Animated Gradient Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-500 to-fuchsia-500 animate-gradient">
+    <!-- Animated Gradient Background - Sky Theme -->
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400">
     </div>
 
-    <!-- Floating Decorative Elements -->
+    <!-- Floating Decorative Elements - Sky Theme Colors -->
     <div class="absolute inset-0 pointer-events-none overflow-hidden">
         <!-- Large floating shapes -->
-        <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float-slow"></div>
-        <div class="absolute top-1/4 right-20 w-48 h-48 bg-pink-300/20 rounded-full blur-2xl animate-float-medium">
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white/20 rounded-full blur-xl animate-float-slow"></div>
+        <div class="absolute top-1/4 right-20 w-48 h-48 bg-blue-200/30 rounded-full blur-2xl animate-float-medium">
         </div>
-        <div class="absolute bottom-20 left-1/4 w-40 h-40 bg-yellow-300/20 rounded-full blur-2xl animate-float-fast">
+        <div class="absolute bottom-20 left-1/4 w-40 h-40 bg-cyan-200/30 rounded-full blur-2xl animate-float-fast">
         </div>
-        <div class="absolute bottom-1/3 right-10 w-24 h-24 bg-cyan-300/20 rounded-full blur-xl animate-float-slow">
+        <div class="absolute bottom-1/3 right-10 w-24 h-24 bg-sky-100/30 rounded-full blur-xl animate-float-slow">
         </div>
 
         <!-- Stars -->
@@ -31,28 +31,28 @@
         <header class="flex items-center justify-between mb-4 md:mb-6">
             <div class="flex items-center gap-3">
                 <button (click)="goBack()"
-                    class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-white text-2xl md:text-3xl font-bold shadow-lg shadow-purple-900/20 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/30">
+                    class="w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl rounded-2xl flex items-center justify-center text-sky-700 text-2xl md:text-3xl font-bold shadow-lg shadow-sky-900/20 hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
                     ←
                 </button>
                 <div class="hidden md:flex flex-col">
-                    <h1 class="text-2xl font-black text-white drop-shadow-lg">Toán Tổng Hợp</h1>
-                    <p class="text-white/70 text-sm font-medium">Luyện tập thông minh 🧠</p>
+                    <h1 class="text-2xl font-black text-sky-800 drop-shadow-lg">Toán Tổng Hợp</h1>
+                    <p class="text-sky-600 text-sm font-medium">Luyện tập thông minh 🧠</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <!-- Progress Badge -->
                 <div
-                    class="bg-white/20 backdrop-blur-xl px-4 py-2 md:px-6 md:py-3 rounded-2xl flex items-center gap-2 border border-white/30 shadow-lg">
+                    class="bg-white/80 backdrop-blur-xl px-4 py-2 md:px-6 md:py-3 rounded-2xl flex items-center gap-2 border border-white/50 shadow-lg">
                     <div
-                        class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                        class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl flex items-center justify-center shadow-md">
                         <span class="text-white text-lg md:text-xl">📝</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-white/60 text-[10px] md:text-xs font-bold uppercase tracking-wider">Câu
+                        <span class="text-sky-600 text-[10px] md:text-xs font-bold uppercase tracking-wider">Câu
                             hỏi</span>
                         <span
-                            class="text-white text-lg md:text-xl font-black leading-none">{{currentQuestionIndex}}/{{totalQuestions}}</span>
+                            class="text-sky-800 text-lg md:text-xl font-black leading-none">{{currentQuestionIndex}}/{{totalQuestions}}</span>
                     </div>
                 </div>
 
@@ -76,7 +76,7 @@
             </div>
 
             <button (click)="readQuestion()"
-                class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg hover:bg-white/30 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/30">
+                class="w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl rounded-2xl flex items-center justify-center text-sky-700 text-2xl shadow-lg hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
                 🔊
             </button>
         </header>
@@ -88,23 +88,23 @@
             <section class="md:col-span-7 lg:col-span-8 relative group">
                 <!-- Glow effect behind card -->
                 <div
-                    class="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    class="absolute inset-0 bg-gradient-to-r from-sky-300/30 via-blue-300/30 to-cyan-300/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                 </div>
 
                 <div
-                    class="relative bg-white/15 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-10 border border-white/30 shadow-2xl shadow-purple-900/20 h-full flex flex-col items-center justify-center overflow-hidden">
+                    class="relative bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-10 border border-white/50 shadow-2xl shadow-sky-900/20 h-full flex flex-col items-center justify-center overflow-hidden">
                     <!-- Inner decorative gradients -->
                     <div
-                        class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-pink-400/20 to-transparent rounded-full blur-3xl">
+                        class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-sky-300/30 to-transparent rounded-full blur-3xl">
                     </div>
                     <div
-                        class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-400/20 to-transparent rounded-full blur-3xl">
+                        class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-300/30 to-transparent rounded-full blur-3xl">
                     </div>
 
                     <!-- Question Type Indicator -->
                     <div
-                        class="absolute top-4 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/30">
-                        <span class="text-white/90 text-xs md:text-sm font-bold uppercase tracking-wider">
+                        class="absolute top-4 left-1/2 -translate-x-1/2 bg-sky-500/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-sky-400">
+                        <span class="text-white text-xs md:text-sm font-bold uppercase tracking-wider">
                             {{ getQuestionTypeLabel() }}
                         </span>
                     </div>
@@ -133,7 +133,7 @@
                             </div>
 
                             <!-- Equals with glow -->
-                            <div class="text-4xl md:text-5xl lg:text-6xl font-black text-white/50 drop-shadow-lg">=
+                            <div class="text-4xl md:text-5xl lg:text-6xl font-black text-sky-600/50 drop-shadow-lg">=
                             </div>
 
                             <!-- Result -->
@@ -173,16 +173,16 @@
 
                         <!-- CASE 6: Chain -->
                         <div *ngIf="missingPos === 6"
-                            class="flex flex-wrap items-center justify-center gap-2 md:gap-4 bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border border-white/20 animate-pop-in">
+                            class="flex flex-wrap items-center justify-center gap-2 md:gap-4 bg-white/60 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border border-white/50 shadow-xl animate-pop-in">
                             <span
-                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[0]}}</span>
-                            <span class="text-2xl md:text-4xl text-white/60 font-bold">{{chainOps[0]}}</span>
+                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[0]}}</span>
+                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">{{chainOps[0]}}</span>
                             <span
-                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[1]}}</span>
-                            <span class="text-2xl md:text-4xl text-white/60 font-bold">{{chainOps[1]}}</span>
+                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[1]}}</span>
+                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">{{chainOps[1]}}</span>
                             <span
-                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[2]}}</span>
-                            <span class="text-2xl md:text-4xl text-white/60 font-bold">=</span>
+                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[2]}}</span>
+                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">=</span>
                             <div
                                 class="number-box-active min-w-[80px] md:min-w-[120px] h-20 md:h-28 rounded-3xl flex items-center justify-center text-4xl md:text-6xl font-black animate-float">
                                 {{ userAnswer || '?' }}
@@ -194,7 +194,7 @@
                             class="flex flex-col items-center gap-6 animate-pop-in">
                             <div class="flex gap-2 md:gap-4 flex-wrap justify-center">
                                 <div *ngFor="let n of (missingPos === 7 ? patternNumbers : countdownNumbers); let i = index"
-                                    class="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-md rounded-2xl shadow-lg flex items-center justify-center text-2xl md:text-3xl font-black text-white border border-white/30"
+                                    class="w-16 h-16 md:w-20 md:h-20 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg flex items-center justify-center text-2xl md:text-3xl font-black text-sky-700 border border-white/50"
                                     [style.animation-delay]="i * 100 + 'ms'"
                                     style="animation: slideInUp 0.5s ease-out forwards;">
                                     {{n}}
@@ -204,8 +204,8 @@
                                     {{ userAnswer || '?' }}
                                 </div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-                                <p class="text-white/80 font-bold text-sm md:text-base">{{ missingPos === 7 ? '📈 Tìm
+                            <div class="bg-sky-100/80 backdrop-blur-md px-4 py-2 rounded-full border border-sky-200">
+                                <p class="text-sky-800 font-bold text-sm md:text-base">{{ missingPos === 7 ? '📈 Tìm
                                     quy luật tăng dần' : '📉 Đếm lùi số tiếp theo' }}</p>
                             </div>
                         </div>
@@ -215,12 +215,12 @@
                             class="flex flex-wrap justify-center items-center gap-2 md:gap-4 animate-pop-in">
                             <div *ngFor="let n of sum3Numbers; let last = last" class="contents">
                                 <div
-                                    class="w-16 h-16 md:w-24 md:h-24 bg-white/20 backdrop-blur-md rounded-3xl shadow-lg flex items-center justify-center text-3xl md:text-5xl font-black text-white border border-white/30">
+                                    class="w-16 h-16 md:w-24 md:h-24 bg-white/80 backdrop-blur-md rounded-3xl shadow-lg flex items-center justify-center text-3xl md:text-5xl font-black text-sky-700 border border-white/50">
                                     {{n}}
                                 </div>
-                                <span *ngIf="!last" class="text-3xl md:text-4xl text-white/60 font-bold">+</span>
+                                <span *ngIf="!last" class="text-3xl md:text-4xl text-sky-500 font-bold">+</span>
                             </div>
-                            <span class="text-3xl md:text-4xl text-white/60 font-bold">=</span>
+                            <span class="text-3xl md:text-4xl text-sky-500 font-bold">=</span>
                             <div
                                 class="number-box-active w-16 h-16 md:w-24 md:h-24 rounded-3xl flex items-center justify-center text-3xl md:text-5xl font-black animate-float">
                                 {{ userAnswer || '?' }}
@@ -231,18 +231,18 @@
                         <div *ngIf="missingPos === 11 || missingPos === 12"
                             class="flex flex-col items-center gap-4 w-full px-4 animate-pop-in">
                             <div *ngIf="missingPos === 11"
-                                class="flex flex-wrap justify-center gap-3 p-6 bg-white/20 backdrop-blur-md rounded-[2rem] border border-white/30 max-w-md">
+                                class="flex flex-wrap justify-center gap-3 p-6 bg-white/70 backdrop-blur-md rounded-[2rem] border border-white/50 max-w-md shadow-lg">
                                 <ng-container *ngFor="let shape of shapesToCount">
                                     <span *ngFor="let _ of [].constructor(shape.count)"
                                         class="text-4xl md:text-5xl transition-transform hover:scale-125 cursor-default animate-wiggle">{{shape.type}}</span>
                                 </ng-container>
                             </div>
                             <div *ngIf="missingPos === 12"
-                                class="w-32 h-32 md:w-44 md:h-44 bg-white/20 backdrop-blur-md rounded-[2rem] shadow-xl flex items-center justify-center text-7xl md:text-[8rem] text-white border-2 border-white/30">
+                                class="w-32 h-32 md:w-44 md:h-44 bg-white/70 backdrop-blur-md rounded-[2rem] shadow-xl flex items-center justify-center text-7xl md:text-[8rem] text-sky-700 border-2 border-white/50">
                                 {{shapeForSides}}
                             </div>
-                            <div class="bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20">
-                                <p class="text-white font-bold text-base md:text-lg">
+                            <div class="bg-sky-100/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-sky-200">
+                                <p class="text-sky-800 font-bold text-base md:text-lg">
                                     {{ missingPos === 11 ? shapeQuestion : '🔷 Hình này có bao nhiêu cạnh?' }}
                                 </p>
                             </div>
@@ -281,8 +281,8 @@
                                     class="absolute w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full z-20 shadow-lg border-2 border-white">
                                 </div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20">
-                                <p class="text-white font-bold text-base md:text-lg">⏰ Đồng hồ đang chỉ mấy giờ?</p>
+                            <div class="bg-sky-100/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-sky-200">
+                                <p class="text-sky-800 font-bold text-base md:text-lg">⏰ Đồng hồ đang chỉ mấy giờ?</p>
                             </div>
                         </div>
                     </div>
@@ -294,11 +294,11 @@
                 <div class="relative group">
                     <!-- Glow effect -->
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                        class="absolute inset-0 bg-gradient-to-r from-sky-300/30 via-blue-300/30 to-cyan-300/30 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                     </div>
 
                     <div
-                        class="relative bg-white/15 backdrop-blur-2xl rounded-[2.5rem] p-5 md:p-8 shadow-2xl shadow-purple-900/20 border border-white/30 flex flex-col justify-center">
+                        class="relative bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-5 md:p-8 shadow-2xl shadow-sky-900/20 border border-white/50 flex flex-col justify-center">
 
                         <!-- NUMERIC KEYPAD -->
                         <div *ngIf="inputType === 'numeric'" class="grid grid-cols-3 gap-2 md:gap-3">
@@ -380,7 +380,7 @@
 
     <!-- Finish Overlay -->
     <div *ngIf="isFinished && !showAchievement"
-        class="fixed inset-0 z-[60] flex items-center justify-center bg-indigo-950/90 backdrop-blur-xl animate-fade-in">
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-sky-950/80 backdrop-blur-xl animate-fade-in">
         <div
             class="relative bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-[3.5rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-4 border-yellow-300 overflow-hidden">
             <!-- Decorative elements -->

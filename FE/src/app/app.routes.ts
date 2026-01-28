@@ -80,11 +80,7 @@ export const routes: Routes = [
         title: 'Sắp Xếp',
         loadComponent: () => import('./features/math-modules/sorting/sorting.component').then(m => m.SortingComponent)
       },
-      {
-        path: 'math/geometry',
-        title: 'Hình Học',
-        loadComponent: () => import('./features/math-modules/geometry/geometry.component').then(m => m.GeometryComponent)
-      },
+
       {
         path: 'math/mixed',
         title: 'Toán Tổng Hợp',

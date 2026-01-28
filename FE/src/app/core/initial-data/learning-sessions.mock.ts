@@ -13,7 +13,7 @@ export interface MockLearningSession {
 }
 
 // Store learning sessions in memory
-let MOCK_LEARNING_SESSIONS: MockLearningSession[] = [
+export let MOCK_LEARNING_SESSIONS: MockLearningSession[] = [
     {
         sessionId: 1,
         userId: '1',

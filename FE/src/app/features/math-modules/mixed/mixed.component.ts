@@ -41,6 +41,56 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+
+    /* Custom Input Boxes & Buttons for Sky Theme */
+    .number-box, .operator-box, .choice-btn {
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: #0369a1; /* sky-700 */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .number-box-active, .operator-box-active, .choice-btn-selected {
+      background-color: #ffffff;
+      border: 4px solid #38bdf8; /* sky-400 */
+      color: #0284c7; /* sky-600 */
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.4);
+    }
+    
+    .keypad-btn {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #0369a1;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 10px rgba(7, 89, 133, 0.1);
+      transition: all 0.2s;
+    }
+    .keypad-btn:active { transform: scale(0.95); background-color: #f0f9ff; }
+    
+    .keypad-btn-delete {
+      background-color: #fee2e2;
+      color: #ef4444;
+      border-radius: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .keypad-btn-delete:active { transform: scale(0.95); background-color: #fecaca; }
+
+    .keypad-btn-submit {
+      background-color: #e0f2fe; /* sky-100 */
+      color: #0284c7; /* sky-600 */
+      border-radius: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .keypad-btn-submit:active { transform: scale(0.95); background-color: #bae6fd; }
+
+    .submit-btn {
+      background-color: #0ea5e9; /* sky-500 */
+      color: white;
+      box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+    }
+    .submit-btn:hover { background-color: #0284c7; transform: translateY(-2px); }
+    .submit-btn:active { transform: translateY(0); }
   `]
 })
 export class MixedComponent implements OnInit, OnDestroy {
@@ -620,7 +670,7 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.dailyProgress.incrementCompletion('mixed');
 
     this.learningService.completeSession({
-      levelId: 'math-5', // ID for Mixed Math
+      levelId: 'math-4', // ID for Mixed Math
       score: this.score,
       totalQuestions: this.totalQuestions,
       durationSeconds: durationSeconds

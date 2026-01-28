@@ -6,6 +6,7 @@ import { MascotService } from '../../core/services/mascot.service';
 import { SubjectService } from '../../core/services/subject.service';
 import { SubjectCard } from '../../core/models/subject.model';
 import { GamificationStore } from '../../core/store/gamification.store';
+import { DataSeedingService } from '../../core/services/data-seeding.service';
 
 
 @Component({
@@ -74,9 +75,36 @@ import { GamificationStore } from '../../core/store/gamification.store';
           <div class="card-shine"></div>
         </div>
       </div>
+      <!-- Migrate Data Button (Dev Only) -->
+      <div class="migrate-wrapper">
+        <button (click)="migrateData()" class="migrate-btn" title="Migrate Mock Data to Firebase">
+          🔄 Sync Data
+        </button>
+      </div>
     </div>
   `,
   styles: [`
+    .migrate-wrapper {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 100;
+        opacity: 0.3;
+        transition: opacity 0.3s;
+    }
+    .migrate-wrapper:hover {
+        opacity: 1;
+    }
+    .migrate-btn {
+        background: black;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
     .selection-container {
       min-height: 100vh;
       background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 50%, #38bdf8 100%);
@@ -492,6 +520,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
 export class SubjectSelectionComponent {
   private router = inject(Router);
   private subjectService = inject(SubjectService);
+  private dataSeeding = inject(DataSeedingService);
   mascot = inject(MascotService);
   gameStore = inject(GamificationStore);
 
@@ -515,9 +544,14 @@ export class SubjectSelectionComponent {
     }, 500);
   }
 
-
-
   goBack() {
     this.router.navigate(['/home']);
+  }
+
+  migrateData() {
+    const shouldSeed = window.confirm('Are you sure you want to seed default data to Firebase? This might overwrite existing data with the same IDs.');
+    if (shouldSeed) {
+      this.dataSeeding.seedAllData();
+    }
   }
 }
