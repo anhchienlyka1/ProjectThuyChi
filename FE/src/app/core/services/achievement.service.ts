@@ -104,7 +104,6 @@ export class AchievementService {
   }
 
   private unlockBadge(badge: Badge) {
-    this.mascot.celebrate();
     // Show toast or modal
     console.log(`Unlocked Badge: ${badge.name}`);
     // Ideally use a ToastService here

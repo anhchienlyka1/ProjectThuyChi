@@ -42,18 +42,15 @@ export class MathModulesComponent implements OnInit {
     levels$ = this.mathLevelService.getLevels();
 
     ngOnInit() {
-        this.mascot.setEmotion('happy', 'Chào con! Hãy chọn bài học yêu thích nhé! 🌟', 4000);
         // Refresh daily completions to show updated badges
         this.dailyProgress.refreshCompletions().subscribe();
     }
 
     selectLevel(level: MathLevel) {
         if (level.isLocked) {
-            this.mascot.setEmotion('sad', 'Ồ! Bài này chưa mở khóa. Hãy hoàn thành bài trước nhé! 🔒', 3000);
             return;
         }
 
-        this.mascot.celebrate();
         setTimeout(() => {
             this.router.navigate([level.route]);
         }, 600);
@@ -61,16 +58,13 @@ export class MathModulesComponent implements OnInit {
 
     onLevelHover(level: MathLevel) {
         if (!level.isLocked) {
-            this.mascot.setEmotion('thinking', `${level.title}: ${level.subtitle} ✨`, 2000);
         }
     }
 
     onLevelLeave() {
-        this.mascot.setEmotion('idle', '', 0);
     }
 
     goBack() {
-        this.mascot.setEmotion('happy', 'Hẹn gặp lại bé nhé! 👋', 2000);
         setTimeout(() => {
             this.router.navigate(['/select-subject']);
         }, 400);

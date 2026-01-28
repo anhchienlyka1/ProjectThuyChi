@@ -47,7 +47,6 @@ export class SpellingComponent implements OnInit, OnDestroy {
   previousFastestTime = 0;
 
   ngOnInit(): void {
-    this.mascot.setEmotion('happy', 'Chào con! Hãy chọn vần đúng nhé! 🗣️', 3000);
     this.loadPreviousFastestTime();
     this.loadLevelsFromAPI();
   }
@@ -98,7 +97,6 @@ export class SpellingComponent implements OnInit, OnDestroy {
     // Shuffle options
     this.shuffledOptions = [...this.currentLevel.options].sort(() => Math.random() - 0.5);
 
-    this.mascot.setEmotion('thinking', this.currentLevel.hint, 4000);
   }
 
   selectOption(option: string) {
@@ -138,8 +136,6 @@ export class SpellingComponent implements OnInit, OnDestroy {
     if (answer === missingPart) {
       this.isCorrect = true;
       this.playSound('success');
-      this.mascot.celebrate();
-      this.mascot.setEmotion('happy', 'Đúng rồi! Bé giỏi quá! 🎉', 2000);
 
       this.showFeedback = true;
 
@@ -169,7 +165,6 @@ export class SpellingComponent implements OnInit, OnDestroy {
           }).subscribe({
             next: (response) => {
               const completionCount = this.dailyProgress.getTodayCompletionCount('spelling');
-              this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
 
               // Show completion stats only if new record
               if (isNewRecord) {
@@ -192,7 +187,6 @@ export class SpellingComponent implements OnInit, OnDestroy {
     } else {
       this.isWrong = true;
       this.playSound('wrong');
-      this.mascot.setEmotion('sad', 'Sai rồi, bé chọn lại nhé! 🤔', 2000);
       this.showFeedback = true;
 
       setTimeout(() => {

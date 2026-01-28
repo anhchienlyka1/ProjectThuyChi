@@ -35,7 +35,6 @@ export class SimpleWordsComponent implements OnInit {
   isFinished: boolean = false;
 
   ngOnInit(): void {
-    this.mascot.setEmotion('happy', 'Chào con! Hãy ghép từ đúng nhé! 📚', 3000);
     this.loadLevelsFromAPI();
   }
 
@@ -71,7 +70,6 @@ export class SimpleWordsComponent implements OnInit {
       used: false
     })).sort(() => Math.random() - 0.5);
 
-    this.mascot.setEmotion('thinking', `Bé hãy ghép từ: ${this.currentLevel.hint}`, 4000);
   }
 
   selectOption(option: { char: string, id: number, used: boolean }) {
@@ -114,8 +112,6 @@ export class SimpleWordsComponent implements OnInit {
     if (formedWord === this.currentLevel.word) {
       this.isCorrect = true;
       this.playSound('success');
-      this.mascot.celebrate();
-      this.mascot.setEmotion('happy', 'Đúng rồi! Bé giỏi quá! 🎉', 2000);
 
       this.showFeedback = true;
 
@@ -131,13 +127,11 @@ export class SimpleWordsComponent implements OnInit {
           // Increment daily completion count
           this.dailyProgress.incrementCompletion('simple-words');
           const completionCount = this.dailyProgress.getTodayCompletionCount('simple-words');
-          this.mascot.setEmotion('celebrating', `Chúc mừng bé đã hoàn thành tất cả các bài! Đã hoàn thành ${completionCount} lần hôm nay! 🔥🏆`, 4000);
         }
       }, 2000);
     } else {
       this.isWrong = true;
       this.playSound('wrong');
-      this.mascot.setEmotion('sad', 'Chưa đúng rồi, bé thử lại nhé! 🤔', 2000);
 
       this.showFeedback = true;
 

@@ -127,7 +127,6 @@ export class MixedComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Fetch previous fastest time before starting
     this.loadPreviousFastestTime();
-    this.mascot.setEmotion('happy', 'Chào bé! Hôm nay chúng mình cùng ôn tập Toán nhé! 🌟', 3000);
     this.startGame();
   }
 
@@ -226,7 +225,6 @@ export class MixedComponent implements OnInit, OnDestroy {
       ? (this.operation === '+' ? `${this.firstNumber} cộng ${this.secondNumber} bằng bao nhiêu?` : `${this.firstNumber} trừ ${this.secondNumber} bằng bao nhiêu?`)
       : 'Số nào còn thiếu nhỉ?';
 
-    this.mascot.setEmotion('thinking', prompt, 4000);
   }
 
   generateFindOperatorQuestion() {
@@ -249,7 +247,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     }
 
     this.correctAnswer = this.operation;
-    this.mascot.setEmotion('thinking', 'Điền dấu thích hợp vào chỗ trống nào!', 4000);
   }
 
   generateComparisonQuestion() {
@@ -292,7 +289,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     else if (this.compareLeftVal < this.compareRightVal) this.correctAnswer = '<';
     else this.correctAnswer = '=';
 
-    this.mascot.setEmotion('thinking', 'So sánh hai bên nhé!', 4000);
   }
 
   generateChainQuestion() {
@@ -338,7 +334,6 @@ export class MixedComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.mascot.setEmotion('thinking', 'Tính toán cẩn thận nha!', 4000);
   }
 
   // Type 7: Pattern Question - Quy luật số
@@ -356,7 +351,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     }
 
     this.correctAnswer = start + 4 * this.patternStep;
-    this.mascot.setEmotion('thinking', 'Tìm quy luật và điền số tiếp theo nhé!', 4000);
   }
 
   // Type 8: Even/Odd Question - Số chẵn/lẻ
@@ -393,7 +387,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.correctAnswer = correctNum;
 
     const typeText = this.evenOddType === 'even' ? 'chẵn' : 'lẻ';
-    this.mascot.setEmotion('thinking', `Chọn số ${typeText} nhé!`, 4000);
   }
 
   // Type 9: Countdown Question - Đếm lùi
@@ -410,7 +403,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     }
 
     this.correctAnswer = start - 4 * this.countdownStep;
-    this.mascot.setEmotion('thinking', 'Đếm lùi và điền số tiếp theo nhé!', 4000);
   }
 
   // Type 10: Sum of 3 numbers - Tổng 3 số
@@ -427,7 +419,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.sum3Numbers = [n1, n2, n3];
     this.correctAnswer = n1 + n2 + n3;
 
-    this.mascot.setEmotion('thinking', `Tính ${n1} cộng ${n2} cộng ${n3} bằng bao nhiêu?`, 4000);
   }
 
   // Type 11: Count Shapes - Đếm hình
@@ -462,7 +453,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.shapeQuestion = `Đếm số ${targetShape}`;
     this.correctAnswer = targetCount;
 
-    this.mascot.setEmotion('thinking', `Đếm xem có bao nhiêu ${shapeNames[targetIndex]} nhé!`, 4000);
   }
 
   // Type 12: Count Sides - Đếm cạnh
@@ -483,7 +473,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.shapeSidesCount = selected.sides;
     this.correctAnswer = selected.sides;
 
-    this.mascot.setEmotion('thinking', `Hình ${selected.name} có bao nhiêu cạnh?`, 4000);
   }
 
   // Type 13: Clock Reading - Xem đồng hồ
@@ -507,7 +496,6 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.clockOptions = options.sort(() => Math.random() - 0.5);
     this.correctAnswer = this.clockHour;
 
-    this.mascot.setEmotion('thinking', 'Đồng hồ đang chỉ mấy giờ nhỉ?', 4000);
   }
 
   readQuestion() {
@@ -593,11 +581,9 @@ export class MixedComponent implements OnInit, OnDestroy {
         this.score += 10;
         this.correctCount++;
       }
-      this.mascot.celebrate();
 
       const msgs = ['Tuyệt vời!', 'Xuất sắc!', 'Bé giỏi lắm!', 'Hoan hô!'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
-      this.mascot.setEmotion('happy', msg, 2000);
 
       setTimeout(() => {
         this.showFeedback = false;
@@ -616,7 +602,6 @@ export class MixedComponent implements OnInit, OnDestroy {
 
       const msgs = ['Chưa đúng rồi', 'Thử lại nào', 'Cố lên bé ơi'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
-      this.mascot.setEmotion('sad', msg, 2000);
 
       // Allow retry without moving to next question
       setTimeout(() => {
@@ -645,7 +630,6 @@ export class MixedComponent implements OnInit, OnDestroy {
         const starMessage = response.starsEarned > 0
           ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
           : `Bé hãy cố gắng hơn lần sau nhé!`;
-        this.mascot.setEmotion('celebrating', starMessage, 5000);
 
         if (response.achievement) {
           this.earnedAchievement = response.achievement;

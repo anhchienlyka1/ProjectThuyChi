@@ -96,7 +96,6 @@ export class AdditionComponent implements OnInit, OnDestroy {
             this.config = config;
             this.items = config.items;
             this.totalQuestions = config.totalQuestions;
-            this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
             this.startGame();
         });
     }
@@ -159,7 +158,6 @@ export class AdditionComponent implements OnInit, OnDestroy {
             .replace('{b}', this.secondNumber.toString())
             || `${this.firstNumber} + ${this.secondNumber} = ?`;
 
-        this.mascot.setEmotion('thinking', prompt, 4000);
         this.readQuestion(); // [NEW] Auto-read question
     }
 
@@ -199,11 +197,9 @@ export class AdditionComponent implements OnInit, OnDestroy {
                 this.score += (this.config.pointsPerQuestion || 10);
                 this.correctCount++;
             }
-            this.mascot.celebrate();
 
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
-            this.mascot.setEmotion('happy', msg, 2000);
 
             setTimeout(() => {
                 this.showFeedback = false;
@@ -222,7 +218,6 @@ export class AdditionComponent implements OnInit, OnDestroy {
 
             const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
-            this.mascot.setEmotion('sad', msg, 2000);
 
             // Allow retry without moving to next question
             setTimeout(() => {
@@ -256,7 +251,6 @@ export class AdditionComponent implements OnInit, OnDestroy {
                 const starMessage = response.starsEarned > 0
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
-                this.mascot.setEmotion('celebrating', starMessage, 5000);
 
                 // Check if math lesson achievement was earned (improvementAchievement)
                 if (response.improvementAchievement) {
@@ -298,7 +292,6 @@ export class AdditionComponent implements OnInit, OnDestroy {
             error: (err) => {
                 console.error('Failed to save progress', err);
                 const completionCount = this.dailyProgress.getTodayCompletionCount('addition');
-                this.mascot.setEmotion('celebrating', `Xuất sắc! Bé đã hoàn thành bài tập! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
                 // Show results even on error - only if new record
                 this.isFinished = true;
                 if (isNewRecord) {

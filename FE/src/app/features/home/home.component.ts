@@ -573,12 +573,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.mascot.greet();
     }, 1000);
   }
 
   pokeMascot() {
-    this.mascot.setEmotion('happy', 'Hihi, nhột quá!', true, 2000);
   }
 
   startLearning() {

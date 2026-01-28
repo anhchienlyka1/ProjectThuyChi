@@ -75,7 +75,6 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
         this.service.getConfig().subscribe(config => {
             this.config = config;
             this.totalQuestions = config.totalQuestions;
-            this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
             this.startGame();
         });
     }
@@ -122,7 +121,6 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
         const prompt = this.config.mascotPrompts?.question
             .replace('{index}', this.currentQuestionIndex.toString())
             || "Số nào còn thiếu nhỉ?";
-        this.mascot.setEmotion('thinking', prompt, 4000);
     }
 
     generateSequence() {
@@ -222,9 +220,7 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
                 this.score += (this.config.pointsPerQuestion || 10);
                 this.correctCount++;
             }
-            this.mascot.celebrate();
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
-            this.mascot.setEmotion('happy', msgs[Math.floor(Math.random() * msgs.length)], 2000);
 
             // Move to next question or finish
             setTimeout(() => {
@@ -243,7 +239,6 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
             this.hasErrorInCurrentRound = true;
 
             const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
-            this.mascot.setEmotion('sad', msgs[Math.floor(Math.random() * msgs.length)], 2000);
 
             // Allow retry without moving to next question - shuffle options
             setTimeout(() => {
@@ -273,7 +268,6 @@ export class FillInBlankComponent implements OnInit, OnDestroy {
                 const starMessage = response.starsEarned > 0
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
-                this.mascot.setEmotion('celebrating', starMessage, 5000);
 
                 if (isNewRecord) {
                     setTimeout(() => {

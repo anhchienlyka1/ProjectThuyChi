@@ -93,7 +93,6 @@ export class SubtractionComponent implements OnInit, OnDestroy {
             this.config = config;
             this.items = config.items;
             this.totalQuestions = config.totalQuestions;
-            this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
             this.startGame();
         });
     }
@@ -161,7 +160,6 @@ export class SubtractionComponent implements OnInit, OnDestroy {
             .replace('{b}', this.secondNumber.toString())
             || `${this.firstNumber} - ${this.secondNumber} = ?`;
 
-        this.mascot.setEmotion('thinking', prompt, 4000);
         this.readQuestion();
     }
 
@@ -195,9 +193,7 @@ export class SubtractionComponent implements OnInit, OnDestroy {
                 this.score += (this.config.pointsPerQuestion || 10);
                 this.correctCount++;
             }
-            this.mascot.celebrate();
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
-            this.mascot.setEmotion('happy', msgs[Math.floor(Math.random() * msgs.length)], 2000);
 
             // Move to next question or finish
             setTimeout(() => {
@@ -216,7 +212,6 @@ export class SubtractionComponent implements OnInit, OnDestroy {
             this.hasErrorInCurrentRound = true;
 
             const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
-            this.mascot.setEmotion('sad', msgs[Math.floor(Math.random() * msgs.length)], 2000);
 
             // Allow retry without moving to next question - regenerate options
             setTimeout(() => {
@@ -245,7 +240,6 @@ export class SubtractionComponent implements OnInit, OnDestroy {
                 const starMessage = response.starsEarned > 0
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
-                this.mascot.setEmotion('celebrating', starMessage, 5000);
 
                 if (response.improvementAchievement) {
                     this.earnedAchievement = {

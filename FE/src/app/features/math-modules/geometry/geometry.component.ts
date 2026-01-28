@@ -110,7 +110,6 @@ export class GeometryComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.loadPreviousFastestTime();
-        this.mascot.setEmotion('happy', 'Chào mừng bé đến với bài học Hình Học! 📐', 3000);
         this.startGame();
     }
 
@@ -195,7 +194,6 @@ export class GeometryComponent implements OnInit, OnDestroy {
         this.currentQuestion = `Bé hãy tìm ${this.targetShape.questionName} nhé!`;
 
         // Mascot prompt
-        this.mascot.setEmotion('thinking', this.currentQuestion, 4000);
         this.readQuestion();
     }
 
@@ -288,7 +286,6 @@ export class GeometryComponent implements OnInit, OnDestroy {
         }
         this.countingOptions.sort(() => Math.random() - 0.5);
 
-        this.mascot.setEmotion('thinking', this.currentQuestion, 4000);
         this.audioService.speak(this.currentQuestion.replace(/\*\*/g, ''));
     }
 
@@ -366,14 +363,12 @@ export class GeometryComponent implements OnInit, OnDestroy {
                 this.score += 10;
                 this.correctCount++;
             }
-            this.mascot.celebrate();
             this.audioService.playCorrectSound();
         } else {
             if (!this.hasErrorInCurrentRound) {
                 this.wrongCount++;
             }
             this.hasErrorInCurrentRound = true;
-            this.mascot.setEmotion('sad', 'Chưa đúng rồi, bé thử lại nhé!', 2000);
             this.audioService.playWrongSound();
         }
 
@@ -411,7 +406,6 @@ export class GeometryComponent implements OnInit, OnDestroy {
                 const starMessage = response.starsEarned > 0
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
-                this.mascot.setEmotion('celebrating', starMessage, 5000);
 
                 if (response.improvementAchievement) {
                     this.earnedAchievement = { ...response.improvementAchievement, date: new Date().toLocaleDateString('vi-VN') };

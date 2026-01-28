@@ -26,75 +26,34 @@ export class MascotService {
    * @param duration How long before staying idle (ms)
    */
   setEmotion(emotion: MascotEmotion, text?: string, speakOrDuration?: boolean | number, durationArg?: number) {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    let speak = true; // Changed default to true - speak by default
-    let duration = 4000;
-
-    // Handle overload: if 3rd arg is number, it's duration, and speak defaults to true
-    if (typeof speakOrDuration === 'number') {
-      duration = speakOrDuration;
-      speak = true; // Changed: speak by default even when duration is provided
-    } else if (typeof speakOrDuration === 'boolean') {
-      speak = speakOrDuration;
-      if (durationArg !== undefined) duration = durationArg;
-    }
-
-    this.emotion.set(emotion);
-    if (text) {
-      this.message.set(text);
-      if (speak) {
-        this.ttsService.speak(text);
-      }
-    }
-
-    // Play SFX based on emotion (Generic sounds from assets if available)
-    // Note: User can add these files to assets/sounds/ later
-    if (emotion === 'celebrating') this.audioEngine.playSFX('assets/sounds/success.mp3');
-    if (emotion === 'sad') this.audioEngine.playSFX('assets/sounds/error.mp3');
-
-    // Clear previous timeout
-    if (this.idleTimeout) clearTimeout(this.idleTimeout);
-
-    // Auto-revert to idle unless it's a persistent state
-    if (emotion !== 'idle') {
-      this.idleTimeout = setTimeout(() => {
-        this.emotion.set('idle');
-        this.message.set('');
-      }, duration);
-    }
+    // Logic removed
   }
 
   /**
    * Helper for correct answer/positive reinforcement
    */
   celebrate(msg: string = 'Hoan hô! Bé giỏi quá!') {
-    this.setEmotion('celebrating', msg, true, 5000);
+    // Logic removed
   }
 
   /**
    * Helper for incorrect answer/encouragement
    */
   encourage(msg: string = 'Không sao đâu, bé thử lại nhé!') {
-    this.setEmotion('sad', msg, true, 4000);
+    // Logic removed
   }
 
   /**
    * Helper for thinking/processing state
    */
   think(msg: string = 'Hmm... Để tớ xem nào...') {
-    this.setEmotion('thinking', msg, false, 3000);
+    // Logic removed
   }
 
   /**
    * Idle greeting
    */
   greet() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const hour = new Date().getHours();
-    let msg = 'Chào bé yêu!';
-    if (hour < 12) msg = 'Chào buổi sáng!';
-    else if (hour > 18) msg = 'Chúc bé buổi tối vui vẻ!';
-    this.setEmotion('happy', msg, true, 4000);
+    // Logic removed
   }
 }

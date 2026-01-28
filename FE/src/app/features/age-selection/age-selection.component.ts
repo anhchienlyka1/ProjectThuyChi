@@ -429,7 +429,6 @@ export class AgeSelectionComponent {
 
     this.ageService.selectedAge = age.value;
 
-    this.mascot.setEmotion('happy', `Bé ${age.value} tuổi rồi. Lớn quá nhỉ!`, 2000);
     setTimeout(() => {
       // Navigate to select subject after selecting age
       this.router.navigate(['/select-subject']);
@@ -440,11 +439,9 @@ export class AgeSelectionComponent {
     if (this.isAgeDisabled(age.value)) {
       return;
     }
-    this.mascot.setEmotion('thinking', `Bé là ${age.value} tuổi đúng không?`, 1500);
   }
 
   onAgeLeave() {
-    this.mascot.message.set('');
   }
 
   goBack() {

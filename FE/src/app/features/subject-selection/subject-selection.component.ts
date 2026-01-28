@@ -6,13 +6,19 @@ import { MascotService } from '../../core/services/mascot.service';
 import { SubjectService } from '../../core/services/subject.service';
 import { SubjectCard } from '../../core/models/subject.model';
 import { GamificationStore } from '../../core/store/gamification.store';
+import { SplineSceneComponent } from '../../shared/components/spline-scene.component';
 
 @Component({
   selector: 'app-subject-selection',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent, RouterLink],
+  imports: [CommonModule, KidButtonComponent, RouterLink, SplineSceneComponent],
   template: `
     <div class="selection-container">
+      
+      <!-- Spline Background -->
+      <div class="spline-background">
+        <app-spline-scene [sceneUrl]="sceneUrl"></app-spline-scene>
+      </div>
 
       <!-- Back Button -->
       <div class="back-button-wrapper">
@@ -33,22 +39,6 @@ import { GamificationStore } from '../../core/store/gamification.store';
         </div>
       </a>
 
-      <!-- Decorative Floating Icons -->
-      <div class="floating-decorations">
-        <div class="floating-icon icon-1">⭐</div>
-        <div class="floating-icon icon-2">📚</div>
-        <div class="floating-icon icon-3">✨</div>
-        <div class="floating-icon icon-4">🎨</div>
-        <div class="floating-icon icon-5">🌈</div>
-        <div class="floating-icon icon-6">💡</div>
-        <div class="floating-icon icon-7">🎵</div>
-        <div class="floating-icon icon-8">🦋</div>
-        <div class="floating-icon icon-9">🌟</div>
-        <div class="floating-icon icon-10">🎈</div>
-        <div class="floating-icon icon-11">🌸</div>
-        <div class="floating-icon icon-12">☁️</div>
-      </div>
-
       <!-- Header -->
       <div class="header">
         <h1 class="page-title">Chọn môn học nhé!</h1>
@@ -57,20 +47,18 @@ import { GamificationStore } from '../../core/store/gamification.store';
 
       <!-- Subject Cards Grid -->
       <div class="cards-grid">
-        <div *ngFor="let subject of subjects$ | async"
+        <div *ngFor="let subject of subjects$ | async" 
              class="subject-card"
              [class.disabled]="isDisabled(subject.id)"
              [style.background]="subject.gradient"
-             (click)="selectSubject(subject)"
-             (mouseenter)="onCardHover(subject)"
-             (mouseleave)="onCardLeave()">
-
+             (click)="selectSubject(subject)">
+          
           <div class="card-icon">{{ subject.icon }}</div>
           <h2 class="card-title">{{ subject.title }}</h2>
-
+          
           <!-- Coming Soon Badge for disabled subjects -->
           <div class="coming-soon-badge" *ngIf="isDisabled(subject.id)">Sắp ra mắt</div>
-
+          
           <!-- Decorative shine effect -->
           <div class="card-shine"></div>
         </div>
@@ -81,7 +69,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
         <span class="mascot-icon">🦄</span>
         <p>{{ mascot.message() }}</p>
       </div>
-
+      
     </div>
   `,
   styles: [`
@@ -94,7 +82,15 @@ import { GamificationStore } from '../../core/store/gamification.store';
       align-items: center;
       justify-content: center; /* Center vertically */
       position: relative;
-      transform: translateZ(0);
+      overflow: hidden; /* Ensure spline doesn't overflow */
+    }
+    
+    .spline-background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.8; /* Slight transparency to blend with background gradient */
+      pointer-events: none; /* Allow clicks to pass through to cards */
     }
 
     .back-button-wrapper {
@@ -154,48 +150,13 @@ import { GamificationStore } from '../../core/store/gamification.store';
       margin-top: -8px;
     }
 
-    .floating-decorations {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .floating-icon {
-      position: absolute;
-      font-size: 2.5rem;
-      opacity: 0.15;
-      animation: float-gentle 8s ease-in-out infinite;
-    }
-
-    /* Position each icon uniquely */
-    .icon-1 { top: 10%; left: 8%; animation-delay: 0s; font-size: 2rem; }
-    .icon-2 { top: 15%; right: 12%; animation-delay: 1s; font-size: 2.8rem; }
-    .icon-3 { top: 25%; left: 15%; animation-delay: 2s; font-size: 2.2rem; }
-    .icon-4 { top: 35%; right: 8%; animation-delay: 0.5s; font-size: 3rem; }
-    .icon-5 { top: 45%; left: 5%; animation-delay: 1.5s; font-size: 2.5rem; }
-    .icon-6 { top: 55%; right: 15%; animation-delay: 2.5s; font-size: 2rem; }
-    .icon-7 { top: 65%; left: 10%; animation-delay: 3s; font-size: 2.8rem; }
-    .icon-8 { top: 75%; right: 10%; animation-delay: 1.8s; font-size: 2.3rem; }
-    .icon-9 { top: 20%; left: 50%; animation-delay: 2.2s; font-size: 2rem; }
-    .icon-10 { top: 70%; left: 50%; animation-delay: 0.8s; font-size: 2.5rem; }
-    .icon-11 { top: 40%; right: 25%; animation-delay: 1.2s; font-size: 2.6rem; }
-    .icon-12 { top: 60%; left: 30%; animation-delay: 2.8s; font-size: 3.2rem; }
-
-    @keyframes float-gentle {
-      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-      25% { transform: translateY(-15px) translateX(10px) rotate(5deg); }
-      50% { transform: translateY(-25px) translateX(-5px) rotate(-3deg); }
-      75% { transform: translateY(-10px) translateX(8px) rotate(4deg); }
-    }
-
     .header {
       text-align: center;
       margin-bottom: 40px;
       width: 100%;
       max-width: 1200px;
       z-index: 5;
+      position: relative; /* Ensure above spline */
     }
 
     .page-title {
@@ -207,6 +168,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       background-clip: text;
       margin: 0 0 10px 0;
       animation: fadeIn 0.6s ease-out;
+      text-shadow: 0 4px 12px rgba(255,255,255,0.5); /* Make text pop against 3D */
     }
 
     .page-subtitle {
@@ -215,6 +177,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       font-weight: 700;
       margin: 0;
       animation: fadeIn 0.6s ease-out 0.2s backwards;
+      text-shadow: 0 2px 4px rgba(255,255,255,0.5);
     }
 
     @keyframes fadeIn {
@@ -231,6 +194,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       animation: fadeIn 0.8s ease-out 0.4s backwards;
       margin-bottom: 40px;
       z-index: 5;
+      position: relative; /* Ensure above spline */
     }
 
     .subject-card {
@@ -248,6 +212,8 @@ import { GamificationStore } from '../../core/store/gamification.store';
       min-height: 300px;
       border: 6px solid rgba(255, 255, 255, 0.6);
       will-change: transform;
+      background: rgba(255, 255, 255, 0.2); /* Glassmorphism base */
+      backdrop-filter: blur(10px); /* Glass effect */
     }
 
     .subject-card.disabled {
@@ -339,7 +305,7 @@ import { GamificationStore } from '../../core/store/gamification.store';
       animation: slideUp 0.3s ease-out backwards;
       z-index: 20;
       white-space: nowrap;
-      pointer-events: none; /* Let clicks pass through */
+      pointer-events: none;
     }
 
     .mascot-icon {
@@ -395,6 +361,10 @@ export class SubjectSelectionComponent {
 
   subjects$ = this.subjectService.getSubjects();
 
+  // URL placeholder - Bạn có thể thay đổi link này bằng scene của bạn
+  // Ví dụ: https://prod.spline.design/your-scene-id/scene.splinecode
+  sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyWf8Z9e3/scene.splinecode';
+
   // List of temporarily disabled subjects
   private disabledSubjects = ['fairy-tales', 'english', 'vietnamese', 'games']; // Temporarily lock vietnamese and games
 
@@ -405,35 +375,15 @@ export class SubjectSelectionComponent {
   selectSubject(subject: SubjectCard) {
     // Prevent navigation if subject is disabled
     if (this.isDisabled(subject.id)) {
-      this.mascot.setEmotion('thinking', 'Môn này sắp ra mắt nhé bé! Chọn môn khác đi!', 2000);
       return;
     }
 
-    this.mascot.setEmotion('happy', `Tuyệt vời! Cùng học ${subject.title} nhé!`, 2000);
     setTimeout(() => {
       this.router.navigate([subject.route]);
     }, 500);
   }
 
-  onCardHover(subject: SubjectCard) {
-    if (this.isDisabled(subject.id)) {
-      this.mascot.setEmotion('thinking', 'Môn này sắp có thôi bé nhé!', 1500);
-      return;
-    }
 
-    const messages = [
-      'Bé thích môn này à?',
-      'Chọn đi bé!',
-      'Môn này hay lắm!',
-      'Cùng học nhé!'
-    ];
-    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    this.mascot.setEmotion('thinking', randomMsg, 1500);
-  }
-
-  onCardLeave() {
-    this.mascot.message.set('');
-  }
 
   goBack() {
     this.router.navigate(['/home']);

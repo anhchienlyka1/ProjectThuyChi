@@ -129,7 +129,6 @@ export class MascotComponent {
 
   poke() {
     if (this.emotion() === 'idle') {
-      this.mascotService.setEmotion('happy', 'Hihi! Chạm vào tớ làm gì thế?', true, 2000);
     }
   }
 }

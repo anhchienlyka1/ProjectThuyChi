@@ -58,13 +58,11 @@ export class AlphabetComponent implements OnInit {
     selectedChar: AlphabetChar | null = null;
 
     ngOnInit() {
-        this.mascot.setEmotion('happy', 'Cùng khám phá bảng chữ cái Tiếng Việt nhé! 🍎', 3000);
         this.selectedChar = this.alphabet[0];
     }
 
     selectChar(char: AlphabetChar) {
         this.selectedChar = char;
-        this.mascot.setEmotion('happy', `${char.upper} là trong từ "${char.example}" đó!`, 2000);
         this.playAudio(char);
     }
 

@@ -89,7 +89,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
       this.config = config;
       this.totalQuestions = config.totalQuestions;
       // Trigger start message
-      this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
       this.startGame();
     });
   }
@@ -154,7 +153,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
 
     const prompt = this.config.mascotPrompts?.question.replace('{index}', this.currentQuestionIndex.toString())
       || `Câu hỏi số ${this.currentQuestionIndex}: So sánh hai phép tính!`;
-    this.mascot.setEmotion('thinking', prompt, 3000);
     this.readQuestion();
   }
 
@@ -177,11 +175,9 @@ export class ComparisonComponent implements OnInit, OnDestroy {
         this.score += (this.config.pointsPerQuestion || 10);
         this.correctCount++;
       }
-      this.mascot.celebrate();
 
       const msgs = this.config.feedback?.correct || ['Hoan hô!'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
-      this.mascot.setEmotion('happy', msg, 2000);
 
       // Move to next question or finish
       setTimeout(() => {
@@ -201,7 +197,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
 
       const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
       const msg = msgs[Math.floor(Math.random() * msgs.length)];
-      this.mascot.setEmotion('sad', msg, 2000);
 
       // Allow retry without moving to next question
       setTimeout(() => {
@@ -229,7 +224,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
         const starMessage = response.starsEarned > 0
           ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
           : `Bé hãy cố gắng hơn lần sau nhé!`;
-        this.mascot.setEmotion('celebrating', starMessage, 5000);
 
         // Check if achievement was earned (improvementAchievement contains math lesson certificate)
         if (response.improvementAchievement) {
@@ -256,7 +250,6 @@ export class ComparisonComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Failed to save progress', err);
         const completionCount = this.dailyProgress.getTodayCompletionCount('comparison');
-        this.mascot.setEmotion('celebrating', `Chúc mừng bé hoàn thành bài học! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`, 5000);
         // Show results even on error
         this.isFinished = true;
         setTimeout(() => {

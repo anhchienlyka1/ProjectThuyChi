@@ -87,7 +87,6 @@ export class SortingComponent implements OnInit, OnDestroy {
             this.config = config;
             this.questions = config.questions;
             this.totalQuestions = this.questions.length;
-            this.mascot.setEmotion('happy', config.mascotPrompts.start, 3000);
             this.startGame();
         });
     }
@@ -141,7 +140,6 @@ export class SortingComponent implements OnInit, OnDestroy {
             .replace('{question}', this.currentQuestion.question)
             || this.currentQuestion.question;
 
-        this.mascot.setEmotion('thinking', prompt, 4000);
     }
 
     handleItemClick(item: number) {
@@ -216,10 +214,8 @@ export class SortingComponent implements OnInit, OnDestroy {
     handleSuccess(roundFinished: boolean) {
         this.isCorrect = true;
         this.showFeedback = true;
-        this.mascot.celebrate();
         const msgs = this.config.feedback?.correct || ['Đúng rồi!'];
         this.feedbackMessage = msgs[Math.floor(Math.random() * msgs.length)];
-        this.mascot.setEmotion('happy', this.feedbackMessage, 2000);
 
         setTimeout(() => {
             this.showFeedback = false;
@@ -236,7 +232,6 @@ export class SortingComponent implements OnInit, OnDestroy {
         this.showFeedback = true;
         const msgs = this.config.feedback?.wrong || ['Chưa đúng rồi!'];
         this.feedbackMessage = msgs[Math.floor(Math.random() * msgs.length)];
-        this.mascot.setEmotion('sad', this.feedbackMessage, 2000);
 
         setTimeout(() => {
             this.showFeedback = false;
@@ -263,7 +258,6 @@ export class SortingComponent implements OnInit, OnDestroy {
                 const starMessage = response.starsEarned > 0
                     ? `Bé đạt ${response.starsEarned} sao! Đã hoàn thành ${completionCount} lần hôm nay! 🔥`
                     : `Bé hãy cố gắng hơn lần sau nhé!`;
-                this.mascot.setEmotion('celebrating', starMessage, 5000);
 
                 if (isNewRecord) {
                     setTimeout(() => {
