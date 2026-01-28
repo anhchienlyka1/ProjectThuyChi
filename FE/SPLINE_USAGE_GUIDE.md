@@ -27,7 +27,8 @@ import { SplineSceneComponent } from '../../shared/components/spline-scene.compo
 })
 export class YourComponent {
   // URL của scene bạn xuất từ Spline (chọn Export -> Public Link trong Spline Design)
-  sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyWf8Z9e3/scene.splinecode';
+  // Lưu ý: Nếu gặp lỗi AccessDenied, có thể link cũ đã hết hạn hoặc bị xóa. Hãy dùng link mới.
+  sceneUrl = 'https://prod.spline.design/S8o9DE-254xyJ0lv/scene.splinecode';
 }
 ```
 
@@ -55,3 +56,10 @@ Tôi đã cài đặt thành công:
 - `@splinetool/viewer`
 
 Chúc bạn có những thiết kế 3D tuyệt vời!
+
+## 5. Component Tạo Sẵn: `Mascot3dComponent`
+
+Vị trí: `src/app/shared/components/mascot-3d/mascot-3d.component.ts`
+
+Đây là một ví dụ nâng cao sử dụng `SplineSceneComponent` để hiển thị nhân vật 3D có hội thoại.
+

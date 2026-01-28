@@ -43,7 +43,8 @@ export class MathModulesComponent implements OnInit {
 
     ngOnInit() {
         // Refresh daily completions to show updated badges
-        this.dailyProgress.refreshCompletions().subscribe();
+        // Refresh daily completions to show updated badges
+        this.dailyProgress.refreshCompletions();
     }
 
     selectLevel(level: MathLevel) {

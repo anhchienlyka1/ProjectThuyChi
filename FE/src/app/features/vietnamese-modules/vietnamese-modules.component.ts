@@ -27,7 +27,8 @@ export class VietnameseModulesComponent implements OnInit {
 
     ngOnInit() {
         // Refresh daily completions to show updated badges
-        this.dailyProgress.refreshCompletions().subscribe();
+        // Refresh daily completions to show updated badges
+        this.dailyProgress.refreshCompletions();
     }
 
     selectLevel(level: VietnameseLevel) {
@@ -49,7 +50,7 @@ export class VietnameseModulesComponent implements OnInit {
     }
 
     goBack() {
-        
+
         setTimeout(() => {
             this.router.navigate(['/select-subject']);
         }, 400);

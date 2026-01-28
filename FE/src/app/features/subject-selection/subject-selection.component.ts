@@ -6,20 +6,31 @@ import { MascotService } from '../../core/services/mascot.service';
 import { SubjectService } from '../../core/services/subject.service';
 import { SubjectCard } from '../../core/models/subject.model';
 import { GamificationStore } from '../../core/store/gamification.store';
-import { SplineSceneComponent } from '../../shared/components/spline-scene.component';
+
 
 @Component({
   selector: 'app-subject-selection',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent, RouterLink, SplineSceneComponent],
+  imports: [CommonModule, KidButtonComponent, RouterLink],
   template: `
     <div class="selection-container">
       
-      <!-- Spline Background -->
-      <div class="spline-background">
-        <app-spline-scene [sceneUrl]="sceneUrl"></app-spline-scene>
+      <!-- Animated Background Elements -->
+      <div class="floating-elements">
+        <span class="float-icon icon-1">⭐</span>
+        <span class="float-icon icon-2">📚</span>
+        <span class="float-icon icon-3">🎨</span>
+        <span class="float-icon icon-4">🎵</span>
+        <span class="float-icon icon-5">🌈</span>
+        <span class="float-icon icon-6">🦋</span>
       </div>
 
+      <!-- Clouds -->
+      <div class="clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+      </div>
       <!-- Back Button -->
       <div class="back-button-wrapper">
         <kid-button (click)="goBack()" variant="neutral" size="md">
@@ -63,36 +74,101 @@ import { SplineSceneComponent } from '../../shared/components/spline-scene.compo
           <div class="card-shine"></div>
         </div>
       </div>
-
-      <!-- Mascot Encouragement -->
-      <div class="mascot-message" *ngIf="mascot.message()">
-        <span class="mascot-icon">🦄</span>
-        <p>{{ mascot.message() }}</p>
-      </div>
-      
     </div>
   `,
   styles: [`
     .selection-container {
       min-height: 100vh;
-      background: linear-gradient(135deg, #bae6fd 0%, #7dd3fc 50%, #38bdf8 100%);
+      background: linear-gradient(180deg, #bae6fd 0%, #7dd3fc 50%, #38bdf8 100%);
       padding: 30px 20px 60px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center; /* Center vertically */
       position: relative;
-      overflow: hidden; /* Ensure spline doesn't overflow */
-    }
-    
-    .spline-background {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      opacity: 0.8; /* Slight transparency to blend with background gradient */
-      pointer-events: none; /* Allow clicks to pass through to cards */
+      overflow: hidden; 
     }
 
+    /* Floating Elements */
+    .floating-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .float-icon {
+      position: absolute;
+      font-size: 3rem;
+      opacity: 0.2;
+      animation: floatAround 20s ease-in-out infinite;
+    }
+
+    .icon-1 { top: 10%; left: 10%; animation-delay: 0s; }
+    .icon-2 { top: 20%; right: 15%; animation-delay: 2s; }
+    .icon-3 { bottom: 20%; left: 15%; animation-delay: 4s; }
+    .icon-4 { top: 60%; right: 10%; animation-delay: 1s; }
+    .icon-5 { bottom: 30%; right: 25%; animation-delay: 3s; }
+    .icon-6 { top: 40%; left: 20%; animation-delay: 5s; }
+
+    @keyframes floatAround {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(30px, -30px) rotate(90deg); }
+      50% { transform: translate(-20px, -50px) rotate(180deg); }
+      75% { transform: translate(20px, -30px) rotate(270deg); }
+    }
+
+    /* Clouds */
+    .clouds {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 100px;
+      animation: cloudDrift 40s linear infinite;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 100px;
+    }
+
+    .cloud-1 {
+      width: 120px; height: 50px; top: 15%; left: -120px; animation-duration: 35s;
+    }
+    .cloud-1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+    .cloud-1::after { width: 70px; height: 45px; top: -20px; right: 15px; }
+
+    .cloud-2 {
+      width: 140px; height: 55px; top: 50%; left: -140px; animation-duration: 40s; animation-delay: 10s;
+    }
+    .cloud-2::before { width: 65px; height: 65px; top: -32px; left: 20px; }
+    .cloud-2::after { width: 75px; height: 50px; top: -22px; right: 20px; }
+
+    .cloud-3 {
+      width: 100px; height: 45px; top: 75%; left: -100px; animation-duration: 45s; animation-delay: 20s;
+    }
+    .cloud-3::before { width: 50px; height: 50px; top: -25px; left: 10px; }
+    .cloud-3::after { width: 60px; height: 40px; top: -15px; right: 10px; }
+
+    @keyframes cloudDrift {
+      0% { left: -150px; }
+      100% { left: 110%; }
+    }
+    
     .back-button-wrapper {
       position: absolute;
       top: 20px;
@@ -210,10 +286,10 @@ import { SplineSceneComponent } from '../../shared/components/spline-scene.compo
       align-items: center;
       justify-content: center;
       min-height: 300px;
-      border: 6px solid rgba(255, 255, 255, 0.6);
+      border: 4px solid rgba(255, 255, 255, 0.8);
       will-change: transform;
-      background: rgba(255, 255, 255, 0.2); /* Glassmorphism base */
-      backdrop-filter: blur(10px); /* Glass effect */
+      background: rgba(255, 255, 255, 0.65); /* Increased opacity to mask 3D bg better */
+      backdrop-filter: blur(16px) saturate(180%); /* Stronger blur */
     }
 
     .subject-card.disabled {
@@ -319,12 +395,72 @@ import { SplineSceneComponent } from '../../shared/components/spline-scene.compo
       color: #6b7280;
     }
 
+    .mascot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+      animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .mascot-box {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(145deg, #ffffff 0%, #dbeafe 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .mascot-img {
+      width: 100px;
+      height: 100px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    }
+
+    .mascot-bubble {
+      background: white;
+      padding: 12px 20px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      margin-bottom: 10px;
+      position: relative;
+      max-width: 250px;
+    }
+
+    .mascot-bubble p {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e40af;
+    }
+
+    .bubble-tail {
+      position: absolute;
+      bottom: -8px;
+      left: 70%; /* Align somewhat with the mascot head */
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
+    }
+
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
 
     @media (max-width: 1200px) {
+
         .cards-grid {
             gap: 20px;
             padding: 0 20px;
@@ -360,10 +496,6 @@ export class SubjectSelectionComponent {
   gameStore = inject(GamificationStore);
 
   subjects$ = this.subjectService.getSubjects();
-
-  // URL placeholder - Bạn có thể thay đổi link này bằng scene của bạn
-  // Ví dụ: https://prod.spline.design/your-scene-id/scene.splinecode
-  sceneUrl = 'https://prod.spline.design/6Wq1Q7YGyWf8Z9e3/scene.splinecode';
 
   // List of temporarily disabled subjects
   private disabledSubjects = ['fairy-tales', 'english', 'vietnamese', 'games']; // Temporarily lock vietnamese and games

@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { delay, map, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { LearningSessionService } from './learning-session.service';
+import { DailyProgressService } from './daily-progress.service';
 import { saveLearningSession, getCompletionTimeStats } from '../mock-data/learning-sessions.mock';
 
 export interface LearningSessionResult {
@@ -11,6 +13,8 @@ export interface LearningSessionResult {
   totalQuestions: number;
   durationSeconds: number;
   answers?: any[];
+  subject?: 'math' | 'vietnamese' | 'english'; // Add subject field
+  moduleType?: string; // Add module type (e.g., 'addition', 'spelling')
 }
 
 export interface LearningResponse {
@@ -66,9 +70,11 @@ export interface CompletionTimeResponse {
 })
 export class LearningService {
   private authService = inject(AuthService);
+  private sessionService = inject(LearningSessionService);
+  private dailyProgressService = inject(DailyProgressService);
 
   completeSession(result: LearningSessionResult): Observable<LearningResponse> {
-    console.log('result', result);
+    console.log('[LearningService] Completing session:', result);
     const userId = result.userId || this.authService.getUserId();
 
     if (!userId) {
@@ -76,8 +82,49 @@ export class LearningService {
       throw new Error('User not logged in');
     }
 
-    // Use mock data service to save session
-    const response = saveLearningSession(
+    // Calculate accuracy and stars
+    const accuracy = Math.round((result.score / result.totalQuestions) * 100);
+    const correctAnswers = Math.round((accuracy / 100) * result.totalQuestions);
+    const starsEarned = Math.floor(accuracy / 20); // 0-5 stars based on accuracy
+
+    // Determine subject and module type from levelId
+    let subject: 'math' | 'vietnamese' | 'english' = 'math';
+    let moduleType = 'mixed';
+
+    if (result.levelId.includes('vietnamese') || result.levelId.includes('spelling')) {
+      subject = 'vietnamese';
+      moduleType = result.moduleType || 'spelling';
+    } else if (result.levelId.includes('addition')) {
+      moduleType = 'addition';
+    } else if (result.levelId.includes('subtraction')) {
+      moduleType = 'subtraction';
+    } else if (result.levelId.includes('geometry')) {
+      moduleType = 'geometry';
+    } else if (result.levelId.includes('comparison')) {
+      moduleType = 'comparison';
+    } else if (result.levelId.includes('sorting')) {
+      moduleType = 'sorting';
+    } else if (result.levelId.includes('fill')) {
+      moduleType = 'fill-in-blank';
+    }
+
+    // Override if provided in result
+    if (result.subject) subject = result.subject;
+    if (result.moduleType) moduleType = result.moduleType;
+
+    // Save to Firestore via LearningSessionService
+    const savePromise = this.sessionService.completeSession({
+      levelId: result.levelId,
+      subject,
+      moduleType,
+      score: accuracy,
+      totalQuestions: result.totalQuestions,
+      correctAnswers,
+      duration: result.durationSeconds
+    });
+
+    // Also save to mock data for backward compatibility
+    const mockResponse = saveLearningSession(
       userId,
       result.levelId,
       result.score,
@@ -85,8 +132,34 @@ export class LearningService {
       result.durationSeconds
     );
 
-    // Return observable with simulated delay
-    return of(response).pipe(delay(500));
+    // Convert Promise to Observable and add delay
+    return from(savePromise).pipe(
+      map(() => {
+        console.log('[LearningService] Session saved to Firestore successfully');
+
+        // Refresh daily progress cache
+        this.dailyProgressService.refreshCompletions();
+
+        // Return response with calculated values
+        return {
+          ...mockResponse,
+          starsEarned,
+          accuracy,
+          success: true
+        };
+      }),
+      catchError(error => {
+        console.error('[LearningService] Error saving to Firestore:', error);
+        // Fallback to mock response if Firestore fails
+        return of({
+          ...mockResponse,
+          starsEarned,
+          accuracy,
+          success: true
+        });
+      }),
+      delay(500)
+    );
   }
 
   getCompletionTime(levelId?: string): Observable<CompletionTimeResponse> {

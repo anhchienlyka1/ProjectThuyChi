@@ -18,6 +18,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent)
       },
       {
+        path: 'register',
+        title: 'Đăng ký',
+        loadComponent: () => import('./features/register/register.component').then(m => m.RegisterComponent)
+      },
+      {
         path: 'home',
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       },
@@ -139,6 +144,11 @@ export const routes: Routes = [
         path: 'exam-practice/math',
         title: 'Thi Toán Học',
         loadComponent: () => import('./features/exam-practice/math/math-exam.component').then(m => m.MathExamComponent)
+      },
+      {
+        path: 'firebase-test',
+        title: '🔥 Firebase Test',
+        loadComponent: () => import('./features/firebase-test/firebase-test.component').then(m => m.FirebaseTestComponent)
       },
       {
         path: 'fairy-tales',

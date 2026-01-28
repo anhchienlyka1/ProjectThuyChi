@@ -8,7 +8,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:ProjectThuyChi": "node dist/ProjectThuyChi/server/server.mjs"
+    "serve:ssr:ProjectThuyChi": "node dist/ProjectThuyChi/server/server.mjs",
+    "build:prod": "ng build --configuration production",
+    "predeploy": "npm run build:prod",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:full": "npm run build:prod && firebase deploy --only hosting"
   },
   "prettier": {
     "printWidth": 100,
@@ -29,6 +33,7 @@
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@angular/platform-server": "^21.0.0",
@@ -39,6 +44,7 @@
     "autoprefixer": "^10.4.23",
     "canvas-confetti": "^1.9.4",
     "express": "^5.1.0",
+    "firebase": "^12.8.0",
     "lucide-angular": "^0.562.0",
     "or": "^0.2.0",
     "rxjs": "~7.8.0",

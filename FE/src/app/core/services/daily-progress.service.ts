@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of, map } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { FirestoreService } from './firestore.service';
 import { AuthService } from './auth.service';
 
 interface DailyCompletionsResponse {
@@ -13,15 +12,14 @@ interface DailyCompletionsResponse {
   providedIn: 'root'
 })
 export class DailyProgressService {
-  private http = inject(HttpClient);
-  private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/learning`;
-
-  // Cache for today's completions to avoid excessive API calls
+  // Cache for today's completions to avoid excessive Firestore calls
   private completionsCache$ = new BehaviorSubject<DailyCompletionsResponse | null>(null);
   private lastFetchDate: string | null = null;
 
-  constructor() {
+  constructor(
+    private db: FirestoreService,
+    private authService: AuthService
+  ) {
     // Load initial data
     this.loadTodayCompletions();
   }
@@ -35,14 +33,14 @@ export class DailyProgressService {
   }
 
   /**
-   * Load today's completions from API
+   * Load today's completions from Firestore
    */
-  private loadTodayCompletions(): Observable<DailyCompletionsResponse> {
+  private async loadTodayCompletions(): Promise<DailyCompletionsResponse> {
     const today = this.getTodayString();
 
     // Check if we need to refresh (new day or no cache)
     if (this.lastFetchDate !== today || !this.completionsCache$.value) {
-      console.log('[DailyProgress] Loading completions from API...');
+      console.log('[DailyProgress] Loading completions from Firestore...');
 
       // Get current user ID from AuthService
       const userId = this.authService.getUserId();
@@ -53,42 +51,46 @@ export class DailyProgressService {
           completions: {}
         };
         this.completionsCache$.next(emptyData);
-        return of(emptyData);
+        return emptyData;
       }
 
-      return this.http.get<DailyCompletionsResponse>(
-        `${this.apiUrl}/daily-completions`,
-        { params: { userId } }
-      ).pipe(
-        tap(data => {
-          console.log('[DailyProgress] Loaded completions:', data);
-          this.completionsCache$.next(data);
-          this.lastFetchDate = today;
-        }),
-        catchError(error => {
-          console.error('[DailyProgress] Failed to load daily completions:', error);
-          // Return empty data on error
-          const emptyData: DailyCompletionsResponse = {
-            date: today,
-            completions: {}
-          };
-          this.completionsCache$.next(emptyData);
-          return of(emptyData);
-        })
-      );
+      try {
+        const docId = `${userId}_${today}`;
+        const progressDoc = await this.db.getDocument('daily_progress', docId);
+
+        const data: DailyCompletionsResponse = {
+          date: today,
+          completions: (progressDoc && progressDoc['completions']) || {}
+        };
+
+        console.log('[DailyProgress] Loaded completions:', data);
+        this.completionsCache$.next(data);
+        this.lastFetchDate = today;
+
+        return data;
+      } catch (error) {
+        console.error('[DailyProgress] Failed to load daily completions:', error);
+        // Return empty data on error
+        const emptyData: DailyCompletionsResponse = {
+          date: today,
+          completions: {}
+        };
+        this.completionsCache$.next(emptyData);
+        return emptyData;
+      }
     }
 
     console.log('[DailyProgress] Using cached completions:', this.completionsCache$.value);
-    return of(this.completionsCache$.value!);
+    return this.completionsCache$.value!;
   }
 
   /**
-   * Refresh completions from server
+   * Refresh completions from Firestore
    */
-  refreshCompletions(): Observable<DailyCompletionsResponse> {
+  async refreshCompletions(): Promise<DailyCompletionsResponse> {
     console.log('[DailyProgress] Forcing refresh...');
     this.lastFetchDate = null; // Force refresh
-    return this.loadTodayCompletions();
+    return await this.loadTodayCompletions();
   }
 
   /**
@@ -111,21 +113,30 @@ export class DailyProgressService {
 
   /**
    * Increment completion count for a level
-   * Note: This is called after completeSession API, so we just refresh the cache
+   * Note: This is called after completeSession, so we just refresh the cache
    */
-  incrementCompletion(levelId: string): void {
-    // The backend already saved the session via completeSession API
+  async incrementCompletion(levelId: string): Promise<void> {
+    // The LearningSessionService already updated the daily_progress document
     // We just need to refresh our cache to get the updated count
-    this.refreshCompletions().subscribe();
+    await this.refreshCompletions();
   }
 
   /**
-   * Get all today's completions as Observable
+   * Get all today's completions as Observable (for reactive updates)
    */
-  getTodayCompletions(): Observable<{ [levelId: string]: number }> {
-    return this.loadTodayCompletions().pipe(
-      map(data => data.completions)
-    );
+  getTodayCompletionsObservable(): Observable<{ [levelId: string]: number }> {
+    // Trigger load if not loaded yet
+    this.loadTodayCompletions();
+
+    return new Observable(observer => {
+      const subscription = this.completionsCache$.subscribe(data => {
+        if (data) {
+          observer.next(data.completions);
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    });
   }
 
   /**
@@ -133,5 +144,54 @@ export class DailyProgressService {
    */
   getCompletionsObservable(): Observable<DailyCompletionsResponse | null> {
     return this.completionsCache$.asObservable();
+  }
+
+  /**
+   * Get today's progress summary
+   */
+  async getTodayProgress(): Promise<{
+    lessonsCompleted: number;
+    correctAnswers: number;
+    totalQuestions: number;
+    minutesLearned: number;
+    xpEarned: number;
+    starsEarned: number;
+  }> {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      return {
+        lessonsCompleted: 0,
+        correctAnswers: 0,
+        totalQuestions: 0,
+        minutesLearned: 0,
+        xpEarned: 0,
+        starsEarned: 0
+      };
+    }
+
+    try {
+      const today = this.getTodayString();
+      const docId = `${userId}_${today}`;
+      const progressDoc = await this.db.getDocument('daily_progress', docId);
+
+      return {
+        lessonsCompleted: (progressDoc && progressDoc['lessonsCompleted']) || 0,
+        correctAnswers: (progressDoc && progressDoc['correctAnswers']) || 0,
+        totalQuestions: (progressDoc && progressDoc['totalQuestions']) || 0,
+        minutesLearned: (progressDoc && progressDoc['minutesLearned']) || 0,
+        xpEarned: (progressDoc && progressDoc['xpEarned']) || 0,
+        starsEarned: (progressDoc && progressDoc['starsEarned']) || 0
+      };
+    } catch (error) {
+      console.error('Error getting today progress:', error);
+      return {
+        lessonsCompleted: 0,
+        correctAnswers: 0,
+        totalQuestions: 0,
+        minutesLearned: 0,
+        xpEarned: 0,
+        starsEarned: 0
+      };
+    }
   }
 }

@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { FirestoreService } from './firestore.service';
+import { where } from 'firebase/firestore';
 import { findUserByCredentials, getUserById } from '../mock-data/users.mock';
 
 export interface User {
@@ -10,6 +12,9 @@ export interface User {
     avatarUrl?: string;
     pinCode?: string;
     gender?: string;
+    level?: number;
+    xp?: number;
+    totalStars?: number;
 }
 
 export interface LoginResponse {
@@ -23,6 +28,7 @@ export interface LoginResponse {
     providedIn: 'root'
 })
 export class AuthService {
+    private db = inject(FirestoreService);
     private readonly STORAGE_KEY = 'thuyChi_user';
     private readonly TOKEN_KEY = 'thuyChi_token';
 
@@ -36,14 +42,48 @@ export class AuthService {
     }
 
     /**
-     * Login user (student or parent) - Using Mock Data
+     * Login user (student or parent) - Uses Firestore first, falls back to Mock Data
      */
     async login(username: string, pinCode: string, type: 'student' | 'parent'): Promise<LoginResponse> {
         try {
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+            console.log(`[AuthService] Attempting login for ${username}...`);
 
-            // Find user in mock data
+            // 1. Try to find user in Firestore
+            try {
+                const users = await this.db.queryDocuments(
+                    'users',
+                    where('username', '==', username.toLowerCase())
+                );
+
+                if (users.length > 0) {
+                    const firestoreUser = users[0] as User;
+                    console.log('[AuthService] User found in Firestore:', firestoreUser.username);
+
+                    // Check PIN
+                    if (firestoreUser.pinCode !== pinCode) {
+                        return {
+                            success: false,
+                            message: 'Mã PIN không đúng!'
+                        };
+                    }
+
+                    // Check Role (if specified, though registration sets it to student)
+                    if (firestoreUser.role !== type) {
+                        return {
+                            success: false,
+                            message: 'Loại tài khoản không đúng!'
+                        };
+                    }
+
+                    // Login successful via Firestore
+                    return this.processSuccessfulLogin(firestoreUser);
+                }
+            } catch (firestoreError) {
+                console.warn('[AuthService] Firestore login failed, falling back to mock:', firestoreError);
+            }
+
+            // 2. Fallback to Mock Data if not found in Firestore or error
+            console.log('[AuthService] User not found in Firestore, checking mock data...');
             const mockUser = findUserByCredentials(username, pinCode);
 
             if (!mockUser) {
@@ -60,29 +100,18 @@ export class AuthService {
                 };
             }
 
-            // Create user object (without pinCode for security)
-            const user: User = {
+            // Login successful via Mock Data
+            return this.processSuccessfulLogin({
                 id: mockUser.id,
                 username: mockUser.username,
                 fullName: mockUser.fullName,
                 email: mockUser.email,
                 role: mockUser.role,
                 avatarUrl: mockUser.avatarUrl,
-                gender: mockUser.gender
-            };
+                gender: mockUser.gender,
+                pinCode: mockUser.pinCode // Keep pinCode internally for fallback logic consistency
+            });
 
-            // Generate mock token
-            const token = 'mock-jwt-token-' + mockUser.id;
-
-            // Save user to storage and update signals
-            this.setUser(user, token);
-
-            return {
-                success: true,
-                message: 'Đăng nhập thành công!',
-                user,
-                token
-            };
         } catch (error: any) {
             console.error('Login error:', error);
             return {
@@ -90,6 +119,24 @@ export class AuthService {
                 message: 'Có lỗi xảy ra. Vui lòng thử lại sau!'
             };
         }
+    }
+
+    private processSuccessfulLogin(user: User): LoginResponse {
+        // Create clean user object (remove sensitive data if strictly needed, but kept here for easy access)
+        // Ensure ID is present. Firestore query returns objects which might not have 'id' field inside the data, 
+        // effectively 'id' comes from the doc ID. FirestoreService queryDocuments adds 'id'.
+
+        const token = 'jwt-token-' + (user.id || user.username);
+
+        // Save user to storage and update signals
+        this.setUser(user, token);
+
+        return {
+            success: true,
+            message: 'Đăng nhập thành công!',
+            user,
+            token
+        };
     }
 
     /**
@@ -171,17 +218,22 @@ export class AuthService {
     }
 
     /**
-     * Update user profile - Using Mock Data
+     * Update user profile - Saves to Firestore if logged in via Firestore
      */
     async updateProfile(updates: Partial<User>): Promise<boolean> {
         try {
             const currentUser = this.currentUser();
-            if (!currentUser) return false;
+            if (!currentUser || !currentUser.id) return false;
 
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Update in Firestore
+            try {
+                await this.db.updateDocument('users', currentUser.id, updates);
+                console.log('[AuthService] Profile updated in Firestore');
+            } catch (error) {
+                console.warn('[AuthService] Could not update Firestore (maybe mock user?), updating local only:', error);
+            }
 
-            // Update current user with new data
+            // Update local state
             const updatedUser = { ...currentUser, ...updates };
             this.setUser(updatedUser);
 
