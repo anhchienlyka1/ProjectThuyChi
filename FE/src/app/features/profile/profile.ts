@@ -108,43 +108,36 @@ export class ProfileComponent {
         });
       }
 
-      // Mock data for Study History (Lịch sử học tập)
-      // Only completed lessons are recorded here (Start Time & End Time)
-      this.studyHistory.set([
-        {
-          id: '1',
-          startTime: '19:30',
-          endTime: '19:42',
-          duration: '12 phút',
-          subject: 'Toán Học',
-          lessonName: 'Phép cộng trong phạm vi 10',
-          score: 10,
-          maxScore: 10,
-          icon: '🧮'
-        },
-        {
-          id: '2',
-          startTime: '19:45',
-          endTime: '19:55',
-          duration: '10 phút',
-          subject: 'Tiếng Việt',
-          lessonName: 'Làm quen bảng chữ cái',
-          score: 8,
-          maxScore: 10,
-          icon: 'abc'
-        },
-        {
-          id: '3',
-          startTime: '20:15',
-          endTime: '20:20',
-          duration: '5 phút',
-          subject: 'Toán Học',
-          lessonName: 'So sánh lớn bé',
-          score: 10,
-          maxScore: 10,
-          icon: '🔢'
-        }
-      ]);
+      // Fetch detailed study history
+      const historySessions = await this.studentProfileService.getTodayHistory(userId);
+
+      const mappedHistory: StudyHistoryItem[] = historySessions.map(session => {
+        const durationMins = Math.ceil((session.durationSeconds || 0) / 60);
+
+        // Determine icon based on subject (simple heuristics for now)
+        let icon = '📝';
+        const subj = (session.subjectName || '').toLowerCase();
+        if (subj.includes('toán') || subj.includes('math')) icon = '🧮';
+        else if (subj.includes('tiếng việt') || subj.includes('vietnamese') || subj.includes('abc')) icon = 'abc';
+
+        // Format time
+        const completedDate = new Date(session.completedAt);
+        const timeStr = completedDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+
+        return {
+          id: session.id,
+          startTime: '', // Not used in current UI
+          endTime: timeStr,
+          duration: `${durationMins} phút`,
+          subject: session.subjectName || 'Bài học',
+          lessonName: session.lessonTitle || 'Bài tập',
+          score: session.score || 0,
+          maxScore: session.maxScore || 10,
+          icon: icon
+        };
+      });
+
+      this.studyHistory.set(mappedHistory);
 
       // Fetch achievements (limit to 6 for profile preview)
       const response = await this.studentProfileService.getStudentAchievements(userId, 1, 6);

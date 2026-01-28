@@ -211,4 +211,36 @@ export class StudentProfileService {
             return [];
         }
     }
+
+    /**
+     * Get today's detailed learning history
+     */
+    async getTodayHistory(userId: string): Promise<any[]> {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTimestamp = Timestamp.fromDate(today);
+
+            const sessionsRef = collection(this.firebaseService.firestore, 'learning_sessions');
+            const q = query(
+                sessionsRef,
+                where('userId', '==', userId),
+                where('completedAt', '>=', todayTimestamp),
+                orderBy('completedAt', 'desc')
+            );
+
+            const querySnapshot = await getDocs(q);
+            return querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    completedAt: data['completedAt'] ? (data['completedAt'] as Timestamp).toDate() : new Date()
+                };
+            });
+        } catch (error) {
+            console.warn('Error fetching today history:', error);
+            return [];
+        }
+    }
 }
