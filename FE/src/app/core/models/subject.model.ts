@@ -5,4 +5,5 @@ export interface SubjectCard {
     color: string;
     gradient: string;
     route: string;
+    isLocked?: boolean;
 }

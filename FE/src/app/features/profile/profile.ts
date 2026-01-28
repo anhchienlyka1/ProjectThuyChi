@@ -21,6 +21,18 @@ export interface Certificate {
   theme: 'pink' | 'blue' | 'yellow' | 'green';
 }
 
+export interface StudyHistoryItem {
+  id: string;
+  startTime: string;
+  endTime: string;
+  duration: string; // Calculated duration string
+  subject: string;
+  lessonName: string;
+  score: number;
+  maxScore: number;
+  icon: string;
+}
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -55,6 +67,9 @@ export class ProfileComponent {
     correct: 0,
     durationMinutes: 0
   });
+
+  // Study History Data
+  studyHistory = signal<StudyHistoryItem[]>([]);
 
   constructor() {
     // Load profile data when component initializes
@@ -92,6 +107,44 @@ export class ProfileComponent {
           durationMinutes: profile.todayStats.minutesLearned
         });
       }
+
+      // Mock data for Study History (Lịch sử học tập)
+      // Only completed lessons are recorded here (Start Time & End Time)
+      this.studyHistory.set([
+        {
+          id: '1',
+          startTime: '19:30',
+          endTime: '19:42',
+          duration: '12 phút',
+          subject: 'Toán Học',
+          lessonName: 'Phép cộng trong phạm vi 10',
+          score: 10,
+          maxScore: 10,
+          icon: '🧮'
+        },
+        {
+          id: '2',
+          startTime: '19:45',
+          endTime: '19:55',
+          duration: '10 phút',
+          subject: 'Tiếng Việt',
+          lessonName: 'Làm quen bảng chữ cái',
+          score: 8,
+          maxScore: 10,
+          icon: 'abc'
+        },
+        {
+          id: '3',
+          startTime: '20:15',
+          endTime: '20:20',
+          duration: '5 phút',
+          subject: 'Toán Học',
+          lessonName: 'So sánh lớn bé',
+          score: 10,
+          maxScore: 10,
+          icon: '🔢'
+        }
+      ]);
 
       // Fetch achievements (limit to 6 for profile preview)
       const response = await this.studentProfileService.getStudentAchievements(userId, 1, 6);

@@ -127,6 +127,61 @@
       </div>
     </div>
 
+    <!-- Study History Section -->
+    <div class="history-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="section-icon">📝</span>
+          Lịch Sử Học Tập Hôm Nay
+        </h2>
+      </div>
+
+      <div class="history-list">
+        @for (item of studyHistory(); track item.id) {
+        <div class="history-item">
+          <div class="history-time-badge">
+            <span class="label-text">Hoàn thành</span>
+            <span class="label-time">{{ item.duration }}</span>
+          </div>
+
+          <div class="history-card-premium">
+            <div class="history-glow"></div>
+            <div class="history-content">
+              <!-- Icon -->
+              <div class="history-icon-wrapper">
+                <div class="history-icon-inner text-2xl" [class.icon-math]="item.subject.includes('Toán')"
+                  [class.icon-lang]="item.subject.includes('Tiếng Việt')">
+                  {{ item.subject.includes('Toán') ? '🧮' : (item.subject.includes('Tiếng Việt') ? '📖' : item.icon) }}
+                </div>
+              </div>
+
+              <!-- Info -->
+              <div class="history-details">
+                <div class="history-subject-pill" [class.pill-math]="item.subject.includes('Toán')"
+                  [class.pill-lang]="item.subject.includes('Tiếng Việt')">
+                  {{ item.subject }}
+                </div>
+                <div class="history-lesson-name">{{ item.lessonName }}</div>
+              </div>
+
+              <!-- Score -->
+              <div class="history-score-badge" [class.perfect-score]="item.score === item.maxScore">
+                <span class="score-label">Điểm:</span>
+                <span class="score-value">{{ item.score }}/{{ item.maxScore }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+        @empty {
+        <div class="empty-history">
+          <span class="empty-icon">🌱</span>
+          <p>Hôm nay bé chưa học bài nào cả. Cố lên nhé!</p>
+        </div>
+        }
+      </div>
+    </div>
+
     <!-- Achievements Section -->
     <div class="achievements-section">
       <div class="section-header">

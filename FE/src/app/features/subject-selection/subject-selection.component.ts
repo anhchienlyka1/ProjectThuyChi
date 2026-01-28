@@ -61,7 +61,7 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
       <div class="cards-grid">
         <div *ngFor="let subject of subjects$ | async"
              class="subject-card"
-             [class.disabled]="isDisabled(subject.id)"
+             [class.disabled]="subject.isLocked || isDisabled(subject.id)"
              [style.background]="subject.gradient"
              (click)="selectSubject(subject)">
 
@@ -69,7 +69,7 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
           <h2 class="card-title">{{ subject.title }}</h2>
 
           <!-- Coming Soon Badge for disabled subjects -->
-          <div class="coming-soon-badge" *ngIf="isDisabled(subject.id)">Sắp ra mắt</div>
+          <div class="coming-soon-badge" *ngIf="subject.isLocked || isDisabled(subject.id)">Sắp ra mắt</div>
 
           <!-- Decorative shine effect -->
           <div class="card-shine"></div>
@@ -527,7 +527,7 @@ export class SubjectSelectionComponent {
   subjects$ = this.subjectService.getSubjects();
 
   // List of temporarily disabled subjects
-  private disabledSubjects = ['fairy-tales', 'english', 'games']; // Temporarily lock games
+  private disabledSubjects = ['fairy-tales', 'english', 'games', 'vietnamese']; // Temporarily lock games and vietnamese
 
   isDisabled(subjectId: string): boolean {
     return this.disabledSubjects.includes(subjectId);
@@ -535,7 +535,7 @@ export class SubjectSelectionComponent {
 
   selectSubject(subject: SubjectCard) {
     // Prevent navigation if subject is disabled
-    if (this.isDisabled(subject.id)) {
+    if (subject.isLocked || this.isDisabled(subject.id)) {
       return;
     }
 
