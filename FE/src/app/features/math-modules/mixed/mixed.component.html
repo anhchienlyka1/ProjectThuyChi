@@ -26,17 +26,17 @@
         <div class="absolute top-1/3 right-1/4 text-3xl animate-bounce-slow delay-300 opacity-50">🌈</div>
     </div>
 
-    <div class="relative z-10 p-3 md:p-6 flex flex-col min-h-screen">
+    <div class="relative z-10 p-1 md:p-2 flex flex-col min-h-screen">
         <!-- Premium Glass Header -->
         <header class="flex items-center justify-between mb-4 md:mb-6">
             <div class="flex items-center gap-3">
                 <button (click)="goBack()"
-                    class="w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl rounded-2xl flex items-center justify-center text-sky-700 text-2xl md:text-3xl font-bold shadow-lg shadow-sky-900/20 hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
+                    class="w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-xl rounded-xl flex items-center justify-center text-sky-700 text-lg md:text-xl font-bold shadow-lg shadow-sky-900/20 hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
                     ←
                 </button>
                 <div class="hidden md:flex flex-col">
-                    <h1 class="text-2xl font-black text-sky-800 drop-shadow-lg">Toán Tổng Hợp</h1>
-                    <p class="text-sky-600 text-sm font-medium">Luyện tập thông minh 🧠</p>
+                    <h1 class="text-xl font-black text-sky-800 drop-shadow-lg">Toán Tổng Hợp</h1>
+                    <p class="text-sky-600 text-xs font-medium">Luyện tập thông minh 🧠</p>
                 </div>
             </div>
 
@@ -49,10 +49,10 @@
                         <span class="text-white text-lg md:text-xl">📝</span>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-sky-600 text-[10px] md:text-xs font-bold uppercase tracking-wider">Câu
+                        <span class="text-sky-600 text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Câu
                             hỏi</span>
                         <span
-                            class="text-sky-800 text-lg md:text-xl font-black leading-none">{{currentQuestionIndex}}/{{totalQuestions}}</span>
+                            class="text-sky-800 text-base md:text-lg font-black leading-none">{{currentQuestionIndex}}/{{totalQuestions}}</span>
                     </div>
                 </div>
 
@@ -76,13 +76,13 @@
             </div>
 
             <button (click)="readQuestion()"
-                class="w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl rounded-2xl flex items-center justify-center text-sky-700 text-2xl shadow-lg hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
+                class="w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-xl rounded-xl flex items-center justify-center text-sky-700 text-lg md:text-xl shadow-lg hover:bg-white hover:scale-105 active:scale-95 transition-all duration-300 border border-white/50">
                 🔊
             </button>
         </header>
 
         <!-- Main Content with Premium Glass Cards -->
-        <main class="flex-1 flex flex-col md:grid md:grid-cols-12 gap-4 md:gap-6">
+        <main class="flex-1 flex flex-col md:grid md:grid-cols-12 gap-2">
 
             <!-- Question Panel - Premium Glass Card -->
             <section class="md:col-span-7 lg:col-span-8 relative group">
@@ -92,7 +92,7 @@
                 </div>
 
                 <div
-                    class="relative bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-10 border border-white/50 shadow-2xl shadow-sky-900/20 h-full flex flex-col items-center justify-center overflow-hidden">
+                    class="relative bg-white/70 backdrop-blur-2xl rounded-xl p-3 border border-white/50 shadow-2xl shadow-sky-900/20 h-full flex flex-col items-center justify-center overflow-hidden">
                     <!-- Inner decorative gradients -->
                     <div
                         class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-sky-300/30 to-transparent rounded-full blur-3xl">
@@ -109,63 +109,63 @@
                         </span>
                     </div>
 
-                    <div class="w-full flex items-center justify-center min-h-[200px] md:min-h-[300px] mt-6">
+                    <div class="w-full flex items-center justify-center min-h-[80px] md:min-h-[150px] mt-2">
 
                         <!-- CASE 1-4: Basic Math & Operator -->
                         <div *ngIf="missingPos <= 4"
                             class="flex items-center justify-center gap-3 md:gap-5 flex-wrap animate-pop-in">
                             <!-- Num 1 -->
                             <div [ngClass]="missingPos === 1 ? 'number-box-active' : 'number-box'"
-                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-xl md:text-3xl font-black transition-all duration-500">
                                 {{ missingPos === 1 ? (userAnswer || '?') : firstNumber }}
                             </div>
 
                             <!-- Operator -->
                             <div [ngClass]="missingPos === 4 ? 'operator-box-active' : 'operator-box'"
-                                class="w-14 h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center text-3xl md:text-4xl lg:text-5xl font-black transition-all duration-500">
+                                class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center text-lg md:text-2xl font-black transition-all duration-500">
                                 {{ missingPos === 4 ? (userAnswer || '?') : operation }}
                             </div>
 
                             <!-- Num 2 -->
                             <div [ngClass]="missingPos === 2 ? 'number-box-active' : 'number-box'"
-                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-xl md:text-3xl font-black transition-all duration-500">
                                 {{ missingPos === 2 ? (userAnswer || '?') : secondNumber }}
                             </div>
 
                             <!-- Equals with glow -->
-                            <div class="text-4xl md:text-5xl lg:text-6xl font-black text-sky-600/50 drop-shadow-lg">=
+                            <div class="text-xl md:text-3xl font-black text-sky-600/50 drop-shadow-lg">=
                             </div>
 
                             <!-- Result -->
                             <div [ngClass]="missingPos === 3 ? 'number-box-active' : 'number-box'"
-                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                class="w-10 h-10 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-xl md:text-3xl font-black transition-all duration-500">
                                 {{ missingPos === 3 ? (userAnswer || '?') : resultNumber }}
                             </div>
                         </div>
 
                         <!-- CASE 5: Comparison -->
-                        <div *ngIf="missingPos === 5" class="flex items-center gap-3 md:gap-6 animate-pop-in">
+                        <div *ngIf="missingPos === 5" class="flex items-center gap-1 md:gap-3 animate-pop-in">
                             <div
-                                class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-5 md:p-8 rounded-[2rem] text-3xl md:text-5xl font-black shadow-2xl shadow-indigo-500/30 border-2 border-indigo-400/30">
+                                class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-2 md:p-4 rounded-xl text-lg md:text-2xl font-black shadow-xl shadow-indigo-500/30 border-2 border-indigo-400/30">
                                 {{compareLeft}}
                             </div>
                             <div
-                                class="number-box-active w-20 h-20 md:w-28 md:h-28 rounded-[2rem] flex items-center justify-center text-4xl md:text-6xl font-black animate-float">
+                                class="number-box-active w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center text-xl md:text-3xl font-black animate-float">
                                 {{ userAnswer || '?' }}
                             </div>
                             <div
-                                class="bg-gradient-to-br from-fuchsia-500 to-fuchsia-700 text-white p-5 md:p-8 rounded-[2rem] text-3xl md:text-5xl font-black shadow-2xl shadow-fuchsia-500/30 border-2 border-fuchsia-400/30">
+                                class="bg-gradient-to-br from-fuchsia-500 to-fuchsia-700 text-white p-2 md:p-4 rounded-xl text-lg md:text-2xl font-black shadow-xl shadow-fuchsia-500/30 border-2 border-fuchsia-400/30">
                                 {{compareRight}}
                             </div>
                         </div>
 
                         <!-- CASE 8: Even/Odd -->
-                        <div *ngIf="missingPos === 8" class="flex flex-col items-center gap-6 animate-pop-in">
+                        <div *ngIf="missingPos === 8" class="flex flex-col items-center gap-2 animate-pop-in">
                             <div
-                                class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6 md:p-10 rounded-[3rem] shadow-2xl border-2 border-white/20 flex flex-col items-center gap-4">
-                                <div class="text-5xl md:text-6xl animate-bounce-slow">🤔</div>
-                                <div class="text-2xl md:text-4xl font-black text-white text-center drop-shadow-lg">
-                                    Chọn số <span class="bg-white/20 px-3 py-1 rounded-xl">{{ evenOddType === 'even' ?
+                                class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-3 md:p-5 rounded-2xl shadow-xl border-2 border-white/20 flex flex-col items-center gap-1">
+                                <div class="text-2xl md:text-3xl animate-bounce-slow">🤔</div>
+                                <div class="text-base md:text-xl font-black text-white text-center drop-shadow-lg">
+                                    Chọn số <span class="bg-white/20 px-2 py-0.5 rounded-lg">{{ evenOddType === 'even' ?
                                         'CHẴN' : 'LẺ' }}</span>
                                 </div>
                             </div>
@@ -173,18 +173,18 @@
 
                         <!-- CASE 6: Chain -->
                         <div *ngIf="missingPos === 6"
-                            class="flex flex-wrap items-center justify-center gap-2 md:gap-4 bg-white/60 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border border-white/50 shadow-xl animate-pop-in">
+                            class="flex flex-wrap items-center justify-center gap-1 bg-white/60 backdrop-blur-md p-2 md:p-4 rounded-2xl border border-white/50 shadow-lg animate-pop-in">
                             <span
-                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[0]}}</span>
-                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">{{chainOps[0]}}</span>
+                                class="text-lg md:text-2xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[0]}}</span>
+                            <span class="text-base md:text-xl text-sky-500 font-bold">{{chainOps[0]}}</span>
                             <span
-                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[1]}}</span>
-                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">{{chainOps[1]}}</span>
+                                class="text-lg md:text-2xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[1]}}</span>
+                            <span class="text-base md:text-xl text-sky-500 font-bold">{{chainOps[1]}}</span>
                             <span
-                                class="text-3xl md:text-5xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[2]}}</span>
-                            <span class="text-2xl md:text-4xl text-sky-500 font-bold">=</span>
+                                class="text-lg md:text-2xl font-black text-sky-700 drop-shadow-lg">{{chainNumbers[2]}}</span>
+                            <span class="text-base md:text-xl text-sky-500 font-bold">=</span>
                             <div
-                                class="number-box-active min-w-[80px] md:min-w-[120px] h-20 md:h-28 rounded-3xl flex items-center justify-center text-4xl md:text-6xl font-black animate-float">
+                                class="number-box-active min-w-[40px] md:min-w-[60px] h-10 md:h-14 rounded-lg flex items-center justify-center text-xl md:text-3xl font-black animate-float">
                                 {{ userAnswer || '?' }}
                             </div>
                         </div>
@@ -194,13 +194,13 @@
                             class="flex flex-col items-center gap-6 animate-pop-in">
                             <div class="flex gap-2 md:gap-4 flex-wrap justify-center">
                                 <div *ngFor="let n of (missingPos === 7 ? patternNumbers : countdownNumbers); let i = index"
-                                    class="w-16 h-16 md:w-20 md:h-20 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg flex items-center justify-center text-2xl md:text-3xl font-black text-sky-700 border border-white/50"
+                                    class="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-lg shadow-lg flex items-center justify-center text-base md:text-lg font-black text-sky-700 border border-white/50"
                                     [style.animation-delay]="i * 100 + 'ms'"
                                     style="animation: slideInUp 0.5s ease-out forwards;">
                                     {{n}}
                                 </div>
                                 <div
-                                    class="number-box-active w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl font-black animate-float">
+                                    class="number-box-active w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-base md:text-lg font-black animate-float">
                                     {{ userAnswer || '?' }}
                                 </div>
                             </div>
@@ -212,17 +212,17 @@
 
                         <!-- CASE 10: Sum 3 -->
                         <div *ngIf="missingPos === 10"
-                            class="flex flex-wrap justify-center items-center gap-2 md:gap-4 animate-pop-in">
+                            class="flex flex-wrap justify-center items-center gap-1 animate-pop-in">
                             <div *ngFor="let n of sum3Numbers; let last = last" class="contents">
                                 <div
-                                    class="w-16 h-16 md:w-24 md:h-24 bg-white/80 backdrop-blur-md rounded-3xl shadow-lg flex items-center justify-center text-3xl md:text-5xl font-black text-sky-700 border border-white/50">
+                                    class="w-8 h-8 md:w-12 md:h-12 bg-white/80 backdrop-blur-md rounded-xl shadow-lg flex items-center justify-center text-base md:text-xl font-black text-sky-700 border border-white/50">
                                     {{n}}
                                 </div>
-                                <span *ngIf="!last" class="text-3xl md:text-4xl text-sky-500 font-bold">+</span>
+                                <span *ngIf="!last" class="text-base md:text-xl text-sky-500 font-bold">+</span>
                             </div>
-                            <span class="text-3xl md:text-4xl text-sky-500 font-bold">=</span>
+                            <span class="text-base md:text-xl text-sky-500 font-bold">=</span>
                             <div
-                                class="number-box-active w-16 h-16 md:w-24 md:h-24 rounded-3xl flex items-center justify-center text-3xl md:text-5xl font-black animate-float">
+                                class="number-box-active w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-base md:text-xl font-black animate-float">
                                 {{ userAnswer || '?' }}
                             </div>
                         </div>
@@ -234,11 +234,11 @@
                                 class="flex flex-wrap justify-center gap-3 p-6 bg-white/70 backdrop-blur-md rounded-[2rem] border border-white/50 max-w-md shadow-lg">
                                 <ng-container *ngFor="let shape of shapesToCount">
                                     <span *ngFor="let _ of [].constructor(shape.count)"
-                                        class="text-4xl md:text-5xl transition-transform hover:scale-125 cursor-default animate-wiggle">{{shape.type}}</span>
+                                        class="text-xl md:text-2xl transition-transform hover:scale-125 cursor-default animate-wiggle">{{shape.type}}</span>
                                 </ng-container>
                             </div>
                             <div *ngIf="missingPos === 12"
-                                class="w-32 h-32 md:w-44 md:h-44 bg-white/70 backdrop-blur-md rounded-[2rem] shadow-xl flex items-center justify-center text-7xl md:text-[8rem] text-sky-700 border-2 border-white/50">
+                                class="w-14 h-14 md:w-20 md:h-20 bg-white/70 backdrop-blur-md rounded-xl shadow-xl flex items-center justify-center text-3xl md:text-5xl text-sky-700 border-2 border-white/50">
                                 {{shapeForSides}}
                             </div>
                             <div class="bg-sky-100/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-sky-200">
@@ -247,7 +247,7 @@
                                 </p>
                             </div>
                             <div
-                                class="number-box-active w-14 h-14 md:w-18 md:h-18 rounded-xl flex items-center justify-center text-2xl md:text-4xl font-black">
+                                class="number-box-active w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center text-base md:text-xl font-black">
                                 {{ userAnswer || '?' }}
                             </div>
                         </div>
@@ -255,7 +255,7 @@
                         <!-- CASE 13: Clock -->
                         <div *ngIf="missingPos === 13" class="flex flex-col items-center gap-6 animate-pop-in">
                             <div
-                                class="relative w-52 h-52 md:w-72 md:h-72 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-full shadow-2xl border-[14px] border-gradient p-2 flex items-center justify-center clock-face">
+                                class="relative w-28 h-28 md:w-36 md:h-36 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-full shadow-2xl border-[8px] border-gradient p-2 flex items-center justify-center clock-face">
                                 <!-- Clock ring decoration -->
                                 <div class="absolute inset-2 rounded-full border-4 border-slate-200"></div>
 
@@ -298,25 +298,25 @@
                     </div>
 
                     <div
-                        class="relative bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-5 md:p-8 shadow-2xl shadow-sky-900/20 border border-white/50 flex flex-col justify-center">
+                        class="relative bg-white/70 backdrop-blur-2xl rounded-xl p-3 md:p-4 shadow-2xl shadow-sky-900/20 border border-white/50 flex flex-col justify-center">
 
                         <!-- NUMERIC KEYPAD -->
                         <div *ngIf="inputType === 'numeric'" class="grid grid-cols-3 gap-2 md:gap-3">
                             <button *ngFor="let num of [1,2,3,4,5,6,7,8,9]" (click)="handleKeypadInput(num.toString())"
-                                class="keypad-btn aspect-square text-2xl md:text-4xl font-black">
+                                class="keypad-btn aspect-square text-base md:text-xl font-black">
                                 {{num}}
                             </button>
                             <button (click)="handleKeypadInput('DELETE')" class="keypad-btn-delete aspect-square">
-                                <svg class="w-7 h-7 md:w-9 md:h-9" fill="none" stroke="currentColor"
+                                <svg class="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                         d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.41-7.09A2 2 0 0110.83 4H19a2 2 0 012 2v12a2 2 0 01-2 2h-8.17a2 2 0 01-1.42-.59L3 12z" />
                                 </svg>
                             </button>
                             <button (click)="handleKeypadInput('0')"
-                                class="keypad-btn aspect-square text-2xl md:text-4xl font-black">0</button>
+                                class="keypad-btn aspect-square text-base md:text-xl font-black">0</button>
                             <button (click)="handleKeypadInput('SUBMIT')" class="keypad-btn-submit aspect-square">
-                                <svg class="w-9 h-9 md:w-12 md:h-12" fill="none" stroke="currentColor"
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7" />
@@ -334,7 +334,7 @@
                                 <ng-container *ngIf="inputType === 'operator'">
                                     <button *ngFor="let op of ['+', '-']" (click)="handleKeypadInput(op)"
                                         [ngClass]="userAnswer === op ? 'choice-btn-selected' : 'choice-btn'"
-                                        class="h-24 md:h-32 text-5xl md:text-6xl font-black rounded-[2rem] transition-all duration-300 flex items-center justify-center">
+                                        class="h-10 md:h-14 text-2xl md:text-3xl font-black rounded-xl transition-all duration-300 flex items-center justify-center">
                                         {{op}}
                                     </button>
                                 </ng-container>
@@ -343,7 +343,7 @@
                                 <ng-container *ngIf="inputType === 'comparison'">
                                     <button *ngFor="let op of ['>', '<', '=']" (click)="handleKeypadInput(op)"
                                         [ngClass]="userAnswer === op ? 'choice-btn-selected' : 'choice-btn'"
-                                        class="h-24 md:h-32 text-4xl md:text-5xl font-black rounded-3xl transition-all duration-300 flex items-center justify-center">
+                                        class="h-10 md:h-14 text-xl md:text-2xl font-black rounded-xl transition-all duration-300 flex items-center justify-center">
                                         {{op}}
                                     </button>
                                 </ng-container>
@@ -353,8 +353,8 @@
                                     <button *ngFor="let choice of (missingPos === 8 ? evenOddOptions : clockOptions)"
                                         (click)="handleKeypadInput(choice.toString())"
                                         [ngClass]="userAnswer === choice.toString() ? 'choice-btn-selected' : 'choice-btn'"
-                                        class="h-20 md:h-28 text-3xl md:text-4xl font-black rounded-3xl transition-all duration-300 flex items-center justify-center gap-1">
-                                        {{choice}}<span class="text-sm md:text-base opacity-70"
+                                        class="h-10 md:h-14 text-lg md:text-xl font-black rounded-xl transition-all duration-300 flex items-center justify-center gap-1">
+                                        {{choice}}<span class="text-xs md:text-sm opacity-70"
                                             *ngIf="missingPos === 13">giờ</span>
                                     </button>
                                 </ng-container>
@@ -362,7 +362,7 @@
 
                             <!-- Submit Button for Choice -->
                             <button (click)="handleKeypadInput('SUBMIT')"
-                                class="w-full py-5 md:py-6 submit-btn text-xl md:text-2xl font-black rounded-[2rem] transition-all duration-300 flex items-center justify-center gap-3">
+                                class="w-full py-2 md:py-3 submit-btn text-base md:text-lg font-black rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
                                 <span>Kiểm tra</span>
                                 <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">

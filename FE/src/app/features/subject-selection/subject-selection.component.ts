@@ -15,7 +15,7 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
   imports: [CommonModule, KidButtonComponent, RouterLink],
   template: `
     <div class="selection-container">
-      
+
       <!-- Animated Background Elements -->
       <div class="floating-elements">
         <span class="float-icon icon-1">⭐</span>
@@ -59,18 +59,18 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
 
       <!-- Subject Cards Grid -->
       <div class="cards-grid">
-        <div *ngFor="let subject of subjects$ | async" 
+        <div *ngFor="let subject of subjects$ | async"
              class="subject-card"
              [class.disabled]="isDisabled(subject.id)"
              [style.background]="subject.gradient"
              (click)="selectSubject(subject)">
-          
+
           <div class="card-icon">{{ subject.icon }}</div>
           <h2 class="card-title">{{ subject.title }}</h2>
-          
+
           <!-- Coming Soon Badge for disabled subjects -->
           <div class="coming-soon-badge" *ngIf="isDisabled(subject.id)">Sắp ra mắt</div>
-          
+
           <!-- Decorative shine effect -->
           <div class="card-shine"></div>
         </div>
@@ -114,7 +114,7 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
       align-items: center;
       justify-content: center; /* Center vertically */
       position: relative;
-      overflow: hidden; 
+      overflow: hidden;
     }
 
     /* Floating Elements */
@@ -196,7 +196,7 @@ import { DataSeedingService } from '../../core/services/data-seeding.service';
       0% { left: -150px; }
       100% { left: 110%; }
     }
-    
+
     .back-button-wrapper {
       position: absolute;
       top: 20px;
@@ -527,7 +527,7 @@ export class SubjectSelectionComponent {
   subjects$ = this.subjectService.getSubjects();
 
   // List of temporarily disabled subjects
-  private disabledSubjects = ['fairy-tales', 'english', 'vietnamese', 'games']; // Temporarily lock vietnamese and games
+  private disabledSubjects = ['fairy-tales', 'english', 'games']; // Temporarily lock games
 
   isDisabled(subjectId: string): boolean {
     return this.disabledSubjects.includes(subjectId);
