@@ -34,6 +34,8 @@
     "@angular/platform-server": "^21.0.0",
     "@angular/router": "^21.0.0",
     "@angular/ssr": "^21.0.3",
+    "@splinetool/runtime": "^1.12.41",
+    "@splinetool/viewer": "^1.12.41",
     "autoprefixer": "^10.4.23",
     "canvas-confetti": "^1.9.4",
     "express": "^5.1.0",

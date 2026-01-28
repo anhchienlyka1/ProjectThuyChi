@@ -57,10 +57,37 @@ export class MixedComponent implements OnInit, OnDestroy {
   secondNumber: number = 0;
   resultNumber: number = 0;
   operation: string = '+';
-  missingPos: number = 3; // 1 (first), 2 (second), 3 (result), 4 (operator), 5 (comparison), 6 (chain)
+  missingPos: number = 3; // 1-3 (basic), 4 (operator), 5 (comparison), 6 (chain), 7 (pattern), 8 (even/odd), 9 (countdown), 10 (sum3), 11 (shapes), 12 (sides), 13 (clock)
 
   // New state variables for advanced questions
-  inputType: 'numeric' | 'operator' | 'comparison' = 'numeric';
+  inputType: 'numeric' | 'operator' | 'comparison' | 'choice' = 'numeric';
+
+  // Pattern question (missingPos = 7)
+  patternNumbers: number[] = [];
+  patternStep: number = 0;
+
+  // Even/Odd question (missingPos = 8)
+  evenOddOptions: number[] = [];
+  evenOddType: 'even' | 'odd' = 'even';
+
+  // Countdown question (missingPos = 9)
+  countdownNumbers: number[] = [];
+  countdownStep: number = 0;
+
+  // Sum of 3 numbers (missingPos = 10)
+  sum3Numbers: number[] = [];
+
+  // Count shapes (missingPos = 11)
+  shapesToCount: { type: string; count: number }[] = [];
+  shapeQuestion: string = '';
+
+  // Count sides (missingPos = 12)
+  shapeForSides: string = '';
+  shapeSidesCount: number = 0;
+
+  // Clock question (missingPos = 13)
+  clockHour: number = 0;
+  clockOptions: number[] = [];
 
   chainNumbers: number[] = [];
   chainOps: string[] = [];
@@ -142,26 +169,31 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.currentQuestionIndex++;
     this.hasErrorInCurrentRound = false; // Reset error flag for new question
 
-    // Determine Question Type based on weights
-    // 40% Basic (Missing 1, 2, 3)
-    // 20% Find Operator (Missing 4)
-    // 20% Comparison (Missing 5)
-    // 20% Chain (Missing 6)
-
+    // Equal probability for all 11 question types (~9% each)
     const rand = Math.random();
 
-    if (rand < 0.4) {
-      // Basic Missing Number (1, 2, 3)
-      this.generateBasicQuestion();
-    } else if (rand < 0.6) {
-      // Find Operator (4)
-      this.generateFindOperatorQuestion();
-    } else if (rand < 0.8) {
-      // Comparison (5)
-      this.generateComparisonQuestion();
+    if (rand < 0.09) {
+      this.generateBasicQuestion(); // Type 1-3
+    } else if (rand < 0.18) {
+      this.generateFindOperatorQuestion(); // Type 4
+    } else if (rand < 0.27) {
+      this.generateComparisonQuestion(); // Type 5
+    } else if (rand < 0.36) {
+      this.generateChainQuestion(); // Type 6
+    } else if (rand < 0.45) {
+      this.generatePatternQuestion(); // Type 7
+    } else if (rand < 0.54) {
+      this.generateEvenOddQuestion(); // Type 8
+    } else if (rand < 0.63) {
+      this.generateCountdownQuestion(); // Type 9
+    } else if (rand < 0.72) {
+      this.generateSum3Question(); // Type 10
+    } else if (rand < 0.81) {
+      this.generateCountShapesQuestion(); // Type 11
+    } else if (rand < 0.90) {
+      this.generateCountSidesQuestion(); // Type 12
     } else {
-      // Chain Calculation (6)
-      this.generateChainQuestion();
+      this.generateClockQuestion(); // Type 13
     }
 
     this.readQuestion();
@@ -309,6 +341,175 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.mascot.setEmotion('thinking', 'Tính toán cẩn thận nha!', 4000);
   }
 
+  // Type 7: Pattern Question - Quy luật số
+  generatePatternQuestion() {
+    this.inputType = 'numeric';
+    this.missingPos = 7;
+
+    // Generate a simple arithmetic sequence
+    this.patternStep = Math.floor(Math.random() * 3) + 1; // Step: 1, 2, or 3
+    const start = Math.floor(Math.random() * 10) + 1;
+
+    this.patternNumbers = [];
+    for (let i = 0; i < 4; i++) {
+      this.patternNumbers.push(start + i * this.patternStep);
+    }
+
+    this.correctAnswer = start + 4 * this.patternStep;
+    this.mascot.setEmotion('thinking', 'Tìm quy luật và điền số tiếp theo nhé!', 4000);
+  }
+
+  // Type 8: Even/Odd Question - Số chẵn/lẻ
+  generateEvenOddQuestion() {
+    this.inputType = 'choice';
+    this.missingPos = 8;
+
+    this.evenOddType = Math.random() > 0.5 ? 'even' : 'odd';
+
+    // Generate 4 unique numbers, only one matches the criteria
+    const numbers: number[] = [];
+    let correctNum: number;
+
+    if (this.evenOddType === 'even') {
+      correctNum = (Math.floor(Math.random() * 10) + 1) * 2; // 2, 4, 6... 20
+      numbers.push(correctNum);
+      // Add 3 odd numbers
+      while (numbers.length < 4) {
+        const odd = Math.floor(Math.random() * 10) * 2 + 1;
+        if (!numbers.includes(odd)) numbers.push(odd);
+      }
+    } else {
+      correctNum = Math.floor(Math.random() * 10) * 2 + 1; // 1, 3, 5... 19
+      numbers.push(correctNum);
+      // Add 3 even numbers
+      while (numbers.length < 4) {
+        const even = (Math.floor(Math.random() * 10) + 1) * 2;
+        if (!numbers.includes(even)) numbers.push(even);
+      }
+    }
+
+    // Shuffle the options
+    this.evenOddOptions = numbers.sort(() => Math.random() - 0.5);
+    this.correctAnswer = correctNum;
+
+    const typeText = this.evenOddType === 'even' ? 'chẵn' : 'lẻ';
+    this.mascot.setEmotion('thinking', `Chọn số ${typeText} nhé!`, 4000);
+  }
+
+  // Type 9: Countdown Question - Đếm lùi
+  generateCountdownQuestion() {
+    this.inputType = 'numeric';
+    this.missingPos = 9;
+
+    this.countdownStep = Math.floor(Math.random() * 2) + 1; // Step: 1 or 2
+    const start = Math.floor(Math.random() * 10) + 10; // Start from 10-19
+
+    this.countdownNumbers = [];
+    for (let i = 0; i < 4; i++) {
+      this.countdownNumbers.push(start - i * this.countdownStep);
+    }
+
+    this.correctAnswer = start - 4 * this.countdownStep;
+    this.mascot.setEmotion('thinking', 'Đếm lùi và điền số tiếp theo nhé!', 4000);
+  }
+
+  // Type 10: Sum of 3 numbers - Tổng 3 số
+  generateSum3Question() {
+    this.inputType = 'numeric';
+    this.missingPos = 10;
+
+    // Generate 3 small numbers that sum to <= 20
+    const n1 = Math.floor(Math.random() * 7) + 1;
+    const n2 = Math.floor(Math.random() * 6) + 1;
+    const maxN3 = Math.min(6, 20 - n1 - n2);
+    const n3 = Math.floor(Math.random() * maxN3) + 1;
+
+    this.sum3Numbers = [n1, n2, n3];
+    this.correctAnswer = n1 + n2 + n3;
+
+    this.mascot.setEmotion('thinking', `Tính ${n1} cộng ${n2} cộng ${n3} bằng bao nhiêu?`, 4000);
+  }
+
+  // Type 11: Count Shapes - Đếm hình
+  generateCountShapesQuestion() {
+    this.inputType = 'numeric';
+    this.missingPos = 11;
+
+    const shapes = ['🔺', '🔵', '🟡', '🟢', '⭐'];
+    const shapeNames = ['tam giác', 'hình tròn xanh', 'hình tròn vàng', 'hình tròn xanh lá', 'ngôi sao'];
+
+    // Pick a random shape to count
+    const targetIndex = Math.floor(Math.random() * shapes.length);
+    const targetShape = shapes[targetIndex];
+    const targetCount = Math.floor(Math.random() * 5) + 2; // 2-6 shapes
+
+    this.shapesToCount = [];
+    this.shapesToCount.push({ type: targetShape, count: targetCount });
+
+    // Add some other shapes as distractors
+    const otherCount = Math.floor(Math.random() * 4) + 1;
+    for (let i = 0; i < otherCount; i++) {
+      let otherIndex = Math.floor(Math.random() * shapes.length);
+      if (otherIndex === targetIndex) otherIndex = (otherIndex + 1) % shapes.length;
+      const existing = this.shapesToCount.find(s => s.type === shapes[otherIndex]);
+      if (existing) {
+        existing.count += Math.floor(Math.random() * 2) + 1;
+      } else {
+        this.shapesToCount.push({ type: shapes[otherIndex], count: Math.floor(Math.random() * 3) + 1 });
+      }
+    }
+
+    this.shapeQuestion = `Đếm số ${targetShape}`;
+    this.correctAnswer = targetCount;
+
+    this.mascot.setEmotion('thinking', `Đếm xem có bao nhiêu ${shapeNames[targetIndex]} nhé!`, 4000);
+  }
+
+  // Type 12: Count Sides - Đếm cạnh
+  generateCountSidesQuestion() {
+    this.inputType = 'numeric';
+    this.missingPos = 12;
+
+    const shapesData = [
+      { name: 'tam giác', shape: '△', sides: 3 },
+      { name: 'hình vuông', shape: '□', sides: 4 },
+      { name: 'hình chữ nhật', shape: '▭', sides: 4 },
+      { name: 'hình ngũ giác', shape: '⬠', sides: 5 },
+      { name: 'hình lục giác', shape: '⬡', sides: 6 }
+    ];
+
+    const selected = shapesData[Math.floor(Math.random() * shapesData.length)];
+    this.shapeForSides = selected.shape;
+    this.shapeSidesCount = selected.sides;
+    this.correctAnswer = selected.sides;
+
+    this.mascot.setEmotion('thinking', `Hình ${selected.name} có bao nhiêu cạnh?`, 4000);
+  }
+
+  // Type 13: Clock Reading - Xem đồng hồ
+  generateClockQuestion() {
+    this.inputType = 'choice';
+    this.missingPos = 13;
+
+    // Generate a random hour (1-12)
+    this.clockHour = Math.floor(Math.random() * 12) + 1;
+
+    // Generate 4 options including the correct one
+    const options: number[] = [this.clockHour];
+    while (options.length < 4) {
+      const randomHour = Math.floor(Math.random() * 12) + 1;
+      if (!options.includes(randomHour)) {
+        options.push(randomHour);
+      }
+    }
+
+    // Shuffle options
+    this.clockOptions = options.sort(() => Math.random() - 0.5);
+    this.correctAnswer = this.clockHour;
+
+    this.mascot.setEmotion('thinking', 'Đồng hồ đang chỉ mấy giờ nhỉ?', 4000);
+  }
+
   readQuestion() {
     let text = '';
     if (this.missingPos <= 3) {
@@ -326,6 +527,21 @@ export class MixedComponent implements OnInit, OnDestroy {
       text = 'So sánh hai bên nhé.';
     } else if (this.missingPos === 6) {
       text = 'Tính kết quả của phép tính dài này nhé.';
+    } else if (this.missingPos === 7) {
+      text = 'Tìm quy luật và điền số tiếp theo.';
+    } else if (this.missingPos === 8) {
+      const typeText = this.evenOddType === 'even' ? 'chẵn' : 'lẻ';
+      text = `Chọn số ${typeText} nhé.`;
+    } else if (this.missingPos === 9) {
+      text = 'Đếm lùi và điền số tiếp theo.';
+    } else if (this.missingPos === 10) {
+      text = `Tính ${this.sum3Numbers[0]} cộng ${this.sum3Numbers[1]} cộng ${this.sum3Numbers[2]} bằng bao nhiêu?`;
+    } else if (this.missingPos === 11) {
+      text = 'Đếm số hình nhé.';
+    } else if (this.missingPos === 12) {
+      text = 'Hình này có bao nhiêu cạnh?';
+    } else if (this.missingPos === 13) {
+      text = 'Đồng hồ đang chỉ mấy giờ?';
     }
 
     this.audioService.speak(text);
@@ -344,12 +560,12 @@ export class MixedComponent implements OnInit, OnDestroy {
         if (this.userAnswer.length < 3) {
           this.userAnswer += key;
         }
-      } else {
-        // Operator or Comparison: Single char answer usually, but just set it
+      } else if (this.inputType === 'choice') {
+        // For multiple choice, just set the answer
         this.userAnswer = key;
-        // Auto submit for single-choice if desired? No, let them press submit or make it auto.
-        // For buttons like > < = usually immediate feedback is nice, but consistency with Submit button is safer.
-        // Let's allow change before submit.
+      } else {
+        // Operator or Comparison: Single char answer
+        this.userAnswer = key;
       }
     }
   }

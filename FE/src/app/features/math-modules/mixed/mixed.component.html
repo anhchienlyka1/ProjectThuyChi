@@ -1,338 +1,449 @@
-<div
-    class="min-h-screen bg-gradient-to-br from-purple-200 via-purple-300 to-purple-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
+<div class="min-h-screen relative overflow-hidden font-sans">
+    <!-- Animated Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-500 to-fuchsia-500 animate-gradient">
+    </div>
 
-    <!-- Game Finished Overlay (Hidden when showing achievement) -->
+    <!-- Floating Decorative Elements -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <!-- Large floating shapes -->
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float-slow"></div>
+        <div class="absolute top-1/4 right-20 w-48 h-48 bg-pink-300/20 rounded-full blur-2xl animate-float-medium">
+        </div>
+        <div class="absolute bottom-20 left-1/4 w-40 h-40 bg-yellow-300/20 rounded-full blur-2xl animate-float-fast">
+        </div>
+        <div class="absolute bottom-1/3 right-10 w-24 h-24 bg-cyan-300/20 rounded-full blur-xl animate-float-slow">
+        </div>
+
+        <!-- Stars -->
+        <div class="absolute top-20 right-1/3 text-4xl animate-twinkle">⭐</div>
+        <div class="absolute top-1/3 left-20 text-3xl animate-twinkle delay-300">✨</div>
+        <div class="absolute bottom-1/4 right-1/4 text-2xl animate-twinkle delay-500">🌟</div>
+        <div class="absolute top-1/2 right-10 text-xl animate-twinkle delay-700">💫</div>
+
+        <!-- Cute floating icons -->
+        <div class="absolute top-16 left-1/3 text-5xl animate-bounce-slow opacity-60">🎈</div>
+        <div class="absolute bottom-32 right-1/3 text-4xl animate-bounce-slow delay-500 opacity-60">🦋</div>
+        <div class="absolute top-1/3 right-1/4 text-3xl animate-bounce-slow delay-300 opacity-50">🌈</div>
+    </div>
+
+    <div class="relative z-10 p-3 md:p-6 flex flex-col min-h-screen">
+        <!-- Premium Glass Header -->
+        <header class="flex items-center justify-between mb-4 md:mb-6">
+            <div class="flex items-center gap-3">
+                <button (click)="goBack()"
+                    class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-white text-2xl md:text-3xl font-bold shadow-lg shadow-purple-900/20 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/30">
+                    ←
+                </button>
+                <div class="hidden md:flex flex-col">
+                    <h1 class="text-2xl font-black text-white drop-shadow-lg">Toán Tổng Hợp</h1>
+                    <p class="text-white/70 text-sm font-medium">Luyện tập thông minh 🧠</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Progress Badge -->
+                <div
+                    class="bg-white/20 backdrop-blur-xl px-4 py-2 md:px-6 md:py-3 rounded-2xl flex items-center gap-2 border border-white/30 shadow-lg">
+                    <div
+                        class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-white text-lg md:text-xl">📝</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-white/60 text-[10px] md:text-xs font-bold uppercase tracking-wider">Câu
+                            hỏi</span>
+                        <span
+                            class="text-white text-lg md:text-xl font-black leading-none">{{currentQuestionIndex}}/{{totalQuestions}}</span>
+                    </div>
+                </div>
+
+                <!-- Timer Component -->
+                <app-lesson-timer [compact]="true"></app-lesson-timer>
+
+                <!-- Score Badge with Glow -->
+                <div class="relative group">
+                    <div
+                        class="absolute inset-0 bg-yellow-400 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity">
+                    </div>
+                    <div
+                        class="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 px-4 py-2 md:px-6 md:py-3 rounded-2xl flex items-center gap-2 shadow-lg border-2 border-yellow-200/50">
+                        <span class="text-2xl md:text-3xl animate-pulse-slow">⭐</span>
+                        <div class="flex flex-col">
+                            <span class="text-yellow-900/60 text-[10px] md:text-xs font-bold uppercase">Điểm</span>
+                            <span class="text-yellow-900 text-lg md:text-xl font-black leading-none">{{score}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button (click)="readQuestion()"
+                class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg hover:bg-white/30 hover:scale-105 active:scale-95 transition-all duration-300 border border-white/30">
+                🔊
+            </button>
+        </header>
+
+        <!-- Main Content with Premium Glass Cards -->
+        <main class="flex-1 flex flex-col md:grid md:grid-cols-12 gap-4 md:gap-6">
+
+            <!-- Question Panel - Premium Glass Card -->
+            <section class="md:col-span-7 lg:col-span-8 relative group">
+                <!-- Glow effect behind card -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                </div>
+
+                <div
+                    class="relative bg-white/15 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-10 border border-white/30 shadow-2xl shadow-purple-900/20 h-full flex flex-col items-center justify-center overflow-hidden">
+                    <!-- Inner decorative gradients -->
+                    <div
+                        class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-pink-400/20 to-transparent rounded-full blur-3xl">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-400/20 to-transparent rounded-full blur-3xl">
+                    </div>
+
+                    <!-- Question Type Indicator -->
+                    <div
+                        class="absolute top-4 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/30">
+                        <span class="text-white/90 text-xs md:text-sm font-bold uppercase tracking-wider">
+                            {{ getQuestionTypeLabel() }}
+                        </span>
+                    </div>
+
+                    <div class="w-full flex items-center justify-center min-h-[200px] md:min-h-[300px] mt-6">
+
+                        <!-- CASE 1-4: Basic Math & Operator -->
+                        <div *ngIf="missingPos <= 4"
+                            class="flex items-center justify-center gap-3 md:gap-5 flex-wrap animate-pop-in">
+                            <!-- Num 1 -->
+                            <div [ngClass]="missingPos === 1 ? 'number-box-active' : 'number-box'"
+                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                {{ missingPos === 1 ? (userAnswer || '?') : firstNumber }}
+                            </div>
+
+                            <!-- Operator -->
+                            <div [ngClass]="missingPos === 4 ? 'operator-box-active' : 'operator-box'"
+                                class="w-14 h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center text-3xl md:text-4xl lg:text-5xl font-black transition-all duration-500">
+                                {{ missingPos === 4 ? (userAnswer || '?') : operation }}
+                            </div>
+
+                            <!-- Num 2 -->
+                            <div [ngClass]="missingPos === 2 ? 'number-box-active' : 'number-box'"
+                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                {{ missingPos === 2 ? (userAnswer || '?') : secondNumber }}
+                            </div>
+
+                            <!-- Equals with glow -->
+                            <div class="text-4xl md:text-5xl lg:text-6xl font-black text-white/50 drop-shadow-lg">=
+                            </div>
+
+                            <!-- Result -->
+                            <div [ngClass]="missingPos === 3 ? 'number-box-active' : 'number-box'"
+                                class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-3xl flex items-center justify-center text-4xl md:text-5xl lg:text-6xl font-black transition-all duration-500">
+                                {{ missingPos === 3 ? (userAnswer || '?') : resultNumber }}
+                            </div>
+                        </div>
+
+                        <!-- CASE 5: Comparison -->
+                        <div *ngIf="missingPos === 5" class="flex items-center gap-3 md:gap-6 animate-pop-in">
+                            <div
+                                class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-5 md:p-8 rounded-[2rem] text-3xl md:text-5xl font-black shadow-2xl shadow-indigo-500/30 border-2 border-indigo-400/30">
+                                {{compareLeft}}
+                            </div>
+                            <div
+                                class="number-box-active w-20 h-20 md:w-28 md:h-28 rounded-[2rem] flex items-center justify-center text-4xl md:text-6xl font-black animate-float">
+                                {{ userAnswer || '?' }}
+                            </div>
+                            <div
+                                class="bg-gradient-to-br from-fuchsia-500 to-fuchsia-700 text-white p-5 md:p-8 rounded-[2rem] text-3xl md:text-5xl font-black shadow-2xl shadow-fuchsia-500/30 border-2 border-fuchsia-400/30">
+                                {{compareRight}}
+                            </div>
+                        </div>
+
+                        <!-- CASE 8: Even/Odd -->
+                        <div *ngIf="missingPos === 8" class="flex flex-col items-center gap-6 animate-pop-in">
+                            <div
+                                class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6 md:p-10 rounded-[3rem] shadow-2xl border-2 border-white/20 flex flex-col items-center gap-4">
+                                <div class="text-5xl md:text-6xl animate-bounce-slow">🤔</div>
+                                <div class="text-2xl md:text-4xl font-black text-white text-center drop-shadow-lg">
+                                    Chọn số <span class="bg-white/20 px-3 py-1 rounded-xl">{{ evenOddType === 'even' ?
+                                        'CHẴN' : 'LẺ' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CASE 6: Chain -->
+                        <div *ngIf="missingPos === 6"
+                            class="flex flex-wrap items-center justify-center gap-2 md:gap-4 bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-[3rem] border border-white/20 animate-pop-in">
+                            <span
+                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[0]}}</span>
+                            <span class="text-2xl md:text-4xl text-white/60 font-bold">{{chainOps[0]}}</span>
+                            <span
+                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[1]}}</span>
+                            <span class="text-2xl md:text-4xl text-white/60 font-bold">{{chainOps[1]}}</span>
+                            <span
+                                class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">{{chainNumbers[2]}}</span>
+                            <span class="text-2xl md:text-4xl text-white/60 font-bold">=</span>
+                            <div
+                                class="number-box-active min-w-[80px] md:min-w-[120px] h-20 md:h-28 rounded-3xl flex items-center justify-center text-4xl md:text-6xl font-black animate-float">
+                                {{ userAnswer || '?' }}
+                            </div>
+                        </div>
+
+                        <!-- CASE 7 & 9: Sequences -->
+                        <div *ngIf="missingPos === 7 || missingPos === 9"
+                            class="flex flex-col items-center gap-6 animate-pop-in">
+                            <div class="flex gap-2 md:gap-4 flex-wrap justify-center">
+                                <div *ngFor="let n of (missingPos === 7 ? patternNumbers : countdownNumbers); let i = index"
+                                    class="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-md rounded-2xl shadow-lg flex items-center justify-center text-2xl md:text-3xl font-black text-white border border-white/30"
+                                    [style.animation-delay]="i * 100 + 'ms'"
+                                    style="animation: slideInUp 0.5s ease-out forwards;">
+                                    {{n}}
+                                </div>
+                                <div
+                                    class="number-box-active w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl font-black animate-float">
+                                    {{ userAnswer || '?' }}
+                                </div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                                <p class="text-white/80 font-bold text-sm md:text-base">{{ missingPos === 7 ? '📈 Tìm
+                                    quy luật tăng dần' : '📉 Đếm lùi số tiếp theo' }}</p>
+                            </div>
+                        </div>
+
+                        <!-- CASE 10: Sum 3 -->
+                        <div *ngIf="missingPos === 10"
+                            class="flex flex-wrap justify-center items-center gap-2 md:gap-4 animate-pop-in">
+                            <div *ngFor="let n of sum3Numbers; let last = last" class="contents">
+                                <div
+                                    class="w-16 h-16 md:w-24 md:h-24 bg-white/20 backdrop-blur-md rounded-3xl shadow-lg flex items-center justify-center text-3xl md:text-5xl font-black text-white border border-white/30">
+                                    {{n}}
+                                </div>
+                                <span *ngIf="!last" class="text-3xl md:text-4xl text-white/60 font-bold">+</span>
+                            </div>
+                            <span class="text-3xl md:text-4xl text-white/60 font-bold">=</span>
+                            <div
+                                class="number-box-active w-16 h-16 md:w-24 md:h-24 rounded-3xl flex items-center justify-center text-3xl md:text-5xl font-black animate-float">
+                                {{ userAnswer || '?' }}
+                            </div>
+                        </div>
+
+                        <!-- CASE 11-12: Geometry -->
+                        <div *ngIf="missingPos === 11 || missingPos === 12"
+                            class="flex flex-col items-center gap-4 w-full px-4 animate-pop-in">
+                            <div *ngIf="missingPos === 11"
+                                class="flex flex-wrap justify-center gap-3 p-6 bg-white/20 backdrop-blur-md rounded-[2rem] border border-white/30 max-w-md">
+                                <ng-container *ngFor="let shape of shapesToCount">
+                                    <span *ngFor="let _ of [].constructor(shape.count)"
+                                        class="text-4xl md:text-5xl transition-transform hover:scale-125 cursor-default animate-wiggle">{{shape.type}}</span>
+                                </ng-container>
+                            </div>
+                            <div *ngIf="missingPos === 12"
+                                class="w-32 h-32 md:w-44 md:h-44 bg-white/20 backdrop-blur-md rounded-[2rem] shadow-xl flex items-center justify-center text-7xl md:text-[8rem] text-white border-2 border-white/30">
+                                {{shapeForSides}}
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20">
+                                <p class="text-white font-bold text-base md:text-lg">
+                                    {{ missingPos === 11 ? shapeQuestion : '🔷 Hình này có bao nhiêu cạnh?' }}
+                                </p>
+                            </div>
+                            <div
+                                class="number-box-active w-14 h-14 md:w-18 md:h-18 rounded-xl flex items-center justify-center text-2xl md:text-4xl font-black">
+                                {{ userAnswer || '?' }}
+                            </div>
+                        </div>
+
+                        <!-- CASE 13: Clock -->
+                        <div *ngIf="missingPos === 13" class="flex flex-col items-center gap-6 animate-pop-in">
+                            <div
+                                class="relative w-52 h-52 md:w-72 md:h-72 bg-gradient-to-br from-white via-slate-50 to-slate-100 rounded-full shadow-2xl border-[14px] border-gradient p-2 flex items-center justify-center clock-face">
+                                <!-- Clock ring decoration -->
+                                <div class="absolute inset-2 rounded-full border-4 border-slate-200"></div>
+
+                                <!-- Clock Numbers -->
+                                <span
+                                    class="absolute top-5 md:top-6 text-xl md:text-2xl font-black text-slate-800">12</span>
+                                <span
+                                    class="absolute right-5 md:right-6 text-xl md:text-2xl font-black text-slate-800">3</span>
+                                <span
+                                    class="absolute bottom-5 md:bottom-6 text-xl md:text-2xl font-black text-slate-800">6</span>
+                                <span
+                                    class="absolute left-5 md:left-6 text-xl md:text-2xl font-black text-slate-800">9</span>
+
+                                <!-- Hour hand -->
+                                <div class="absolute w-3 h-[30%] bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-full origin-bottom -translate-y-1/2 shadow-lg"
+                                    [style.transform]="'rotate(' + (clockHour * 30) + 'deg)'"></div>
+                                <!-- Minute hand -->
+                                <div
+                                    class="absolute w-2 h-[40%] bg-gradient-to-t from-slate-400 to-slate-300 rounded-full origin-bottom -translate-y-1/2">
+                                </div>
+                                <!-- Center dot -->
+                                <div
+                                    class="absolute w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full z-20 shadow-lg border-2 border-white">
+                                </div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20">
+                                <p class="text-white font-bold text-base md:text-lg">⏰ Đồng hồ đang chỉ mấy giờ?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Keypad Panel - Premium Glass Card -->
+            <aside class="md:col-span-5 lg:col-span-4 flex flex-col justify-center">
+                <div class="relative group">
+                    <!-- Glow effect -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                    </div>
+
+                    <div
+                        class="relative bg-white/15 backdrop-blur-2xl rounded-[2.5rem] p-5 md:p-8 shadow-2xl shadow-purple-900/20 border border-white/30 flex flex-col justify-center">
+
+                        <!-- NUMERIC KEYPAD -->
+                        <div *ngIf="inputType === 'numeric'" class="grid grid-cols-3 gap-2 md:gap-3">
+                            <button *ngFor="let num of [1,2,3,4,5,6,7,8,9]" (click)="handleKeypadInput(num.toString())"
+                                class="keypad-btn aspect-square text-2xl md:text-4xl font-black">
+                                {{num}}
+                            </button>
+                            <button (click)="handleKeypadInput('DELETE')" class="keypad-btn-delete aspect-square">
+                                <svg class="w-7 h-7 md:w-9 md:h-9" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.41-7.09A2 2 0 0110.83 4H19a2 2 0 012 2v12a2 2 0 01-2 2h-8.17a2 2 0 01-1.42-.59L3 12z" />
+                                </svg>
+                            </button>
+                            <button (click)="handleKeypadInput('0')"
+                                class="keypad-btn aspect-square text-2xl md:text-4xl font-black">0</button>
+                            <button (click)="handleKeypadInput('SUBMIT')" class="keypad-btn-submit aspect-square">
+                                <svg class="w-9 h-9 md:w-12 md:h-12" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- CHOICE KEYPADS -->
+                        <div *ngIf="inputType === 'choice' || inputType === 'operator' || inputType === 'comparison'"
+                            class="flex flex-col gap-4">
+                            <div class="flex-1 grid grid-cols-2 gap-3"
+                                [ngClass]="{'grid-cols-3': inputType === 'comparison'}">
+
+                                <!-- Operators -->
+                                <ng-container *ngIf="inputType === 'operator'">
+                                    <button *ngFor="let op of ['+', '-']" (click)="handleKeypadInput(op)"
+                                        [ngClass]="userAnswer === op ? 'choice-btn-selected' : 'choice-btn'"
+                                        class="h-24 md:h-32 text-5xl md:text-6xl font-black rounded-[2rem] transition-all duration-300 flex items-center justify-center">
+                                        {{op}}
+                                    </button>
+                                </ng-container>
+
+                                <!-- Comparisons -->
+                                <ng-container *ngIf="inputType === 'comparison'">
+                                    <button *ngFor="let op of ['>', '<', '=']" (click)="handleKeypadInput(op)"
+                                        [ngClass]="userAnswer === op ? 'choice-btn-selected' : 'choice-btn'"
+                                        class="h-24 md:h-32 text-4xl md:text-5xl font-black rounded-3xl transition-all duration-300 flex items-center justify-center">
+                                        {{op}}
+                                    </button>
+                                </ng-container>
+
+                                <!-- Choice Options (Even/Odd, Clock) -->
+                                <ng-container *ngIf="inputType === 'choice'">
+                                    <button *ngFor="let choice of (missingPos === 8 ? evenOddOptions : clockOptions)"
+                                        (click)="handleKeypadInput(choice.toString())"
+                                        [ngClass]="userAnswer === choice.toString() ? 'choice-btn-selected' : 'choice-btn'"
+                                        class="h-20 md:h-28 text-3xl md:text-4xl font-black rounded-3xl transition-all duration-300 flex items-center justify-center gap-1">
+                                        {{choice}}<span class="text-sm md:text-base opacity-70"
+                                            *ngIf="missingPos === 13">giờ</span>
+                                    </button>
+                                </ng-container>
+                            </div>
+
+                            <!-- Submit Button for Choice -->
+                            <button (click)="handleKeypadInput('SUBMIT')"
+                                class="w-full py-5 md:py-6 submit-btn text-xl md:text-2xl font-black rounded-[2rem] transition-all duration-300 flex items-center justify-center gap-3">
+                                <span>Kiểm tra</span>
+                                <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Finish Overlay -->
     <div *ngIf="isFinished && !showAchievement"
-        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-indigo-950/90 backdrop-blur-xl animate-fade-in">
         <div
-            class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-yellow-400 relative overflow-hidden">
+            class="relative bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-[3.5rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-4 border-yellow-300 overflow-hidden">
+            <!-- Decorative elements -->
             <div
-                class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://www.svgrepo.com/show/308930/confetti.svg')] bg-cover">
+                class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-yellow-300/30 to-transparent rounded-full blur-2xl">
             </div>
-
-            <h2
-                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-green-600 mb-8">
-                Kết Quả
-            </h2>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="flex flex-col items-center p-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200">
-                    <span class="text-4xl mb-2">⭐</span>
-                    <span class="text-3xl font-black text-yellow-600">{{score}}</span>
-                    <span class="text-sm font-bold text-yellow-800 uppercase">Điểm</span>
-                </div>
-                <div class="flex flex-col items-center p-4 bg-green-50 rounded-2xl border-2 border-green-200">
-                    <span class="text-4xl mb-2">✅</span>
-                    <span class="text-3xl font-black text-green-600">{{correctCount}}</span>
-                    <span class="text-sm font-bold text-green-800 uppercase">Đúng</span>
-                </div>
-                <div class="flex flex-col items-center p-4 bg-red-50 rounded-2xl border-2 border-red-200">
-                    <span class="text-4xl mb-2">❌</span>
-                    <span class="text-3xl font-black text-red-600">{{wrongCount}}</span>
-                    <span class="text-sm font-bold text-red-800 uppercase">Sai</span>
-                </div>
-                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-2xl border-2 border-blue-200">
-                    <span class="text-4xl mb-2">⏱️</span>
-                    <span
-                        class="text-2xl md:text-3xl font-black text-blue-600">{{formatDuration(completionDuration)}}</span>
-                    <span class="text-sm font-bold text-blue-800 uppercase">Thời gian</span>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-4">
-                <kid-button (click)="startGame()" variant="primary" size="lg" class="w-full justify-center">
-                    🔄 Chơi Lại
-                </kid-button>
-                <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
-                    🏠 Về Menu
-                </kid-button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Feedback Overlay -->
-    <div *ngIf="showFeedback"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
-        <div class="bg-white rounded-[3rem] p-12 shadow-2xl transform animate-bounce-in text-center border-8"
-            [ngClass]="isCorrect ? 'border-green-400' : 'border-red-400'">
-            <div class="text-9xl mb-6">
-                {{ isCorrect ? '🎉' : '🤔' }}
-            </div>
-            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
-                [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
-                {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
-            </h2>
-            <p class="text-2xl text-gray-500 font-bold">
-                {{ isCorrect ? 'Bé quá siêu!' : 'Cố gắng lại nhé!' }}
-            </p>
-        </div>
-    </div>
-
-    <!-- Header Section with Title -->
-    <div class="relative z-10 mb-6">
-        <!-- Top Bar: Back button, Title and Score -->
-        <div class="flex justify-between items-center mb-3">
-            <kid-button (click)="goBack()" variant="neutral" size="md">
-                ← Quay lại
-            </kid-button>
-
-            <!-- Title -->
-            <h1
-                class="text-2xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 drop-shadow-sm flex-1 mx-4">
-                Toán Tổng Hợp
-            </h1>
-
             <div
-                class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2 animate-bounce">
-                <span class="text-2xl">⭐</span>
-                <span class="text-2xl font-black text-yellow-500">{{score}}</span>
-            </div>
-        </div>
-
-        <!-- Question Info and Timer -->
-        <div class="flex items-center justify-center gap-4 mt-8">
-            <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-purple-100 shadow-sm">
-                <span class="text-purple-700 font-bold text-lg">Câu hỏi {{currentQuestionIndex}} /
-                    {{totalQuestions}}</span>
+                class="absolute bottom-0 right-0 w-40 h-40 bg-gradient-to-tl from-pink-300/30 to-transparent rounded-full blur-2xl">
             </div>
 
-            <!-- Timer Component -->
-            <app-lesson-timer [compact]="true"></app-lesson-timer>
+            <!-- Confetti decoration -->
+            <div class="absolute top-4 left-8 text-4xl animate-bounce-slow">🎊</div>
+            <div class="absolute top-4 right-8 text-4xl animate-bounce-slow delay-300">🎉</div>
 
-            <kid-button (onClick)="readQuestion()" variant="secondary" size="md" iconName="volume-2"
-                class="!min-w-0 !px-4">
-            </kid-button>
+            <div class="relative">
+                <div class="text-6xl mb-4 animate-bounce-slow">🏆</div>
+                <h2
+                    class="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent mb-8">
+                    Tuyệt Vời!</h2>
+
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div
+                        class="bg-gradient-to-br from-yellow-100 to-yellow-50 p-5 rounded-3xl border-2 border-yellow-200 flex flex-col shadow-lg">
+                        <span class="text-4xl mb-2">⭐</span>
+                        <span class="text-4xl font-black text-yellow-600">{{score}}</span>
+                        <span class="text-xs font-bold text-yellow-800 uppercase tracking-wider">Điểm số</span>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-emerald-100 to-emerald-50 p-5 rounded-3xl border-2 border-emerald-200 flex flex-col shadow-lg">
+                        <span class="text-4xl mb-2">🎯</span>
+                        <span class="text-4xl font-black text-emerald-600">{{correctCount}}</span>
+                        <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Chính xác</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <kid-button (click)="startGame()" variant="primary" size="lg" class="w-full justify-center">
+                        🔄 Luyện tập lại
+                    </kid-button>
+                    <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
+                        🏠 Trở về trang chủ
+                    </kid-button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Game Content -->
-    <div class="flex flex-col items-center max-w-5xl mx-auto w-full relative z-10 pb-4 gap-6 h-full">
-
-        <!-- Math Visual Area -->
-        <div class="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5 w-full">
-
-            <!-- CASE 1: Basic Math & Find Operator (Pos 1-4) -->
-            <ng-container *ngIf="missingPos <= 4">
-                <!-- Number 1 -->
-                <div *ngIf="missingPos !== 1; else input1"
-                    class="bg-white rounded-2xl p-4 shadow-lg border-b-4 border-green-200 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]">
-                    <div class="text-6xl md:text-8xl font-black text-green-500 animate-pop-in">{{firstNumber}}</div>
-                </div>
-                <ng-template #input1>
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-4 shadow-lg border-b-4 border-yellow-300 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]"
-                        [ngClass]="{'animate-float': !userAnswer}">
-                        <div class="text-6xl md:text-8xl font-black text-yellow-600">
-                            {{ userAnswer || '?' }}
-                        </div>
-                    </div>
-                </ng-template>
-
-                <!-- Operation Sign -->
-                <div *ngIf="missingPos !== 4; else inputOp"
-                    class="text-4xl md:text-5xl font-black text-gray-400 my-1 md:my-0">
-                    {{operation}}
-                </div>
-                <ng-template #inputOp>
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-2 shadow-lg border-b-4 border-yellow-300 min-w-[80px] flex flex-col items-center justify-center min-h-[80px] mx-2"
-                        [ngClass]="{'animate-float': !userAnswer}">
-                        <div class="text-4xl md:text-6xl font-black text-yellow-600">
-                            {{ userAnswer || '?' }}
-                        </div>
-                    </div>
-                </ng-template>
-
-                <!-- Number 2 -->
-                <div *ngIf="missingPos !== 2; else input2"
-                    class="bg-white rounded-2xl p-4 shadow-lg border-b-4 border-blue-200 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]">
-                    <div class="text-6xl md:text-8xl font-black text-blue-500 animate-pop-in">{{secondNumber}}</div>
-                </div>
-                <ng-template #input2>
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-4 shadow-lg border-b-4 border-yellow-300 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]"
-                        [ngClass]="{'animate-float': !userAnswer}">
-                        <div class="text-6xl md:text-8xl font-black text-yellow-600">
-                            {{ userAnswer || '?' }}
-                        </div>
-                    </div>
-                </ng-template>
-
-                <!-- Equal Sign -->
-                <div class="text-4xl md:text-5xl font-black text-gray-400 rotate-90 md:rotate-0 my-1 md:my-0">
-                    =
-                </div>
-
-                <!-- Result -->
-                <div *ngIf="missingPos !== 3; else input3"
-                    class="bg-white rounded-2xl p-4 shadow-lg border-b-4 border-purple-200 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]">
-                    <div class="text-6xl md:text-8xl font-black text-purple-500 animate-pop-in">{{resultNumber}}</div>
-                </div>
-                <ng-template #input3>
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-4 shadow-lg border-b-4 border-yellow-300 w-full md:w-1/4 flex flex-col items-center justify-center min-h-[120px] md:min-h-[160px]"
-                        [ngClass]="{'animate-float': !userAnswer}">
-                        <div class="text-6xl md:text-8xl font-black text-yellow-600">
-                            {{ userAnswer || '?' }}
-                        </div>
-                    </div>
-                </ng-template>
-            </ng-container>
-
-            <!-- CASE 2: Comparison (Pos 5) -->
-            <ng-container *ngIf="missingPos === 5">
-                <!-- Left Box -->
-                <div
-                    class="bg-white rounded-2xl p-4 shadow-lg border-b-4 border-blue-200 w-full md:w-5/12 flex flex-col items-center justify-center min-h-[140px]">
-                    <div class="text-4xl md:text-6xl font-black text-blue-500 animate-pop-in text-center">
-                        {{compareLeft}}</div>
-                </div>
-
-                <!-- Question Mark -->
-                <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-3 shadow-lg border-b-4 border-yellow-300 w-24 md:w-32 flex flex-col items-center justify-center min-h-[100px] shrink-0"
-                    [ngClass]="{'animate-float': !userAnswer}">
-                    <div class="text-4xl md:text-6xl font-black text-yellow-600">
-                        {{ userAnswer || '?' }}
-                    </div>
-                </div>
-
-                <!-- Right Box -->
-                <div
-                    class="bg-white rounded-2xl p-4 shadow-lg border-b-4 border-purple-200 w-full md:w-5/12 flex flex-col items-center justify-center min-h-[140px]">
-                    <div class="text-4xl md:text-6xl font-black text-purple-500 animate-pop-in text-center">
-                        {{compareRight}}</div>
-                </div>
-            </ng-container>
-
-            <!-- CASE 3: Chain Calculation (Pos 6) -->
-            <ng-container *ngIf="missingPos === 6">
-                <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 w-full animate-pop-in">
-                    <!-- N1 -->
-                    <div
-                        class="bg-white rounded-xl p-2 md:p-3 shadow border-b-4 border-green-200 min-w-[60px] md:min-w-[80px] text-center">
-                        <span class="text-3xl md:text-5xl font-black text-green-500">{{chainNumbers[0]}}</span>
-                    </div>
-                    <!-- Op1 -->
-                    <span class="text-2xl md:text-4xl font-black text-gray-400">{{chainOps[0]}}</span>
-
-                    <!-- N2 -->
-                    <div
-                        class="bg-white rounded-xl p-2 md:p-3 shadow border-b-4 border-blue-200 min-w-[60px] md:min-w-[80px] text-center">
-                        <span class="text-3xl md:text-5xl font-black text-blue-500">{{chainNumbers[1]}}</span>
-                    </div>
-
-                    <!-- Op2 -->
-                    <span class="text-2xl md:text-4xl font-black text-gray-400">{{chainOps[1]}}</span>
-
-                    <!-- N3 -->
-                    <div
-                        class="bg-white rounded-xl p-2 md:p-3 shadow border-b-4 border-purple-200 min-w-[60px] md:min-w-[80px] text-center">
-                        <span class="text-3xl md:text-5xl font-black text-purple-500">{{chainNumbers[2]}}</span>
-                    </div>
-
-                    <!-- Eq -->
-                    <span class="text-2xl md:text-4xl font-black text-gray-400">=</span>
-
-                    <!-- Result (Question) -->
-                    <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-xl p-3 shadow border-b-4 border-yellow-300 min-w-[80px] md:min-w-[100px] text-center"
-                        [ngClass]="{'animate-float': !userAnswer}">
-                        <span class="text-3xl md:text-5xl font-black text-yellow-600">{{ userAnswer || '?' }}</span>
-                    </div>
-                </div>
-            </ng-container>
-
+    <!-- Correct/Wrong Feedback Toast -->
+    <div *ngIf="showFeedback" class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div class="relative">
+            <!-- Glow effect -->
+            <div [ngClass]="isCorrect ? 'bg-emerald-400' : 'bg-rose-400'"
+                class="absolute inset-0 rounded-full blur-3xl opacity-50 scale-150 animate-pulse"></div>
+            <div class="relative transform scale-150 animate-bounce-in">
+                <span *ngIf="isCorrect" class="text-9xl filter drop-shadow-2xl">🎉</span>
+                <span *ngIf="!isCorrect" class="text-9xl filter drop-shadow-2xl">😅</span>
+            </div>
         </div>
-
-        <!-- Numeric Keypad (Bottom, 3 rows, 4 cols) -->
-        <div class="w-full max-w-2xl mx-auto mt-4">
-            <!-- NUMERIC KEYPAD -->
-            <div *ngIf="inputType === 'numeric'" class="grid grid-cols-4 gap-3 md:gap-4">
-                <!-- Row 1: 1, 2, 3, 4 -->
-                <button *ngFor="let num of [1,2,3,4]" (click)="handleKeypadInput(num.toString())"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-3xl md:text-4xl font-black text-gray-700 py-3 md:py-4 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    {{num}}
-                </button>
-
-                <!-- Row 2: 5, 6, 7, 8 -->
-                <button *ngFor="let num of [5,6,7,8]" (click)="handleKeypadInput(num.toString())"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-3xl md:text-4xl font-black text-gray-700 py-3 md:py-4 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    {{num}}
-                </button>
-
-                <!-- Row 3: 9, 0, DELETE, SUBMIT -->
-                <button (click)="handleKeypadInput('9')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-3xl md:text-4xl font-black text-gray-700 py-3 md:py-4 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    9
-                </button>
-
-                <button (click)="handleKeypadInput('0')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-3xl md:text-4xl font-black text-gray-700 py-3 md:py-4 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    0
-                </button>
-
-                <!-- Delete Button -->
-                <button (click)="handleKeypadInput('DELETE')"
-                    class="bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-500 py-3 md:py-4 rounded-xl shadow-md border-b-4 border-red-200 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-                        <line x1="18" y1="9" x2="12" y2="15"></line>
-                        <line x1="12" y1="9" x2="18" y2="15"></line>
-                    </svg>
-                </button>
-
-                <!-- Submit Button -->
-                <button (click)="handleKeypadInput('SUBMIT')"
-                    class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white py-3 md:py-4 rounded-xl shadow-md border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- OPERATOR KEYPAD (+ -) -->
-            <div *ngIf="inputType === 'operator'" class="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-                <button (click)="handleKeypadInput('+')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-5xl font-black text-gray-700 py-6 rounded-2xl shadow-lg border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    +
-                </button>
-                <button (click)="handleKeypadInput('-')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-5xl font-black text-gray-700 py-6 rounded-2xl shadow-lg border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    -
-                </button>
-                <button (click)="handleKeypadInput('SUBMIT')"
-                    class="col-span-2 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-2xl font-bold py-4 rounded-xl shadow-md border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all">
-                    Kiểm tra
-                </button>
-            </div>
-
-            <!-- COMPARISON KEYPAD (> < =) -->
-            <div *ngIf="inputType === 'comparison'" class="grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto">
-                <button (click)="handleKeypadInput('>')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-4xl md:text-5xl font-black text-gray-700 py-4 md:py-6 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    >
-                </button>
-                <button (click)="handleKeypadInput('<')"
-                    class="bg-white hover:bg-purple-50 active:bg-purple-100 text-4xl md:text-5xl font-black text-gray-700 py-4 md:py-6 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                    < </button>
-                        <button (click)="handleKeypadInput('=')"
-                            class="bg-white hover:bg-purple-50 active:bg-purple-100 text-4xl md:text-5xl font-black text-gray-700 py-4 md:py-6 rounded-xl shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all">
-                            =
-                        </button>
-
-                        <button (click)="handleKeypadInput('SUBMIT')"
-                            class="col-span-3 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-2xl font-bold py-4 rounded-xl shadow-md border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all">
-                            Kiểm tra
-                        </button>
-            </div>
-
-        </div>
-
     </div>
+
+    <app-certificate-popup *ngIf="showAchievement" [certificate]="earnedAchievement"
+        (close)="closeAchievement()"></app-certificate-popup>
+    <app-lesson-completion-stats *ngIf="showCompletionStats" [levelId]="'math-mixed'"
+        [currentDuration]="completionDuration" [previousFastestTime]="previousFastestTime"
+        (close)="closeCompletionStats()"></app-lesson-completion-stats>
 </div>
-
-<!-- Achievement Notification -->
-<app-certificate-popup *ngIf="showAchievement" [certificate]="earnedAchievement" (close)="closeAchievement()">
-</app-certificate-popup>
-
-<!-- Completion Stats Modal -->
-<app-lesson-completion-stats *ngIf="showCompletionStats" [levelId]="'math-mixed'" [currentDuration]="completionDuration"
-    [previousFastestTime]="previousFastestTime" (close)="closeCompletionStats()">
-</app-lesson-completion-stats>
