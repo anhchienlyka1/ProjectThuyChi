@@ -693,6 +693,37 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.router.navigate(['/math']);
   }
 
+  getQuestionTypeLabel(): string {
+    switch (this.missingPos) {
+      case 1:
+      case 2:
+      case 3:
+        return 'Phép tính cơ bản';
+      case 4:
+        return 'Tìm phép tính';
+      case 5:
+        return 'So sánh';
+      case 6:
+        return 'Chuỗi phép tính';
+      case 7:
+        return 'Quy luật số';
+      case 8:
+        return this.evenOddType === 'even' ? 'Số chẵn' : 'Số lẻ';
+      case 9:
+        return 'Đếm lùi';
+      case 10:
+        return 'Tổng 3 số';
+      case 11:
+        return 'Đếm hình';
+      case 12:
+        return 'Đếm cạnh';
+      case 13:
+        return 'Xem đồng hồ';
+      default:
+        return 'Toán tổng hợp';
+    }
+  }
+
   formatDuration(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
