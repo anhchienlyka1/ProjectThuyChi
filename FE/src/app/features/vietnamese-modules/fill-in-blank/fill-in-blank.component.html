@@ -1,0 +1,190 @@
+<div
+    class="min-h-screen bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400 p-2 md:p-4 flex flex-col relative overflow-hidden">
+
+    <!-- Game Finished Overlay -->
+    <div *ngIf="isFinished"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+        <div
+            class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-yellow-400 relative overflow-hidden">
+            <h2
+                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-green-600 mb-8">
+                Hoàn Thành!
+            </h2>
+            <div class="text-9xl mb-8">🏆</div>
+            <p class="text-2xl text-gray-600 font-bold mb-8">
+                Chúc mừng bé đã hoàn thành bài tập!
+            </p>
+            <div class="flex flex-col gap-4">
+                <kid-button (click)="restartGame()" variant="primary" size="lg" class="w-full justify-center">
+                    🔄 Chơi Lại
+                </kid-button>
+                <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
+                    🏠 Về Menu
+                </kid-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        <!-- Blobs -->
+        <div
+            class="absolute top-0 left-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute -bottom-32 left-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+        </div>
+
+        <!-- Floating Vietnamese Letters -->
+        <div class="absolute top-1/4 left-10 text-6xl text-white/40 animate-float-slow font-black rotate-12">A</div>
+        <div
+            class="absolute bottom-1/3 right-10 text-8xl text-white/30 animate-float-slower animation-delay-2000 font-black -rotate-12">
+            ă</div>
+        <div
+            class="absolute top-20 right-1/4 text-6xl text-white/20 animate-float-slow animation-delay-4000 font-black">
+            â</div>
+        <div
+            class="absolute bottom-20 left-1/3 text-5xl text-white/30 animate-float-slower animation-delay-1000 font-black">
+            b</div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div *ngIf="showFeedback"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[3rem] p-12 shadow-2xl transform animate-bounce-in text-center border-8 min-w-[300px]"
+            [ngClass]="isCorrect ? 'border-green-400' : 'border-red-400'">
+            <div class="text-9xl mb-6">
+                {{ isCorrect ? '🎉' : '🤔' }}
+            </div>
+            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
+                [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
+                {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
+            </h2>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="absolute inset-0 z-40 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+        <div class="text-2xl font-bold text-teal-600 animate-pulse">Đang tải bài tập...</div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && levels.length === 0"
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm p-4 text-center">
+        <div class="text-6xl mb-4">📭</div>
+        <h2 class="text-3xl font-black text-gray-800 mb-4">Chưa có bài tập nào!</h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-lg">
+            Vui lòng nhờ ba mẹ vào phần Quản trị (Admin) và bấm nút "Tạo dữ liệu mẫu" để bắt đầu nhé!
+        </p>
+        <kid-button (click)="goBack()" variant="primary" size="lg">
+            Quay lại
+        </kid-button>
+    </div>
+
+    <!-- Header Section (Standardized) -->
+    <div class="relative z-10 mb-6">
+        <!-- Top Bar: Back button, Title and Score -->
+        <div class="flex justify-between items-center mb-3">
+            <kid-button (click)="goBack()" variant="neutral" size="md">
+                ← Quay lại
+            </kid-button>
+
+            <!-- Title -->
+            <h1
+                class="text-2xl tablet:text-3xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600 drop-shadow-sm flex-1 mx-4">
+                Điền Từ Vui Nhộn
+            </h1>
+
+            <div
+                class="bg-white px-6 py-2 tablet:px-4 tablet:py-1.5 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2">
+                <span class="text-2xl">⭐</span>
+                <span class="text-2xl font-black text-yellow-500">{{score}}</span>
+            </div>
+        </div>
+
+        <!-- Question Info and Timer -->
+        <div class="flex items-center justify-center gap-4 tablet:gap-2 mt-4">
+            <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-green-100 shadow-sm">
+                <span class="text-green-700 font-bold text-lg">Câu hỏi {{currentLevelIndex + 1}} /
+                    {{levels.length}}</span>
+            </div>
+
+            <!-- Timer Component -->
+            <app-lesson-timer [compact]="true"></app-lesson-timer>
+
+            <!-- Sound Button -->
+            <kid-button (onClick)="readQuestion()" variant="secondary" size="md" iconName="volume-2"
+                class="!min-w-0 !px-4">
+            </kid-button>
+        </div>
+    </div>
+
+
+    <!-- Main Game Container (Fit Screen - Vertical Stack) -->
+    <div *ngIf="!isLoading && levels.length > 0 && currentLevel"
+        class="flex-1 w-full max-w-4xl mx-auto flex items-center justify-center z-10 p-2 min-h-0">
+
+        <!-- Glassmorphism Card (Vertical Layout) -->
+        <div
+            class="bg-white/60 backdrop-blur-xl rounded-[2rem] shadow-2xl border-4 border-white/60 p-4 md:p-6 w-full flex flex-col items-center gap-4 md:gap-6">
+
+            <!-- 1. IMAGE SECTION (Compact) -->
+            <div class="flex flex-col items-center justify-center" *ngIf="currentLevel.imageUrl">
+                <div class="relative group mb-2">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-teal-400 to-green-400 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000">
+                    </div>
+                    <div
+                        class="relative w-28 h-28 md:w-40 md:h-40 bg-white rounded-[1.5rem] shadow-xl flex items-center justify-center p-2 border-4 border-white">
+                        <img [src]="currentLevel.imageUrl" class="h-full w-full rounded-xl object-contain"
+                            alt="Hint Image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PHRASE / QUESTION AREA -->
+            <div class="w-full flex flex-col items-center">
+                <h2
+                    class="text-2xl md:text-4xl lg:text-5xl font-black text-slate-700 text-center leading-relaxed tracking-wide drop-shadow-sm">
+                    <!-- If isCorrect, show full text -->
+                    <ng-container *ngIf="isCorrect; else partialText">
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-teal-600 animate-pop-in block transform scale-110 transition-transform">{{
+                            currentLevel.fullText }}</span>
+                    </ng-container>
+                    <ng-template #partialText>
+                        <!-- Stylized Phrase with ONE clear blank -->
+                        <span *ngFor="let part of questionParts; let last = last">
+                            {{ part }}
+                            <span *ngIf="!last"
+                                class="inline-flex items-center justify-center w-8 h-8 md:w-12 md:h-12 bg-white/50 border-b-4 border-dashed border-teal-500 rounded-lg mx-1 align-middle text-transparent select-none"></span>
+                        </span>
+                    </ng-template>
+                </h2>
+            </div>
+
+            <!-- 3. OPTIONS AREA (Horizontal Row) -->
+            <div class="w-full flex flex-col items-center">
+                <p class="text-center text-gray-500 font-bold mb-2 text-base md:text-lg animate-pulse">
+                    Chọn chữ cái đúng:</p>
+
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 w-full">
+                    <button *ngFor="let option of shuffledOptions" (click)="selectOption(option)" [disabled]="isCorrect"
+                        [ngClass]="{
+                         'bg-white hover:bg-sky-50 border-gray-100 text-slate-700 hover:border-sky-200': selectedOption !== option && !isCorrect,
+                         'bg-red-100 border-red-400 text-red-600 scale-95 shadow-none': selectedOption === option && isWrong,
+                         'bg-green-100 border-green-400 text-green-600 scale-110 shadow-green-200': isCorrect && option === currentLevel.correctAnswer,
+                         'opacity-40 scale-95': isCorrect && option !== currentLevel.correctAnswer
+                     }"
+                        class="group relative h-14 min-w-[4rem] px-4 md:h-16 md:min-w-[5rem] md:px-6 rounded-xl border-b-4 border-2 text-xl md:text-2xl font-black shadow-lg transition-all duration-200 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 flex items-center justify-center outline-none tap-highlight-transparent">
+                        {{ option }}
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

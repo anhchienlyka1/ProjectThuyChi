@@ -1,0 +1,28 @@
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to right, #9333ea, #db2777);
+}
+
+/* Animation for row hover */
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+/* Math class helper */
+.Math {
+  display: none;
+}

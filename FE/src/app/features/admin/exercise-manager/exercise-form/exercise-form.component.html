@@ -1,0 +1,136 @@
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-md p-8">
+        <h2 class="text-3xl font-black text-gray-800 mb-6 flex items-center gap-3">
+            <span class="text-4xl">📝</span>
+            {{ isEditMode ? 'Chỉnh sửa bài tập Tiếng Việt' : 'Tạo bài tập Tiếng Việt mới' }}
+        </h2>
+
+        <form [formGroup]="exerciseForm" (ngSubmit)="onSubmit()" class="space-y-8">
+            <!-- SECTION 1: Basic Information -->
+            <div class="border-2 border-purple-100 rounded-xl p-6 bg-purple-50/30">
+                <h3 class="text-xl font-black text-purple-800 mb-4 flex items-center gap-2">
+                    <span>📋</span> Thông tin cơ bản
+                </h3>
+
+                <div class="space-y-4">
+                    <!-- Exercise Type Dropdown -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Loại bài tập *</label>
+                        <select formControlName="type" (change)="onTypeChange()"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none font-semibold text-lg">
+                            <option *ngFor="let type of exerciseTypes" [value]="type.value">
+                                {{ type.icon }} {{ type.label }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Title (Auto-generated) -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Tiêu đề (Tự động tạo)</label>
+                        <input type="text" formControlName="title" readonly
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 font-semibold text-gray-600 cursor-not-allowed" />
+                        <p class="text-xs text-gray-500 mt-1">Tiêu đề sẽ tự động tạo khi chọn loại bài tập</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Mô tả (Tùy chọn)</label>
+                        <textarea formControlName="description" placeholder="Mô tả ngắn về bài tập này..." rows="2"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none font-semibold resize-none"></textarea>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Generate Button Area (Moved from AI Params section) -->
+            <div class="flex justify-center py-4">
+                <button type="button" (click)="generateQuestionsWithAI()" [disabled]="isGenerating"
+                    class="w-full md:w-2/3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black text-xl rounded-2xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+                    <span *ngIf="!isGenerating" class="flex items-center gap-2">
+                        <span class="text-3xl">✨</span>
+                        Tự động tạo câu hỏi (AI)
+                    </span>
+                    <span *ngIf="isGenerating" class="flex items-center gap-2">
+                        <span class="animate-spin text-2xl">⏳</span>
+                        Đang tạo câu hỏi...
+                    </span>
+                </button>
+            </div>
+
+            <!-- SECTION 3: Generated Questions Preview -->
+            <div *ngIf="generatedQuestions.length > 0"
+                class="border-2 border-orange-100 rounded-xl p-6 bg-orange-50/30">
+                <h3 class="text-xl font-black text-orange-800 mb-4 flex items-center gap-2">
+                    <span>👀</span> Preview Câu hỏi ({{ generatedQuestions.length }} câu)
+                </h3>
+
+                <div class="space-y-4">
+                    <div *ngFor="let question of generatedQuestions; let i = index"
+                        class="bg-white rounded-xl p-5 border-2 border-gray-200 hover:border-purple-300 transition-all">
+                        <div class="flex items-start justify-between mb-3">
+                            <span class="text-lg font-black text-purple-600">Câu {{ i + 1 }}</span>
+                            <div class="flex gap-2">
+                                <button type="button" (click)="deleteQuestion(i)"
+                                    class="px-3 py-1 bg-red-100 text-red-700 rounded-lg font-semibold text-sm hover:bg-red-200 transition-all">
+                                    🗑️ Xóa
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Simple Words Preview -->
+                        <div *ngIf="exerciseForm.value.type === 'simple-words' && isSimpleWordQuestion(question)"
+                            class="space-y-2">
+                            <p class="font-bold text-lg">Từ: <span class="text-green-600">{{ question.word }}</span></p>
+                            <p class="text-gray-600">Nghĩa: {{ question.meaning }}</p>
+                            <p class="text-sm text-gray-500">Âm tiết: {{ question.syllables?.join(', ') }}</p>
+                            <p *ngIf="question.distractors.length" class="text-sm text-orange-600">
+                                Chữ nhiễu: {{ question.distractors.join(', ') }}
+                            </p>
+                        </div>
+
+                        <!-- Spelling Preview -->
+                        <div *ngIf="exerciseForm.value.type === 'spelling' && isSpellingQuestion(question)"
+                            class="space-y-2">
+                            <p class="font-bold text-lg">Từ: <span class="text-blue-600">{{ question.word }}</span></p>
+                            <p class="text-gray-600">Gợi ý: {{ question.hint }}</p>
+                            <p class="text-sm text-gray-500">
+                                Phần tạo thành:
+                                <span *ngFor="let part of question.parts" [class.text-red-600]="part.missing">
+                                    {{ part.text }}{{ part.missing ? ' (?)' : '' }}
+                                </span>
+                            </p>
+                            <p class="text-sm text-purple-600">Lựa chọn: {{ question.options.join(', ') }}</p>
+                        </div>
+
+                        <!-- Fill-in-Blank Preview -->
+                        <div *ngIf="exerciseForm.value.type === 'fill-in-blank' && isFillInBlankQuestion(question)"
+                            class="space-y-2">
+                            <p class="font-bold text-lg">Cụm từ: <span class="text-teal-600">{{ question.phrase
+                                    }}</span></p>
+                            <p class="text-gray-600">Đầy đủ: {{ question.fullText }}</p>
+                            <p class="text-green-600 font-medium">Đáp án: {{ question.correctAnswer }}</p>
+                            <p class="text-sm text-purple-600">Lựa chọn: {{ question.options.join(', ') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER: Action Buttons -->
+            <div class="flex gap-4 pt-6 border-t-2 border-gray-200">
+                <button type="button" (click)="saveDraft()" [disabled]="isSaving"
+                    class="flex-1 px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white font-black text-lg rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50">
+                    💾 Lưu nháp
+                </button>
+                <button type="submit" [disabled]="isSaving || exerciseForm.invalid || generatedQuestions.length === 0"
+                    class="flex-1 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-black text-lg rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    ✅ Xuất bản
+                </button>
+                <button type="button" (click)="cancel()"
+                    class="px-8 py-4 bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-black text-lg rounded-xl shadow-md hover:shadow-lg transition-all">
+                    ❌ Hủy
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -527,7 +527,7 @@ export class SubjectSelectionComponent {
   subjects$ = this.subjectService.getSubjects();
 
   // List of temporarily disabled subjects
-  private disabledSubjects = ['fairy-tales', 'english', 'games', 'vietnamese']; // Temporarily lock games and vietnamese
+  private disabledSubjects = ['fairy-tales', 'english', 'games']; // Temporarily lock games
 
   isDisabled(subjectId: string): boolean {
     return this.disabledSubjects.includes(subjectId);

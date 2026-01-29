@@ -50,16 +50,36 @@
         </div>
     </div>
 
-    <!-- Decorative Blobs (Restored) -->
-    <div
-        class="absolute top-0 left-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20 animate-blob">
-    </div>
-    <div
-        class="absolute top-0 right-0 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-20 animate-blob animation-delay-2000">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        <!-- Blobs -->
+        <div
+            class="absolute top-0 left-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute -bottom-32 left-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+        </div>
+
+        <!-- Floating Vietnamese Letters -->
+        <div class="absolute top-1/4 left-10 text-6xl text-white/40 animate-float-slow font-black rotate-12">A</div>
+        <div
+            class="absolute bottom-1/3 right-10 text-8xl text-white/30 animate-float-slower animation-delay-2000 font-black -rotate-12">
+            ă</div>
+        <div
+            class="absolute top-20 right-1/4 text-6xl text-white/20 animate-float-slow animation-delay-4000 font-black">
+            â</div>
+        <div
+            class="absolute bottom-20 left-1/3 text-5xl text-white/30 animate-float-slower animation-delay-1000 font-black">
+            b</div>
     </div>
 
     <!-- Header Section (New Design) -->
-    <div class="relative z-10 mb-6 w-full max-w-6xl mx-auto">
+    <!-- Header Section with Title -->
+    <div class="relative z-10 mb-6">
+        <!-- Top Bar: Back button, Title and Score -->
         <div class="flex justify-between items-center mb-3">
             <kid-button (click)="goBack()" variant="neutral" size="md">
                 ← Quay lại
@@ -67,87 +87,123 @@
 
             <!-- Title -->
             <h1
-                class="hidden md:block text-2xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 drop-shadow-sm flex-1 mx-4">
-                Ghép Từ Đơn
+                class="text-2xl tablet:text-3xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600 drop-shadow-sm flex-1 mx-4">
+                Ghép Từ Vui Nhộn
             </h1>
 
-            <div class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2">
-                <span class="text-2xl">🌟</span>
-                <span class="text-xl md:text-2xl font-black text-yellow-600">Cấp độ {{currentLevelIndex + 1}}</span>
+            <div
+                class="bg-white px-6 py-2 tablet:px-4 tablet:py-1.5 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2">
+                <span class="text-2xl">⭐</span>
+                <span class="text-2xl font-black text-yellow-500">{{score}}</span>
             </div>
+        </div>
+
+        <!-- Question Info and Timer -->
+        <div class="flex items-center justify-center gap-4 tablet:gap-2 mt-4">
+            <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-green-100 shadow-sm">
+                <span class="text-green-700 font-bold text-lg">Câu hỏi {{currentLevelIndex + 1}} /
+                    {{levels.length}}</span>
+            </div>
+
+            <!-- Timer Component -->
+            <app-lesson-timer [compact]="true"></app-lesson-timer>
+
+            <!-- Sound Button -->
+            <kid-button (onClick)="readQuestion()" variant="secondary" size="md" iconName="volume-2"
+                class="!min-w-0 !px-4">
+            </kid-button>
         </div>
     </div>
 
-    <!-- Main Game Container (Old Layout: Left Image, Right Interaction) -->
-    <div
-        class="flex-1 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center z-10 md:gap-16 pb-4">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+        <div class="text-3xl font-bold text-sky-600 animate-pulse">⏳ Đang tải bài tập...</div>
+    </div>
 
-        <!-- LEFT COLUMN: Image & Hint -->
-        <div class="flex flex-col items-center mb-8 md:mb-0">
-            <!-- Image Card Area -->
-            <div class="relative group mb-6 md:mb-8">
-                <div
-                    class="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
-                </div>
-                <div
-                    class="relative w-60 h-60 md:w-80 md:h-80 bg-white rounded-[2rem] shadow-2xl flex flex-col items-center justify-center p-6 border-4 border-white transform transition-transform duration-500 hover:scale-105">
-                    <span class="text-[8rem] md:text-[10rem] leading-none drop-shadow-xl filter">{{ currentLevel.image
-                        }}</span>
-                </div>
-            </div>
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && levels.length === 0"
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm p-4 text-center">
+        <div class="text-6xl mb-4">📭</div>
+        <h2 class="text-3xl font-black text-gray-800 mb-4">Chưa có bài tập nào!</h2>
+        <p class="text-xl text-gray-600 mb-8 max-w-lg">
+            Vui lòng nhờ ba mẹ vào phần Quản trị (Admin) và bấm nút "Tạo dữ liệu mẫu" để bắt đầu nhé!
+        </p>
+        <kid-button (click)="goBack()" variant="primary" size="lg">
+            Quay lại
+        </kid-button>
+    </div>
 
-            <!-- Hint -->
-            <div class="text-center animate-fade-in-up">
-                <span
-                    class="inline-block px-8 py-3 bg-white/60 backdrop-blur-md rounded-2xl text-xl md:text-2xl text-slate-700 font-bold shadow-sm border border-white/50">
-                    {{ currentLevel.hint }}
-                </span>
-            </div>
-        </div>
+    <!-- Main Game Container (Fit Screen) -->
+    <div *ngIf="!isLoading && levels.length > 0 && currentLevel"
+        class="flex-1 w-full max-w-4xl mx-auto flex items-center justify-center z-10 p-2 min-h-0">
 
-        <!-- RIGHT COLUMN: Interaction -->
-        <div class="flex flex-col items-center w-full md:w-auto">
-            <!-- Word Slots (Drop Zones) -->
-            <div class="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12 flex-wrap px-2">
-                <div *ngFor="let char of userAnswer; let i = index" (click)="removeLetter(i)" [ngClass]="{
-                 'border-green-400 bg-green-50': isCorrect,
-                 'border-red-400 bg-red-50': isWrong,
-                 'border-dashed border-gray-400 bg-white/50': !isCorrect && !isWrong && !char,
-                 'border-solid border-blue-400 bg-white shadow-lg': !isCorrect && !isWrong && char
-               }"
-                    class="w-16 h-16 md:w-24 md:h-24 border-4 rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 relative">
+        <!-- Glassmorphism Card (Vertical Layout) -->
+        <div
+            class="bg-white/60 backdrop-blur-xl rounded-[2rem] shadow-2xl border-4 border-white/60 p-4 md:p-6 w-full flex flex-col items-center gap-4 md:gap-6">
 
-                    <span *ngIf="char" class="text-3xl md:text-5xl font-black text-gray-800 animate-pop-in">{{ char
-                        }}</span>
-
-                    <!-- Empty State Indicator -->
-                    <div *ngIf="!char && !isCorrect" class="w-2 h-2 rounded-full bg-gray-300"></div>
+            <!-- 1. IMAGE & HINT SECTION -->
+            <div class="flex flex-col items-center justify-center">
+                <!-- Image Card -->
+                <div class="relative group mb-2">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000">
+                    </div>
+                    <div
+                        class="relative w-28 h-28 md:w-40 md:h-40 bg-white rounded-[1.5rem] shadow-xl flex items-center justify-center p-3 border-4 border-white">
+                        <span class="text-[3.5rem] md:text-[5rem] leading-none drop-shadow-md filter">{{
+                            currentLevel.image
+                            }}</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Letter Options (Keyboard) -->
-            <div class="w-full flex justify-center">
-                <div
-                    class="flex flex-wrap gap-3 md:gap-4 justify-center max-w-2xl p-4 bg-white/40 backdrop-blur-md rounded-3xl shadow-inner border border-white/40">
-                    <button *ngFor="let option of shuffledOptions" (click)="selectOption(option)"
-                        [disabled]="option.used"
-                        class="relative group w-14 h-14 md:w-20 md:h-20 transition-all duration-300 outline-none tap-highlight-transparent"
-                        [ngClass]="{'opacity-0 pointer-events-none': option.used}">
+            <!-- 2. WORD CONSTRUCTION AREA -->
+            <div class="w-full flex flex-col items-center">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-3 mb-1">
+                    <!-- Syllable Slots -->
+                    <div *ngFor="let syllable of currentLevel.syllables; let i = index"
+                        class="h-16 w-16 md:h-20 md:w-20 bg-white rounded-2xl border-b-4 md:border-b-8 border-r-4 md:border-r-8 border-blue-200 shadow-md flex items-center justify-center transition-all duration-300"
+                        [ngClass]="{
+                            'bg-green-100 border-green-400 scale-105 shadow-green-200': isSyllableFilled(syllable, i),
+                            'bg-white border-blue-200': !isSyllableFilled(syllable, i)
+                        }">
+                        <span class="text-3xl md:text-4xl font-black"
+                            [ngClass]="isSyllableFilled(syllable, i) ? 'text-green-600' : 'text-gray-300'">
+                            {{ isSyllableFilled(syllable, i) ? syllable : '?' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Result Word (Shows when correct) -->
+                <div class="h-10 md:h-12 flex items-center justify-center">
+                    <div *ngIf="isCorrect"
+                        class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-teal-500 animate-pop-in">
+                        {{ currentLevel.word }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. OPTIONS AREA (Horizontal) -->
+            <div class="w-full flex flex-col items-center">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 w-full">
+                    <button *ngFor="let option of shuffledOptions" (click)="onOptionSelect(option)"
+                        [disabled]="isCorrect"
+                        class="group relative h-14 min-w-[4rem] px-4 md:h-16 md:min-w-[5rem] md:px-6 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
 
                         <div
-                            class="absolute inset-0 bg-white rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] group-active:shadow-none group-active:translate-y-1 border-2 border-b-4 border-gray-100 transition-all">
+                            class="absolute inset-0 bg-white rounded-xl border-2 border-b-4 border-gray-200 shadow-sm transition-all group-hover:border-blue-300 group-hover:shadow-md group-active:border-b-2 group-active:translate-y-[2px]">
                         </div>
 
-                        <!-- Letter Content -->
-                        <div
-                            class="absolute inset-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-yellow-300 to-orange-400 group-hover:from-yellow-200 group-hover:to-orange-300 group-active:translate-y-1 transition-all">
-                            <span class="text-2xl md:text-4xl font-black text-white drop-shadow-sm">{{ option.char
-                                }}</span>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span
+                                class="text-xl md:text-2xl font-black text-gray-700 group-hover:text-blue-600 transition-colors">
+                                {{ option }}
+                            </span>
                         </div>
                     </button>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>

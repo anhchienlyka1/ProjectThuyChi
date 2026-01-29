@@ -1,28 +1,36 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { MOCK_VIETNAMESE_EXERCISES } from '../../../core/initial-data/vietnamese-exercises.mock';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { KidButtonComponent } from '../../../shared/ui-kit/kid-button/kid-button.component';
-import { MascotService } from '../../../core/services/mascot.service';
-import { SpellingService, SpellingLevel } from '../../../core/services/spelling.service';
 import { DailyProgressService } from '../../../core/services/daily-progress.service';
 import { LessonTimerService } from '../../../core/services/lesson-timer.service';
 import { LessonTimerComponent } from '../../../shared/components/lesson-timer/lesson-timer.component';
 import { LessonCompletionStatsComponent } from '../../../shared/components/lesson-completion-stats/lesson-completion-stats.component';
 import { LearningService } from '../../../core/services/learning.service';
+import { ExerciseService } from '../../../core/services/exercise.service';
+import { SpellingQuestion } from '../../../core/models/exercise.model';
+
+interface SpellingLevel {
+  word: string;
+  image: string;
+  parts: { text: string; missing: boolean }[];
+  options: string[];
+  hint: string;
+}
 
 @Component({
   selector: 'app-spelling',
   standalone: true,
-  imports: [CommonModule, KidButtonComponent, LessonTimerComponent, LessonCompletionStatsComponent],
+  imports: [CommonModule, KidButtonComponent, LessonTimerComponent],
   templateUrl: './spelling.component.html',
   styleUrl: './spelling.component.css'
 })
 export class SpellingComponent implements OnInit, OnDestroy {
-  private spellingService = inject(SpellingService);
+  private exerciseService = inject(ExerciseService);
   private location = inject(Location);
   private router = inject(Router);
-  private mascot = inject(MascotService);
   private dailyProgress = inject(DailyProgressService);
   private lessonTimer = inject(LessonTimerService);
   private learningService = inject(LearningService);
@@ -39,6 +47,8 @@ export class SpellingComponent implements OnInit, OnDestroy {
   isWrong: boolean = false;
   showFeedback: boolean = false;
   isFinished: boolean = false;
+  isLoading: boolean = true;
+  score: number = 0;
 
   // Timer and stats
   showCompletionStats = false;
@@ -48,7 +58,7 @@ export class SpellingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadPreviousFastestTime();
-    this.loadLevelsFromAPI();
+    this.loadExerciseData();
   }
 
   ngOnDestroy() {
@@ -68,21 +78,67 @@ export class SpellingComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadLevelsFromAPI() {
-    this.spellingService.getLevels().subscribe({
-      next: (data) => {
-        this.levels = data;
-        if (this.levels.length > 0) {
-          this.startTime = Date.now();
-          this.lessonTimer.startTimer('spelling');
-          this.loadLevel();
-        } else {
-          console.warn('No spelling levels found in database');
+  loadExerciseData() {
+    this.isLoading = true;
+    this.exerciseService.getExercises({ type: 'spelling', status: 'published' }).subscribe({
+      next: (exercises) => {
+        let targetExercise = exercises[0];
+
+        // FALLBACK
+        if (!targetExercise) {
+          const mock = MOCK_VIETNAMESE_EXERCISES.find((e: any) => e.type === 'spelling');
+          if (mock) targetExercise = mock as any;
         }
+
+        if (targetExercise && targetExercise.questions && targetExercise.questions.length > 0) {
+          const questionsToUse = targetExercise.questions.slice(0, 5);
+          this.levels = questionsToUse
+            .filter((q: any) => q.type === 'spelling')
+            .map((q: any) => {
+              const data = q.data as SpellingQuestion;
+              return {
+                word: data.word,
+                image: '✏️',
+                parts: data.parts,
+                options: data.options,
+                hint: data.hint
+              };
+            });
+
+          if (this.levels.length > 0) {
+            this.startTime = Date.now();
+            this.lessonTimer.startTimer('spelling');
+            this.loadLevel();
+          } else {
+            console.warn('No valid spelling questions found.');
+          }
+        } else {
+          console.warn('No exercises found.');
+        }
+        this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load spelling levels:', err);
-        // Fallback to empty or show error message
+        console.error('Failed to load exercises, using fallback:', err);
+        const mock = MOCK_VIETNAMESE_EXERCISES.find((e: any) => e.type === 'spelling');
+        if (mock && mock.questions) {
+          const questionsToUse = mock.questions.slice(0, 5);
+          this.levels = questionsToUse.map((q: any) => {
+            const data = q.data as SpellingQuestion;
+            return {
+              word: data.word,
+              image: '✏️',
+              parts: data.parts,
+              options: data.options,
+              hint: data.hint
+            };
+          });
+          if (this.levels.length > 0) {
+            this.startTime = Date.now();
+            this.lessonTimer.startTimer('spelling');
+            this.loadLevel();
+          }
+        }
+        this.isLoading = false;
       }
     });
   }
@@ -136,6 +192,7 @@ export class SpellingComponent implements OnInit, OnDestroy {
     if (answer === missingPart) {
       this.isCorrect = true;
       this.playSound('success');
+      this.score += 10;
 
       this.showFeedback = true;
 
@@ -159,7 +216,7 @@ export class SpellingComponent implements OnInit, OnDestroy {
           // Save to backend
           this.learningService.completeSession({
             levelId: 'spelling',
-            score: this.levels.length,
+            score: this.score,
             totalQuestions: this.levels.length,
             durationSeconds: durationSeconds
           }).subscribe({
@@ -199,6 +256,7 @@ export class SpellingComponent implements OnInit, OnDestroy {
 
   restartGame() {
     this.currentLevelIndex = 0;
+    this.score = 0;
     this.isFinished = false;
     this.showCompletionStats = false;
     this.startTime = Date.now();
@@ -216,5 +274,16 @@ export class SpellingComponent implements OnInit, OnDestroy {
 
   playSound(type: 'pop' | 'click' | 'success' | 'wrong') {
     // Placeholder
+  }
+
+  readQuestion() {
+    if (this.currentLevel) {
+      window.speechSynthesis.cancel();
+      const text = `Đánh vần từ: ${this.currentLevel.word}. ${this.currentLevel.hint}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'vi-VN';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
   }
 }

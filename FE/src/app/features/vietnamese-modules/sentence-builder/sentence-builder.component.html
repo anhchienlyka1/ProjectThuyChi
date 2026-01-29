@@ -1,0 +1,141 @@
+<div
+    class="min-h-screen bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400 p-2 md:p-4 flex flex-col relative overflow-hidden">
+
+    <!-- Game Finished Overlay -->
+    <div *ngIf="isFinished"
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
+        <div
+            class="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl max-w-2xl w-full mx-4 text-center border-8 border-yellow-400 relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10 bg-[url('https://www.svgrepo.com/show/308930/confetti.svg')] bg-cover">
+            </div>
+
+            <h2
+                class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-green-600 mb-8">
+                Hoàn Thành!
+            </h2>
+
+            <div class="text-9xl mb-8">🏆</div>
+
+            <p class="text-2xl text-gray-600 font-bold mb-8">
+                Chúc mừng bé đã xếp xong các câu!
+            </p>
+
+            <div class="flex flex-col gap-4">
+                <kid-button (click)="restartGame()" variant="primary" size="lg" class="w-full justify-center">
+                    🔄 Chơi Lại
+                </kid-button>
+                <kid-button (click)="goBack()" variant="neutral" size="lg" class="w-full justify-center">
+                    🏠 Về Menu
+                </kid-button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div *ngIf="showFeedback"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-[3rem] p-12 shadow-2xl transform animate-bounce-in text-center border-8 min-w-[300px]"
+            [ngClass]="isCorrect ? 'border-green-400' : 'border-red-400'">
+            <div class="text-9xl mb-6">
+                {{ isCorrect ? '🎉' : '🤔' }}
+            </div>
+            <h2 class="text-6xl font-black mb-4 transparent bg-clip-text bg-gradient-to-r"
+                [ngClass]="isCorrect ? 'from-green-500 to-emerald-600 text-green-600' : 'from-red-500 to-pink-600 text-red-600'">
+                {{ isCorrect ? 'ĐÚNG RỒI!' : 'SAI RỒI!' }}
+            </h2>
+            <p class="text-2xl text-gray-500 font-bold">
+                {{ isCorrect ? 'Câu chính xác!' : 'Thử lại nhé bé ơi!' }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        <div
+            class="absolute top-0 left-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+        </div>
+        <div
+            class="absolute top-0 right-0 w-96 h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute -bottom-32 left-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000">
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="relative z-10 mb-2 md:mb-6">
+        <div class="flex justify-between items-center mb-2 md:mb-3">
+            <kid-button (click)="goBack()" variant="neutral" size="md">
+                ← Quay lại
+            </kid-button>
+
+            <h1
+                class="text-2xl tablet:text-3xl md:text-4xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 drop-shadow-sm flex-1 mx-4">
+                Xếp Từ Thành Câu
+            </h1>
+
+            <div
+                class="bg-white px-6 py-2 tablet:px-4 tablet:py-1.5 rounded-full shadow-lg border-2 border-yellow-400 flex items-center gap-2">
+                <span class="text-2xl">⭐</span>
+                <span class="text-2xl font-black text-yellow-500">{{score}}</span>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 tablet:gap-2 mt-2">
+            <div class="bg-white/80 backdrop-blur px-6 py-2 rounded-full border border-green-100 shadow-sm">
+                <span class="text-green-700 font-bold text-lg">Câu {{currentLevelIndex + 1}} / {{levels.length}}</span>
+            </div>
+            <app-lesson-timer [compact]="true"></app-lesson-timer>
+
+            <kid-button (onClick)="readSentence()" variant="secondary" size="md" iconName="volume-2"
+                class="!min-w-0 !px-4"></kid-button>
+        </div>
+    </div>
+
+    <!-- Game Content -->
+    <div *ngIf="!isLoading && levels.length > 0 && currentLevel"
+        class="flex-1 w-full max-w-5xl mx-auto flex flex-col justify-start items-center z-10 p-2 gap-4 md:gap-8 min-h-0">
+
+        <!-- Hint Section -->
+        <div class="flex flex-col items-center">
+            <div class="text-[5rem] md:text-[6rem] leading-none drop-shadow-md animate-float-math mb-2">
+                {{currentLevel.image}}
+            </div>
+            <div *ngIf="currentLevel.hint"
+                class="bg-white/60 backdrop-blur px-6 py-2 rounded-full text-gray-700 font-bold text-lg md:text-xl text-center shadow-sm border border-white/50">
+                💡 {{currentLevel.hint}}
+            </div>
+        </div>
+
+        <!-- Sentence Construction Area (Drop Zone) -->
+        <div class="w-full bg-white/40 backdrop-blur-xl rounded-[2rem] shadow-xl border-4 border-white/60 p-6 md:p-8 flex flex-wrap items-center justify-center gap-3 min-h-[140px] md:min-h-[160px] transition-all duration-300"
+            [ngClass]="{'border-green-400 bg-green-50/50': isCorrect, 'border-red-400 bg-red-50/50': isWrong}">
+
+            <!-- Placeholder if empty -->
+            <div *ngIf="selectedWords.length === 0"
+                class="text-gray-400 font-medium text-xl italic absolute pointer-events-none">
+                Chọn các từ bên dưới để ghép thành câu...
+            </div>
+
+            <button *ngFor="let item of selectedWords; let i = index" (click)="deselectWord(i)"
+                class="animate-pop-in bg-white text-blue-800 font-black text-2xl md:text-3xl px-6 py-3 md:px-8 md:py-4 rounded-xl shadow-lg border-b-4 border-blue-200 hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:border-b-0 transition-all cursor-pointer">
+                {{item.text}}
+            </button>
+        </div>
+
+        <!-- Word Bank (Source) -->
+        <div class="w-full">
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4 p-4">
+                <ng-container *ngFor="let item of availableWords; let i = index">
+                    <button (click)="selectWord(item, i)" [disabled]="item.selected" [class.opacity-0]="item.selected"
+                        [class.pointer-events-none]="item.selected"
+                        class="bg-yellow-100 text-yellow-800 font-black text-2xl md:text-3xl px-6 py-3 md:px-8 md:py-4 rounded-xl shadow-lg border-b-4 border-yellow-300 hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:border-b-0 transition-all duration-200 cursor-pointer disabled:cursor-default transform">
+                        {{item.text}}
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
+</div>

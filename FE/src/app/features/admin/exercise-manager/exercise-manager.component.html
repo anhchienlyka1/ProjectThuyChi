@@ -1,0 +1,239 @@
+<div class="space-y-6">
+    <!-- Header with Search and Filters -->
+    <div class="bg-white rounded-2xl shadow-md p-6">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+            <div class="flex-1 w-full lg:w-auto">
+                <div class="relative">
+                    <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+                        placeholder="🔍 Tìm kiếm bài tập..."
+                        class="w-full px-6 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none text-lg font-semibold" />
+                    <lucide-icon name="Search" [size]="20"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></lucide-icon>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button (click)="seedData()"
+                    class="px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center gap-2">
+                    <span>🔄</span> Tạo dữ liệu mẫu
+                </button>
+                <kid-button (onClick)="navigateToCreate()" variant="primary" size="lg">
+                    ➕ Tạo bài tập mới
+                </kid-button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3">
+            <!-- Type Filter -->
+            <select [(ngModel)]="selectedType" (ngModelChange)="onFilterChange()"
+                class="px-4 py-2 rounded-full border-2 border-gray-200 font-semibold text-sm focus:border-purple-400 focus:outline-none cursor-pointer hover:bg-gray-50">
+                <option value="all">Tất cả loại</option>
+                <option value="simple-words">📝 Từ đơn giản</option>
+                <option value="spelling">✏️ Đánh vần</option>
+            </select>
+
+            <!-- Difficulty Filter -->
+            <select [(ngModel)]="selectedDifficulty" (ngModelChange)="onFilterChange()"
+                class="px-4 py-2 rounded-full border-2 border-gray-200 font-semibold text-sm focus:border-purple-400 focus:outline-none cursor-pointer hover:bg-gray-50">
+                <option value="all">Tất cả độ khó</option>
+                <option value="easy">✅ Dễ</option>
+                <option value="medium">⚠️ Trung bình</option>
+                <option value="hard">🔥 Khó</option>
+            </select>
+
+            <!-- Status Filter -->
+            <select [(ngModel)]="selectedStatus" (ngModelChange)="onFilterChange()"
+                class="px-4 py-2 rounded-full border-2 border-gray-200 font-semibold text-sm focus:border-purple-400 focus:outline-none cursor-pointer hover:bg-gray-50">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="published">✅ Đã xuất bản</option>
+                <option value="draft">📝 Bản nháp</option>
+            </select>
+
+            <!-- View Mode Toggle -->
+            <div class="ml-auto flex gap-2 bg-gray-100 p-1 rounded-full">
+                <button (click)="viewMode = 'table'" [class.bg-white]="viewMode === 'table'"
+                    [class.shadow-sm]="viewMode === 'table'"
+                    class="px-4 py-2 rounded-full font-semibold text-sm transition-all">
+                    📋 Bảng
+                </button>
+                <button (click)="viewMode = 'grid'" [class.bg-white]="viewMode === 'grid'"
+                    [class.shadow-sm]="viewMode === 'grid'"
+                    class="px-4 py-2 rounded-full font-semibold text-sm transition-all">
+                    🎴 Thẻ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-20">
+        <div class="inline-block animate-spin text-6xl mb-4">⏳</div>
+        <p class="text-xl font-semibold text-gray-500">Đang tải...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredExercises.length === 0" class="bg-white rounded-2xl shadow-md p-12 text-center">
+        <div class="text-8xl mb-6">📚</div>
+        <h3 class="text-2xl font-black text-gray-800 mb-2">Chưa có bài tập nào</h3>
+        <p class="text-gray-500 mb-6">Hãy tạo bài tập đầu tiên cho bé!</p>
+        <kid-button (onClick)="navigateToCreate()" variant="primary" size="lg">
+            ➕ Tạo bài tập đầu tiên
+        </kid-button>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="!isLoading && filteredExercises.length > 0 && viewMode === 'table'"
+        class="bg-white rounded-2xl shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-slate-100 border-b-2 border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Icon</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Tiêu đề</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Loại</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Độ khó</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Số câu</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Trạng thái</th>
+                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let exercise of paginatedExercises; let i = index" [class.bg-slate-50]="i % 2 === 1"
+                        class="border-b border-slate-100 hover:bg-blue-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-2xl shadow-md">
+                                {{ getTypeIcon(exercise.type) }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-bold text-gray-800">{{ exercise.title }}</p>
+                                <p class="text-sm text-gray-500" *ngIf="exercise.description">{{ exercise.description }}
+                                </p>
+                                <div class="flex gap-2 mt-1" *ngIf="exercise.tags.length > 0">
+                                    <span *ngFor="let tag of exercise.tags"
+                                        class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                                        {{ tag }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-semibold text-gray-700">{{ getTypeLabel(exercise.type) }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span
+                                [class]="'px-3 py-1 rounded-full text-xs font-bold border-2 ' + getDifficultyClass(exercise.difficulty)">
+                                {{ getDifficultyLabel(exercise.difficulty) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-bold text-gray-700">{{ exercise.questionCount }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button (click)="toggleStatus(exercise)" [class]="exercise.status === 'published'
+                  ? 'bg-green-100 text-green-700 border-green-300'
+                  : 'bg-yellow-100 text-yellow-700 border-yellow-300'"
+                                class="px-3 py-1 rounded-full text-xs font-bold border-2 cursor-pointer hover:opacity-80 transition-all">
+                                {{ exercise.status === 'published' ? '✅ Xuất bản' : '📝 Nháp' }}
+                            </button>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button (click)="navigateToEdit(exercise.id!)"
+                                    class="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition-all"
+                                    title="Chỉnh sửa">
+                                    <lucide-icon name="Pencil" [size]="18"></lucide-icon>
+                                </button>
+                                <button (click)="duplicateExercise(exercise)"
+                                    class="p-2 rounded-lg hover:bg-purple-100 text-purple-600 transition-all"
+                                    title="Nhân bản">
+                                    <lucide-icon name="Copy" [size]="18"></lucide-icon>
+                                </button>
+                                <button (click)="previewExercise(exercise)"
+                                    class="p-2 rounded-lg hover:bg-green-100 text-green-600 transition-all"
+                                    title="Xem trước">
+                                    <lucide-icon name="Eye" [size]="18"></lucide-icon>
+                                </button>
+                                <button (click)="deleteExercise(exercise)"
+                                    class="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-all" title="Xóa">
+                                    <lucide-icon name="Trash2" [size]="18"></lucide-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-gray-600">
+                    Hiển thị {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage * itemsPerPage,
+                    filteredExercises.length) }}
+                    trong tổng số {{ filteredExercises.length }} bài tập
+                </p>
+                <div class="flex gap-2">
+                    <button (click)="prevPage()" [disabled]="currentPage === 1"
+                        class="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-all">
+                        ← Trước
+                    </button>
+                    <div class="flex gap-1">
+                        <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i + 1)"
+                            [class.bg-gradient-to-r]="currentPage === i + 1"
+                            [class.from-purple-500]="currentPage === i + 1" [class.to-pink-500]="currentPage === i + 1"
+                            [class.text-white]="currentPage === i + 1" [class.font-bold]="currentPage === i + 1"
+                            class="w-10 h-10 rounded-lg bg-white border-2 border-gray-200 font-semibold text-sm hover:bg-gray-50 transition-all">
+                            {{ i + 1 }}
+                        </button>
+                    </div>
+                    <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                        class="px-4 py-2 rounded-lg bg-white border-2 border-gray-200 font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-all">
+                        Sau →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid View -->
+    <div *ngIf="!isLoading && filteredExercises.length > 0 && viewMode === 'grid'"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let exercise of paginatedExercises"
+            class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1">
+            <div class="h-32 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-6xl">
+                {{ getTypeIcon(exercise.type) }}
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-black text-gray-800 mb-2">{{ exercise.title }}</h3>
+                <p class="text-sm text-gray-500 mb-4" *ngIf="exercise.description">{{ exercise.description }}</p>
+
+                <div class="flex items-center gap-2 mb-4">
+                    <span
+                        [class]="'px-3 py-1 rounded-full text-xs font-bold border-2 ' + getDifficultyClass(exercise.difficulty)">
+                        {{ getDifficultyLabel(exercise.difficulty) }}
+                    </span>
+                    <span class="text-sm text-gray-600 font-semibold">{{ exercise.questionCount }} câu</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <button (click)="navigateToEdit(exercise.id!)"
+                        class="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold text-sm hover:bg-blue-200 transition-all">
+                        ✏️ Sửa
+                    </button>
+                    <button (click)="duplicateExercise(exercise)"
+                        class="px-3 py-2 bg-purple-100 text-purple-700 rounded-lg font-semibold text-sm hover:bg-purple-200 transition-all">
+                        📋
+                    </button>
+                    <button (click)="deleteExercise(exercise)"
+                        class="px-3 py-2 bg-red-100 text-red-700 rounded-lg font-semibold text-sm hover:bg-red-200 transition-all">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

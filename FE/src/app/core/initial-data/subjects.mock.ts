@@ -16,7 +16,7 @@ export const MOCK_SUBJECTS: SubjectCard[] = [
     color: '#ec4899',
     gradient: 'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #fbcfe8 100%)',
     route: '/vietnamese',
-    isLocked: true
+    isLocked: false
   },
   {
     id: 'games',

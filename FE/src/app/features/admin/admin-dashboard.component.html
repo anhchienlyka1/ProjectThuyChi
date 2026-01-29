@@ -1,0 +1,58 @@
+<div class="space-y-8">
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let stat of statsCards"
+            [class]="'bg-gradient-to-br ' + stat.gradient + ' rounded-2xl p-6 shadow-lg transform hover:scale-105 transition-all cursor-pointer'">
+            <div class="flex items-start justify-between mb-4">
+                <div class="text-5xl">{{ stat.icon }}</div>
+            </div>
+            <div [class]="'text-4xl font-black mb-2 ' + stat.textColor">
+                {{ stat.value }}
+            </div>
+            <div [class]="'text-sm font-semibold ' + stat.textColor + ' opacity-90'">
+                {{ stat.title }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-2xl shadow-md p-8">
+        <h3 class="text-2xl font-black text-gray-800 mb-6">⚡ Thao tác nhanh</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <kid-button (onClick)="navigateToCreateExercise()" variant="primary" size="lg"
+                class="w-full justify-center">
+                ➕ Tạo bài tập mới
+            </kid-button>
+            <kid-button (onClick)="navigateToExercises()" variant="secondary" size="lg" class="w-full justify-center">
+                📚 Xem tất cả bài tập
+            </kid-button>
+            <kid-button (onClick)="navigateToStats()" variant="neutral" size="lg" class="w-full justify-center">
+                📊 Xem thống kê
+            </kid-button>
+        </div>
+    </div>
+
+    <!-- Exercise Types Breakdown -->
+    <div class="bg-white rounded-2xl shadow-md p-8">
+        <h3 class="text-2xl font-black text-gray-800 mb-6">📊 Phân loại bài tập</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div *ngFor="let type of exerciseTypesBreakdown"
+                class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border-2 border-gray-200">
+                <div>
+                    <p class="text-sm font-semibold text-gray-600">{{ type.label }}</p>
+                    <p class="text-2xl font-black text-gray-800">{{ type.count }}</p>
+                </div>
+                <div class="text-3xl">{{ type.icon }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity (Placeholder) -->
+    <div class="bg-white rounded-2xl shadow-md p-8">
+        <h3 class="text-2xl font-black text-gray-800 mb-6">🕒 Hoạt động gần đây</h3>
+        <div class="text-center py-12 text-gray-400">
+            <div class="text-6xl mb-4">📝</div>
+            <p class="font-semibold">Chưa có hoạt động nào</p>
+        </div>
+    </div>
+</div>

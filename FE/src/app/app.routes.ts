@@ -107,6 +107,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/vietnamese-modules/spelling/spelling.component').then(m => m.SpellingComponent)
       },
       {
+        path: 'vietnamese/fill-in-blank',
+        title: 'Điền Từ Còn Thiếu',
+        loadComponent: () => import('./features/vietnamese-modules/fill-in-blank/fill-in-blank.component').then(m => m.VietnameseFillInBlankComponent)
+      },
+      {
+        path: 'vietnamese/sentence-builder',
+        title: 'Xếp Từ Thành Câu',
+        loadComponent: () => import('./features/vietnamese-modules/sentence-builder/sentence-builder.component').then(m => m.SentenceBuilderComponent)
+      },
+      {
         path: 'vietnamese',
         title: 'Tiếng Việt',
         loadComponent: () => import('./features/vietnamese-modules/vietnamese-modules.component').then(m => m.VietnameseModulesComponent)
@@ -152,5 +162,32 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
       }
     ]
-  }
+  },
+  // Admin Routes - Vietnamese Exercises Only
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/admin/admin-layout.component').then(m => m.AdminLayoutComponent),
+    children: [
+      {
+        path: '',
+        redirectTo: 'exercises',
+        pathMatch: 'full'
+      },
+      {
+        path: 'exercises',
+        title: 'Quản lý Bài tập Tiếng Việt',
+        loadComponent: () => import('./features/admin/exercise-manager/exercise-manager.component').then(m => m.ExerciseManagerComponent)
+      },
+      {
+        path: 'exercises/new',
+        title: 'Tạo Bài tập Tiếng Việt Mới',
+        loadComponent: () => import('./features/admin/exercise-manager/exercise-form/exercise-form.component').then(m => m.ExerciseFormComponent)
+      },
+      {
+        path: 'exercises/edit/:id',
+        title: 'Chỉnh sửa Bài tập Tiếng Việt',
+        loadComponent: () => import('./features/admin/exercise-manager/exercise-form/exercise-form.component').then(m => m.ExerciseFormComponent)
+      }
+    ]
+  },
 ];

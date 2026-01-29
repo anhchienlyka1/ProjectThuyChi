@@ -5,6 +5,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'tablet': '1024px',
+        // md: 768px (default)
+        // lg: 1024px -> tablet takes this
+        // xl: 1280px (default)
+      },
       colors: {
         'kid-primary': '#FF6B6B',
         'kid-secondary': '#4ECDC4',

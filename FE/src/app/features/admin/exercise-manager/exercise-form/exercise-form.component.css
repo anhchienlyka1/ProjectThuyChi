@@ -1,0 +1,27 @@
+/* Sticky preview panel */
+.sticky {
+    position: sticky;
+}
+
+/* Form validation styles */
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+    border-color: #ef4444;
+}
+
+input.ng-valid.ng-touched,
+textarea.ng-valid.ng-touched,
+select.ng-valid.ng-touched {
+    border-color: #10b981;
+}
+
+/* Radio button custom styles */
+input[type="radio"]:checked {
+    accent-color: #a855f7;
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease;
+}

@@ -70,8 +70,8 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
   {
     id: 'viet-2',
     levelNumber: 2,
-    title: 'Từ Đơn',
-    subtitle: 'Học đọc từ đơn giản',
+    title: 'Ghép Từ Đơn',
+    subtitle: 'Bé tập ghép từ đơn giản',
     icon: '📖',
     color: '#FD79A8',
     gradient: 'linear-gradient(135deg, #FD79A8 0%, #FC5C8E 100%)',
@@ -100,7 +100,19 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
     color: '#74B9FF',
     gradient: 'linear-gradient(135deg, #74B9FF 0%, #5EA1E0 100%)',
     route: '/vietnamese/spelling',
-    isLocked: true,
+    isLocked: false,
+    stars: 0
+  },
+  {
+    id: 'viet-5',
+    levelNumber: 5,
+    title: 'Xếp Từ Thành Câu',
+    subtitle: 'Bé tập xếp câu hoàn chỉnh',
+    icon: '🧩',
+    color: '#FF7675',
+    gradient: 'linear-gradient(135deg, #FF7675 0%, #D63031 100%)',
+    route: '/vietnamese/sentence-builder',
+    isLocked: false,
     stars: 0
   }
 ];
