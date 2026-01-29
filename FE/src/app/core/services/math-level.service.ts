@@ -1,17 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MathLevel } from '../models/math-level.model';
 import { AuthService } from './auth.service';
-import { FirebaseService } from './firebase.service';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { MOCK_MATH_LEVELS } from '../initial-data/levels.mock';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MathLevelService {
   private authService = inject(AuthService);
-  private firebaseService = inject(FirebaseService);
 
   getLevels(subjectId: string = 'math'): Observable<MathLevel[]> {
     const userId = this.authService.getUserId();
@@ -20,15 +18,15 @@ export class MathLevelService {
       return of([]);
     }
 
-    const levelsRef = collection(this.firebaseService.firestore, 'levels');
-    const q = query(levelsRef, where('subjectId', '==', subjectId));
+    // Filter mocks if needed (though structurally straightforward here)
+    // The current mock has 'math-' ids but doesn't explicitly have subjectId property in type?
+    // Let's assume we return all MOCK_MATH_LEVELS as they are specific to this service.
 
-    return from(getDocs(q)).pipe(
-      map(snapshot => snapshot.docs.map(doc => {
-        const data = doc.data() as MathLevel;
+    return of(MOCK_MATH_LEVELS).pipe(
+      map(levels => levels.map(level => {
         return {
-          ...data,
-          colorRgb: this.hexToRgb(data.color)
+          ...level,
+          colorRgb: this.hexToRgb(level.color)
         };
       }))
     );

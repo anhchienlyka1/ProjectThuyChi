@@ -42,6 +42,86 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+    
+    /* Floating Elements */
+    .floating-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .float-icon {
+      position: absolute;
+      font-size: 3rem;
+      opacity: 0.2;
+      animation: floatAround 20s ease-in-out infinite;
+    }
+
+    .icon-1 { top: 10%; left: 10%; animation-delay: 0s; }
+    .icon-2 { top: 20%; right: 15%; animation-delay: 2s; }
+    .icon-3 { bottom: 20%; left: 15%; animation-delay: 4s; }
+    .icon-4 { top: 60%; right: 10%; animation-delay: 1s; }
+    .icon-5 { bottom: 30%; right: 25%; animation-delay: 3s; }
+    .icon-6 { top: 40%; left: 20%; animation-delay: 5s; }
+
+    @keyframes floatAround {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(30px, -30px) rotate(90deg); }
+      50% { transform: translate(-20px, -50px) rotate(180deg); }
+      75% { transform: translate(20px, -30px) rotate(270deg); }
+    }
+
+    /* Clouds */
+    .clouds {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 100px;
+      animation: cloudDrift 40s linear infinite;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 100px;
+    }
+
+    .cloud-1 {
+      width: 120px; height: 50px; top: 15%; left: -120px; animation-duration: 35s;
+    }
+    .cloud-1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+    .cloud-1::after { width: 70px; height: 45px; top: -20px; right: 15px; }
+
+    .cloud-2 {
+      width: 140px; height: 55px; top: 50%; left: -140px; animation-duration: 40s; animation-delay: 10s;
+    }
+    .cloud-2::before { width: 65px; height: 65px; top: -32px; left: 20px; }
+    .cloud-2::after { width: 75px; height: 50px; top: -22px; right: 20px; }
+
+    .cloud-3 {
+      width: 100px; height: 45px; top: 75%; left: -100px; animation-duration: 45s; animation-delay: 20s;
+    }
+    .cloud-3::before { width: 50px; height: 50px; top: -25px; left: 10px; }
+    .cloud-3::after { width: 60px; height: 40px; top: -15px; right: 10px; }
+
+    @keyframes cloudDrift {
+      0% { left: -150px; }
+      100% { left: 110%; }
+    }
   `]
 })
 export class AdditionComponent implements OnInit, OnDestroy {

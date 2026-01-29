@@ -1,17 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { VietnameseLevel } from '../models/vietnamese-level.model';
 import { AuthService } from './auth.service';
-import { FirebaseService } from './firebase.service';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { MOCK_VIETNAMESE_LEVELS } from '../initial-data/levels.mock';
 
 @Injectable({
     providedIn: 'root'
 })
 export class VietnameseLevelService {
     private authService = inject(AuthService);
-    private firebaseService = inject(FirebaseService);
 
     getLevels(): Observable<VietnameseLevel[]> {
         const userId = this.authService.getUserId();
@@ -20,11 +17,6 @@ export class VietnameseLevelService {
             return of([]);
         }
 
-        const levelsRef = collection(this.firebaseService.firestore, 'levels');
-        const q = query(levelsRef, where('subjectId', '==', 'vietnamese'));
-
-        return from(getDocs(q)).pipe(
-            map(snapshot => snapshot.docs.map(doc => doc.data() as VietnameseLevel))
-        );
+        return of(MOCK_VIETNAMESE_LEVELS);
     }
 }

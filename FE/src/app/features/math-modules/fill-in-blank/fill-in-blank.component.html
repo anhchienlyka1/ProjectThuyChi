@@ -1,6 +1,23 @@
 <div
     class="min-h-screen bg-gradient-to-br from-sky-200 via-sky-300 to-sky-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
 
+    <!-- Animated Background Elements -->
+    <div class="floating-elements">
+        <span class="float-icon icon-1">⭐</span>
+        <span class="float-icon icon-2">📚</span>
+        <span class="float-icon icon-3">🎨</span>
+        <span class="float-icon icon-4">🎵</span>
+        <span class="float-icon icon-5">🌈</span>
+        <span class="float-icon icon-6">🦋</span>
+    </div>
+
+    <!-- Clouds -->
+    <div class="clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+
     <!-- Game Finished Overlay -->
     <div *ngIf="isFinished"
         class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md animate-fade-in">
@@ -77,8 +94,7 @@
         <app-lesson-timer [compact]="true"></app-lesson-timer>
 
 
-        <div
-            class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-cyan-400 flex items-center gap-2 animate-bounce">
+        <div class="bg-white px-6 py-2 rounded-full shadow-lg border-2 border-cyan-400 flex items-center gap-2">
             <span class="text-2xl">⭐</span>
             <span class="text-2xl font-black text-cyan-500">{{score}}</span>
         </div>
