@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ExerciseService } from '../../../../core/services/exercise.service';
-import { AIQuestionGeneratorService, AIGenerationParams } from '../../../../core/services/ai-question-generator.service';
+import { AiExerciseGeneratorService, AIGenerationRequest } from '../../../../core/services/ai-exercise-generator.service';
 import {
     Exercise,
     ExerciseType,
@@ -30,19 +30,11 @@ export class ExerciseFormComponent implements OnInit {
     isSaving = false;
     isGenerating = false;
 
-    // AI Generation parameters
-    aiParams: AIGenerationParams = {
-        exerciseType: 'simple-words',
-        questionCount: 10,
-        difficulty: 'easy',
-        wordCategory: 'animals',
-        syllableCount: 1,
-        includeDistractors: true,
-        focusArea: 'tones'
-    };
-
     // Generated questions
     generatedQuestions: (SimpleWordQuestion | SpellingQuestion | FillInBlankQuestion)[] = [];
+
+    // Suggested topics (dynamic based on exercise type)
+    suggestedTopics: string[] = [];
 
     // Exercise type options - Vietnamese only
     exerciseTypes: { value: ExerciseType; label: string; icon: string }[] = [
@@ -57,15 +49,6 @@ export class ExerciseFormComponent implements OnInit {
         { value: 'hard', label: 'Khó', class: 'bg-red-500 hover:bg-red-600' }
     ];
 
-    // Suggestion templates for description - Prompt style
-    descriptionSuggestions: string[] = [
-        'Tạo giúp tôi 10 câu hỏi về từ đơn giản với chủ đề là động vật',
-        'Tạo giúp tôi 10 câu hỏi về đánh vần với chủ đề là gia đình',
-        'Tạo giúp tôi 10 câu hỏi về từ đơn giản với chủ đề là thiên nhiên',
-        'Tạo giúp tôi 10 câu hỏi về đánh vần với chủ đề là trường học',
-        'Tạo giúp tôi 10 câu hỏi về từ đơn giản với chủ đề là đồ vật'
-    ];
-
     // Category is locked to vietnamese
     categories: { value: ExerciseCategory; label: string }[] = [
         { value: 'vietnamese', label: 'Tiếng Việt' }
@@ -74,7 +57,7 @@ export class ExerciseFormComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private exerciseService: ExerciseService,
-        private aiService: AIQuestionGeneratorService,
+        private aiService: AiExerciseGeneratorService,
         private router: Router,
         private route: ActivatedRoute
     ) { }
@@ -82,21 +65,30 @@ export class ExerciseFormComponent implements OnInit {
     ngOnInit(): void {
         this.initForm();
         this.checkEditMode();
+        this.updateSuggestedTopics();
     }
 
     initForm(): void {
         this.exerciseForm = this.fb.group({
             type: ['simple-words', Validators.required],
             category: ['vietnamese', Validators.required],
-            difficulty: ['easy'], // Default, not displayed in UI
-            title: [''], // Auto-generated
-            description: ['', [Validators.required, Validators.minLength(10)]],
+            difficulty: ['easy', Validators.required],
+            topic: ['', Validators.required],
+            questionCount: [5, [Validators.required, Validators.min(3), Validators.max(10)]],
+            title: [''],
             tags: [''],
             status: ['draft']
         });
 
-        // Generate initial title and description
-        this.updateAutoFields();
+        // Listen to type changes
+        this.exerciseForm.get('type')?.valueChanges.subscribe(() => {
+            this.onTypeChange();
+        });
+
+        // Listen to topic changes to update title
+        this.exerciseForm.get('topic')?.valueChanges.subscribe(() => {
+            this.updateTitle();
+        });
     }
 
     checkEditMode(): void {
@@ -133,99 +125,91 @@ export class ExerciseFormComponent implements OnInit {
     }
 
     /**
-     * Use a suggested description
+     * Update suggested topics based on exercise type
      */
-    useDescription(suggestion: string): void {
-        this.exerciseForm.patchValue({ description: suggestion });
-        this.exerciseForm.get('description')?.markAsDirty();
+    updateSuggestedTopics(): void {
+        const type = this.exerciseForm.get('type')?.value;
+        this.suggestedTopics = this.aiService.suggestTopics(type);
+    }
+
+    /**
+     * Auto-generate title based on exercise type and topic
+     */
+    updateTitle(): void {
+        const type = this.exerciseForm.get('type')?.value;
+        const topic = this.exerciseForm.get('topic')?.value;
+
+        let title = '';
+
+        if (type === 'simple-words') {
+            title = topic ? `Bài tập Từ Đơn: ${topic}` : 'Bài tập Từ Đơn';
+        } else if (type === 'spelling') {
+            title = topic ? `Bài tập Ghép Vần: ${topic}` : 'Bài tập Ghép Vần';
+        } else if (type === 'fill-in-blank') {
+            title = topic ? `Bài tập Điền Chữ: ${topic}` : 'Bài tập Điền Chữ';
+        }
+
+        this.exerciseForm.patchValue({ title }, { emitEvent: false });
+    }
+
+    /**
+     * Select a suggested topic
+     */
+    selectTopic(topic: string): void {
+        this.exerciseForm.patchValue({ topic });
+        this.updateTitle(); // Update title when topic is selected
     }
 
     /**
      * Handle type change from dropdown
      */
     onTypeChange(): void {
-        const selectedType = this.exerciseForm.value.type as 'simple-words' | 'spelling' | 'fill-in-blank';
-        this.aiParams.exerciseType = selectedType;
-        this.generatedQuestions = []; // Reset questions when changing type
-        this.updateAutoFields(); // Auto-generate title and description
+        this.generatedQuestions = [];
+        this.updateSuggestedTopics();
+        this.exerciseForm.patchValue({ topic: '' });
+        this.updateTitle(); // Update title when type changes
     }
 
     /**
-     * Auto-generate title and description based on exercise type
-     */
-    updateAutoFields(): void {
-        const type = this.exerciseForm.value.type;
-        let title = '';
-        let description = '';
-
-        // Randomly select a topic for the prompt
-        const topics = ['động vật', 'gia đình', 'đồ vật', 'thiên nhiên', 'thức ăn', 'trường học'];
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-
-        // Map topic to AI param category roughly (for internal logic)
-        const topicMap: Record<string, 'animals' | 'family' | 'objects' | 'nature' | 'food'> = {
-            'động vật': 'animals',
-            'gia đình': 'family',
-            'đồ vật': 'objects',
-            'thiên nhiên': 'nature',
-            'thức ăn': 'food',
-            'trường học': 'objects' // Fallback
-        };
-        if (topicMap[randomTopic]) {
-            this.aiParams.wordCategory = topicMap[randomTopic];
-        }
-
-        if (type === 'simple-words') {
-            title = 'Bài tập Từ đơn giản - Tiếng Việt';
-            description = `Tạo giúp tôi 10 câu hỏi về từ đơn giản với chủ đề là ${randomTopic}`;
-        } else if (type === 'spelling') {
-            title = 'Bài tập Ghép vần - Tiếng Việt';
-            description = `Tạo giúp tôi 10 câu hỏi về ghép vần với chủ đề là ${randomTopic}`;
-        } else if (type === 'fill-in-blank') {
-            title = 'Bài tập Điền chữ - Tiếng Việt';
-            description = `Tạo giúp tôi 10 câu hỏi điền chữ vào chỗ trống với chủ đề là ${randomTopic}`;
-        }
-
-        this.exerciseForm.patchValue({
-            title,
-            description
-        }, { emitEvent: false });
-    }
-
-    /**
-     * Generate questions using AI
+     * Generate questions using AI (Gemini)
      */
     generateQuestionsWithAI(): void {
-        this.isGenerating = true;
+        const formValue = this.exerciseForm.value;
 
-        // Auto-select a random category to add variety since UI is hidden
-        const categories: ('animals' | 'family' | 'objects' | 'nature' | 'food')[] =
-            ['animals', 'family', 'objects', 'nature', 'food'];
-        this.aiParams.wordCategory = categories[Math.floor(Math.random() * categories.length)];
-
-        // Update AI params from form basics
-        this.aiParams.exerciseType = this.exerciseForm.value.type;
-        // Default difficulty is easy
-        this.aiParams.difficulty = 'easy';
-
-        // Randomize other params slightly for variety
-        if (this.aiParams.exerciseType === 'simple-words') {
-            this.aiParams.syllableCount = Math.random() > 0.5 ? 1 : 2;
+        if (!formValue.topic) {
+            alert('⚠️ Vui lòng nhập chủ đề!'); return;
         }
 
-        this.aiService.generateQuestions({
-            exerciseType: this.aiParams.exerciseType,
-            parameters: this.aiParams
-        }).subscribe({
-            next: (questions) => {
-                this.generatedQuestions = questions as (SimpleWordQuestion | SpellingQuestion | FillInBlankQuestion)[];
+        this.isGenerating = true;
+
+        const request: AIGenerationRequest = {
+            exerciseType: formValue.type,
+            topic: formValue.topic,
+            questionCount: formValue.questionCount || 5,
+            difficulty: formValue.difficulty
+        };
+
+        this.aiService.generateExercise(request).subscribe({
+            next: (exercise) => {
+                if (exercise.questions) {
+                    this.generatedQuestions = exercise.questions.map(q => q.data) as any[];
+
+                    if (!formValue.title && exercise.title) {
+                        this.exerciseForm.patchValue({ title: exercise.title });
+                    }
+
+                    if (exercise.tags && exercise.tags.length > 0) {
+                        this.exerciseForm.patchValue({ tags: exercise.tags.join(', ') });
+                    }
+                }
+
                 this.isGenerating = false;
-                alert(`✅ Đã tạo ${questions.length} câu hỏi thành công!`);
+                alert(`✅ Đã tạo ${this.generatedQuestions.length} câu hỏi thành công!`);
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error generating questions:', error);
                 this.isGenerating = false;
-                alert('❌ Có lỗi xảy ra khi tạo câu hỏi');
+                alert('❌ Có lỗi xảy ra khi tạo câu hỏi. Vui lòng thử lại.');
             }
         });
     }

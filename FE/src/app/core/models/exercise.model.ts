@@ -39,6 +39,7 @@ export interface SimpleWordQuestion {
     word: string;
     meaning: string;
     imageUrl?: string;
+    iconEmoji?: string; // 🐟 🐔 🐱 etc - Simple emoji for illustration
     audioUrl?: string;
     syllables?: string[];
     distractors: string[];
@@ -51,11 +52,13 @@ export interface SpellingQuestion {
     options: string[];
     audioUrl?: string;
     imageUrl?: string;
+    iconEmoji?: string; // 👪 🏠 etc - Emoji illustration
     hint: string;
 }
 
 export interface FillInBlankQuestion {
     imageUrl?: string;
+    iconEmoji?: string; // 🪑 📚 ✏️ etc - Emoji for objects
     phrase: string; // Text with blank, e.g., "C_ cá"
     correctAnswer: string;
     options: string[];

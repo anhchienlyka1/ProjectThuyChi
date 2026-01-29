@@ -92,7 +92,7 @@ export class SimpleWordsComponent implements OnInit {
               const data = q.data as SimpleWordQuestion;
               return {
                 word: data.word,
-                image: data.imageUrl || '📝',
+                image: data.iconEmoji || data.imageUrl || '📝', // Prioritize emoji over image URL
                 hint: data.meaning,
                 syllables: data.syllables && data.syllables.length ? data.syllables : data.word.split(''),
                 distractors: data.distractors || []
@@ -116,7 +116,7 @@ export class SimpleWordsComponent implements OnInit {
             const data = q.data as SimpleWordQuestion;
             return {
               word: data.word,
-              image: data.imageUrl || '📝',
+              image: data.iconEmoji || data.imageUrl || '📝', // Prioritize emoji over image URL
               hint: data.meaning,
               syllables: data.syllables || data.word.split(''),
               distractors: data.distractors || []

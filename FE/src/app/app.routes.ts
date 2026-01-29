@@ -163,29 +163,19 @@ export const routes: Routes = [
       }
     ]
   },
-  // Admin Routes - Vietnamese Exercises Only
+  // Admin Routes - Create Exercise Only
   {
     path: 'admin',
     loadComponent: () => import('./features/admin/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
       {
         path: '',
-        redirectTo: 'exercises',
+        redirectTo: 'exercises/new',
         pathMatch: 'full'
-      },
-      {
-        path: 'exercises',
-        title: 'Quản lý Bài tập Tiếng Việt',
-        loadComponent: () => import('./features/admin/exercise-manager/exercise-manager.component').then(m => m.ExerciseManagerComponent)
       },
       {
         path: 'exercises/new',
         title: 'Tạo Bài tập Tiếng Việt Mới',
-        loadComponent: () => import('./features/admin/exercise-manager/exercise-form/exercise-form.component').then(m => m.ExerciseFormComponent)
-      },
-      {
-        path: 'exercises/edit/:id',
-        title: 'Chỉnh sửa Bài tập Tiếng Việt',
         loadComponent: () => import('./features/admin/exercise-manager/exercise-form/exercise-form.component').then(m => m.ExerciseFormComponent)
       }
     ]

@@ -17,7 +17,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'CÁ',
                     meaning: 'Con cá bơi dưới nước',
                     syllables: ['C', 'Á'],
-                    distractors: ['A', 'BA', 'M']
+                    distractors: ['A', 'BA', 'M'],
+                    iconEmoji: '🐟'
                 }
             },
             {
@@ -26,7 +27,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'GÀ',
                     meaning: 'Con gà kêu cục tác',
                     syllables: ['G', 'À'],
-                    distractors: ['C', 'DA', 'L']
+                    distractors: ['C', 'DA', 'L'],
+                    iconEmoji: '🐔'
                 }
             },
             {
@@ -35,7 +37,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'CHO',
                     meaning: 'Cho bé quà',
                     syllables: ['CH', 'O'],
-                    distractors: ['A', 'NH', 'TR']
+                    distractors: ['A', 'NH', 'TR'],
+                    iconEmoji: '🎁'
                 }
             },
             {
@@ -44,7 +47,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'MÈO',
                     meaning: 'Con mèo kêu meo meo',
                     syllables: ['M', 'ÈO'],
-                    distractors: ['EO', 'AO', 'N']
+                    distractors: ['EO', 'AO', 'N'],
+                    iconEmoji: '🐱'
                 }
             },
             {
@@ -53,7 +57,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'LỢN',
                     meaning: 'Con lợn ủn ỉn',
                     syllables: ['L', 'ỢN'],
-                    distractors: ['ON', 'EN', 'TR']
+                    distractors: ['ON', 'EN', 'TR'],
+                    iconEmoji: '🐷'
                 }
             },
             {
@@ -62,7 +67,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'VỊT',
                     meaning: 'Con vịt kêu cạp cạp',
                     syllables: ['V', 'ỊT'],
-                    distractors: ['IT', 'OT', 'D']
+                    distractors: ['IT', 'OT', 'D'],
+                    iconEmoji: '🦆'
                 }
             },
             {
@@ -71,7 +77,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'BÒ',
                     meaning: 'Con bò ăn cỏ',
                     syllables: ['B', 'Ò'],
-                    distractors: ['O', 'C', 'L']
+                    distractors: ['O', 'C', 'L'],
+                    iconEmoji: '🐄'
                 }
             },
             {
@@ -80,7 +87,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'HỔ',
                     meaning: 'Con hổ trong rừng',
                     syllables: ['H', 'Ổ'],
-                    distractors: ['O', 'A', 'NG']
+                    distractors: ['O', 'A', 'NG'],
+                    iconEmoji: '🐯'
                 }
             },
             {
@@ -89,7 +97,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'SÓC',
                     meaning: 'Con sóc trên cây',
                     syllables: ['S', 'ÓC'],
-                    distractors: ['OC', 'AC', 'KH']
+                    distractors: ['OC', 'AC', 'KH'],
+                    iconEmoji: '🐿️'
                 }
             },
             {
@@ -98,7 +107,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     word: 'KHỈ',
                     meaning: 'Con khỉ leo trèo',
                     syllables: ['KH', 'Ỉ'],
-                    distractors: ['I', 'E', 'L']
+                    distractors: ['I', 'E', 'L'],
+                    iconEmoji: '🐵'
                 }
             }
         ]
@@ -120,7 +130,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     correctSpelling: 'B-À',
                     hint: 'Người sinh ra mẹ',
                     parts: [{ text: 'B', missing: false }, { text: 'À', missing: true }],
-                    options: ['À', 'Á', 'Ạ', 'Ả']
+                    options: ['À', 'Á', 'Ạ', 'Ả'],
+                    iconEmoji: '👵'
                 }
             },
             {
@@ -130,7 +141,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     correctSpelling: 'B-Ố',
                     hint: 'Người sinh ra con (cha)',
                     parts: [{ text: 'B', missing: false }, { text: 'Ố', missing: true }],
-                    options: ['Ố', 'Ô', 'Ọ', 'Ỏ']
+                    options: ['Ố', 'Ô', 'Ọ', 'Ỏ'],
+                    iconEmoji: '👨'
                 }
             },
             {
@@ -140,7 +152,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     correctSpelling: 'M-Ẹ',
                     hint: 'Người sinh ra con',
                     parts: [{ text: 'M', missing: false }, { text: 'Ẹ', missing: true }],
-                    options: ['Ẹ', 'E', 'É', 'Ẻ']
+                    options: ['Ẹ', 'E', 'É', 'Ẻ'],
+                    iconEmoji: '👩'
                 }
             },
             {
@@ -231,7 +244,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     phrase: 'Cái _àn',
                     correctAnswer: 'b',
                     options: ['b', 'c', 'd', 'đ'],
-                    fullText: 'Cái bàn'
+                    fullText: 'Cái bàn',
+                    iconEmoji: '🪑'
                 }
             },
             {
@@ -249,7 +263,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     phrase: 'Quyển _ở',
                     correctAnswer: 'v',
                     options: ['v', 'd', 'gi', 'r'],
-                    fullText: 'Quyển vở'
+                    fullText: 'Quyển vở',
+                    iconEmoji: '📓'
                 }
             },
             {
@@ -258,7 +273,8 @@ export const MOCK_VIETNAMESE_EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'upd
                     phrase: 'Cây _út',
                     correctAnswer: 'b',
                     options: ['b', 'p', 'nh', 'ch'],
-                    fullText: 'Cây bút'
+                    fullText: 'Cây bút',
+                    iconEmoji: '✏️'
                 }
             },
             {
