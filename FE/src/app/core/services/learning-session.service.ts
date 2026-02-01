@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { FirestoreService } from './firestore.service';
 import { AuthService } from './auth.service';
+import { where } from 'firebase/firestore';
 
 export interface LearningSessionData {
     levelId: string;
@@ -95,8 +96,8 @@ export class LearningSessionService {
             const sessionId = await this.db.addDocument('learning_sessions', session);
             console.log('Session saved with ID:', sessionId);
 
-            // Update user stats (XP, stars, level)
-            await this.updateUserStats(userId, xpEarned, starsEarned);
+            // Update user stats (XP, stars, level, completions)
+            await this.updateUserStats(userId, xpEarned, starsEarned, sessionData.levelId);
 
             // Update daily progress
             await this.updateDailyProgress(userId, today, sessionData, xpEarned, starsEarned);
@@ -113,45 +114,34 @@ export class LearningSessionService {
     }
 
     /**
-     * Update user XP, stars, and level
+     * Update user XP, stars, level and completions
      */
-    private async updateUserStats(userId: string, xpEarned: number, starsEarned: number): Promise<void> {
+    private async updateUserStats(userId: string, xpEarned: number, starsEarned: number, levelId: string): Promise<void> {
         try {
-            // Note: Temporarily using localStorage since we haven't migrated auth yet
-            // This will be replaced when we migrate auth.service to use Firestore
             const currentUser = this.auth.currentUser();
             if (!currentUser) return;
 
-            // Cast to any because the base User interface doesn't have these properties yet
+            // Cast to any because the base User interface implementation might vary slightly
             const userAny = currentUser as any;
             const currentXp = userAny.xp || 0;
             const currentStars = userAny.totalStars || 0;
+            const completedLevels = userAny.completedLevels || {};
 
             const newXp = currentXp + xpEarned;
             const newTotalStars = currentStars + starsEarned;
             const newLevel = Math.floor(newXp / 500) + 1;
 
-            // Update in Firestore if user document exists
-            const userDoc = await this.db.getDocument('users', userId);
-            if (userDoc) {
-                await this.db.updateDocument('users', userId, {
-                    xp: newXp,
-                    totalStars: newTotalStars,
-                    level: newLevel
-                });
-            }
+            // Increment completion count for this level
+            const newCompletions = { ...completedLevels };
+            newCompletions[levelId] = (newCompletions[levelId] || 0) + 1;
 
-            // Also update localStorage for now
-            const updatedUser = {
-                ...userAny,
+            // Use AuthService to update profile (handles Firestore, LocalStorage, and Signal/State)
+            await this.auth.updateProfile({
                 xp: newXp,
                 totalStars: newTotalStars,
-                level: newLevel
-            };
-
-            if (typeof localStorage !== 'undefined') {
-                localStorage.setItem('thuyChi_user', JSON.stringify(updatedUser));
-            }
+                level: newLevel,
+                completedLevels: newCompletions
+            });
 
             console.log(`User stats updated: +${xpEarned} XP, +${starsEarned} stars, Level ${newLevel}`);
         } catch (error) {
@@ -243,7 +233,7 @@ export class LearningSessionService {
                 'learning_sessions',
                 // @ts-ignore
                 where('userId', '==', userId),
-                // @ts-ignore  
+                // @ts-ignore
                 where('date', '==', today)
             );
             return sessions.length;

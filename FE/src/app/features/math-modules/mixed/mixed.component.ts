@@ -219,6 +219,7 @@ export class MixedComponent implements OnInit, OnDestroy {
     this.wrongCount = 0;
     this.score = 0;
     this.isFinished = false;
+    this.showFeedback = false;
     this.startTime = Date.now();
     this.userAnswer = '';
 
@@ -479,28 +480,27 @@ export class MixedComponent implements OnInit, OnDestroy {
   }
 
   handleCorrect() {
+    if (!this.hasErrorInCurrentRound) {
+      this.score += 10;
+    }
+    this.correctCount++;
+
+    if (this.currentQuestionIndex >= this.totalQuestions) {
+      this.finishGame();
+      return;
+    }
+
     this.isCorrect = true;
     this.showFeedback = true;
 
-    if (!this.hasErrorInCurrentRound) {
-      this.score += 10;
-      this.correctCount++;
-    }
-
     setTimeout(() => {
       this.showFeedback = false;
-      if (this.currentQuestionIndex < this.totalQuestions) {
-        this.generateNewRound();
-      } else {
-        this.finishGame();
-      }
-    }, 2000);
+      this.generateNewRound();
+    }, 1000);
   }
 
   handleWrong() {
-    if (!this.hasErrorInCurrentRound) {
-      this.wrongCount++;
-    }
+    this.wrongCount++;
     this.hasErrorInCurrentRound = true;
     this.isCorrect = false;
     this.showFeedback = true;
@@ -508,7 +508,7 @@ export class MixedComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.showFeedback = false;
       if (this.questionType !== 'sorting') this.userAnswer = '';
-    }, 2000);
+    }, 1000);
   }
   finishGame() {
     // Stop timer and get duration

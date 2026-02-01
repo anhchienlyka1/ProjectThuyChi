@@ -42,13 +42,7 @@
                 <option value="hard">🔥 Khó</option>
             </select>
 
-            <!-- Status Filter -->
-            <select [(ngModel)]="selectedStatus" (ngModelChange)="onFilterChange()"
-                class="px-4 py-2 rounded-full border-2 border-gray-200 font-semibold text-sm focus:border-purple-400 focus:outline-none cursor-pointer hover:bg-gray-50">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="published">✅ Đã xuất bản</option>
-                <option value="draft">📝 Bản nháp</option>
-            </select>
+
 
             <!-- View Mode Toggle -->
             <div class="ml-auto flex gap-2 bg-gray-100 p-1 rounded-full">
@@ -94,7 +88,7 @@
                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Loại</th>
                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Độ khó</th>
                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Số câu</th>
-                        <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Trạng thái</th>
+
                         <th class="px-6 py-4 text-left text-sm font-black text-slate-700 uppercase">Hành động</th>
                     </tr>
                 </thead>
@@ -131,14 +125,6 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="font-bold text-gray-700">{{ exercise.questionCount }}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <button (click)="toggleStatus(exercise)" [class]="exercise.status === 'published'
-                  ? 'bg-green-100 text-green-700 border-green-300'
-                  : 'bg-yellow-100 text-yellow-700 border-yellow-300'"
-                                class="px-3 py-1 rounded-full text-xs font-bold border-2 cursor-pointer hover:opacity-80 transition-all">
-                                {{ exercise.status === 'published' ? '✅ Xuất bản' : '📝 Nháp' }}
-                            </button>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2">

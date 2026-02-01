@@ -10,7 +10,7 @@ export class ComparisonService {
     private readonly MOCK_CONFIG: ComparisonConfig = {
         title: 'So Sánh Lớn Bé',
         instruction: 'Bé hãy chọn dấu > , < hoặc = nhé!',
-        totalQuestions: 20,
+        totalQuestions: 5,
         pointsPerQuestion: 10,
         difficulty: {
             minNumber: 1,

@@ -4,7 +4,7 @@ import { VietnameseLevel } from '../models/vietnamese-level.model';
 
 export const MOCK_MATH_LEVELS: MathLevel[] = [
   {
-    id: 'math-1',
+    id: 'addition',
     levelNumber: 1,
     title: 'Cộng Cơ Bản',
     subtitle: 'Phép cộng các số nhỏ',
@@ -16,7 +16,7 @@ export const MOCK_MATH_LEVELS: MathLevel[] = [
     stars: 9
   },
   {
-    id: 'math-2',
+    id: 'subtraction',
     levelNumber: 2,
     title: 'Trừ Cơ Bản',
     subtitle: 'Phép trừ các số nhỏ',
@@ -28,7 +28,7 @@ export const MOCK_MATH_LEVELS: MathLevel[] = [
     stars: 0
   },
   {
-    id: 'math-3',
+    id: 'comparison',
     levelNumber: 3,
     title: 'So Sánh',
     subtitle: 'So sánh lớn bé',
@@ -41,7 +41,7 @@ export const MOCK_MATH_LEVELS: MathLevel[] = [
   },
 
   {
-    id: 'math-5',
+    id: 'mixed',
     levelNumber: 4,
     title: 'Toán Tổng Hợp',
     subtitle: 'Ôn tập tất cả các phép tính',
@@ -56,7 +56,7 @@ export const MOCK_MATH_LEVELS: MathLevel[] = [
 
 export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
   {
-    id: 'viet-1',
+    id: 'alphabet',
     levelNumber: 1,
     title: 'Bảng Chữ Cái',
     subtitle: 'Học các chữ cái tiếng Việt',
@@ -68,7 +68,7 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
     stars: 30
   },
   {
-    id: 'viet-2',
+    id: 'simple-words',
     levelNumber: 2,
     title: 'Ghép Từ Đơn',
     subtitle: 'Bé tập ghép từ đơn giản',
@@ -80,7 +80,7 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
     stars: 15
   },
   {
-    id: 'viet-3',
+    id: 'fill-in-blank',
     levelNumber: 3,
     title: 'Điền Chữ',
     subtitle: 'Điền chữ cái vào chỗ trống',
@@ -92,7 +92,7 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
     stars: 0
   },
   {
-    id: 'viet-4',
+    id: 'spelling',
     levelNumber: 4,
     title: 'Ghép Vần',
     subtitle: 'Học ghép vần cơ bản',
@@ -104,7 +104,7 @@ export const MOCK_VIETNAMESE_LEVELS: VietnameseLevel[] = [
     stars: 0
   },
   {
-    id: 'viet-5',
+    id: 'sentence-builder',
     levelNumber: 5,
     title: 'Xếp Từ Thành Câu',
     subtitle: 'Bé tập xếp câu hoàn chỉnh',

@@ -7,6 +7,7 @@ import { KidButtonComponent } from '../../shared/ui-kit/kid-button/kid-button.co
 import { MathLevelService } from '../../core/services/math-level.service';
 import { MathLevel } from '../../core/models/math-level.model';
 import { DailyProgressService } from '../../core/services/daily-progress.service';
+import { AuthService } from '../../core/services/auth.service';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class MathModulesComponent implements OnInit {
     private router = inject(Router);
     private mathLevelService = inject(MathLevelService);
     dailyProgress = inject(DailyProgressService);
+    authService = inject(AuthService);
     mascot = inject(MascotService);
 
     @ViewChild('scrollContainer') scrollContainer!: ElementRef;
@@ -73,5 +75,15 @@ export class MathModulesComponent implements OnInit {
     // Generate array for stars display
     getStarsArray(count: number): number[] {
         return Array(3).fill(0).map((_, i) => i < count ? 1 : 0);
+    }
+
+    getCompletionCount(levelId: string): number {
+        const user = this.authService.currentUser();
+        if (!user || !user.completedLevels) return 0;
+        return user.completedLevels[levelId] || 0;
+    }
+
+    isLevelCompleted(levelId: string): boolean {
+        return this.getCompletionCount(levelId) > 0;
     }
 }

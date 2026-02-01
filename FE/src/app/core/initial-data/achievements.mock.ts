@@ -30,7 +30,7 @@ export const MOCK_ACHIEVEMENTS: MockAchievement[] = [
         icon: '🧮',
         rarity: 'rare',
         earnedAt: new Date('2026-01-21'),
-        earnedContext: { levelId: 'math-1', score: 100 },
+        earnedContext: { levelId: 'addition', score: 100 },
         points: 25
     },
     {
@@ -62,7 +62,7 @@ export const MOCK_ACHIEVEMENTS: MockAchievement[] = [
         rarity: 'legendary',
         earnedAt: new Date('2026-01-25'),
         earnedContext: {
-            levelId: 'math-2',
+            levelId: 'subtraction',
             improvement: {
                 previousScore: 80,
                 newScore: 95

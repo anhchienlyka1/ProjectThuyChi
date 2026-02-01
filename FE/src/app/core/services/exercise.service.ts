@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore';
 import { Observable, from, map } from 'rxjs';
 import { FirebaseService } from './firebase.service';
-import { Exercise, ExerciseFilters, ExerciseStats } from '../models/exercise.model';
+import { Exercise, ExerciseFilters, ExerciseStats, ExerciseType } from '../models/exercise.model';
 
 import { MOCK_VIETNAMESE_EXERCISES } from '../initial-data/vietnamese-exercises.mock';
 
@@ -186,7 +186,9 @@ export class ExerciseService {
                         'comparison': 0,
                         'simple-words': 0,
                         'spelling': 0,
-                        'fill-in-blank': 0
+                        'fill-in-blank': 0,
+                        'alphabet': 0,
+                        'sentence-builder': 0
                     },
                     exercisesByDifficulty: {
                         'easy': 0,
@@ -229,5 +231,29 @@ export class ExerciseService {
                 return resultId;
             })
         );
+    }
+    /**
+     * Archive (unpublish) old exercises of a specific type
+     * Used when publishing a new exercise to ensure only one is active
+     */
+    async archiveOldPublishedExercises(type: ExerciseType, excludeId?: string): Promise<void> {
+        // Use direct query to avoid 'orderBy' from getExercises which requires composite index
+        const q = query(
+            collection(this.firebaseService.firestore, this.COLLECTION_NAME),
+            where('type', '==', type),
+            where('status', '==', 'published')
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+            const batchPromises = snapshot.docs
+                .filter(docSnap => docSnap.id !== excludeId)
+                .map(docSnap => {
+                    return this.updateExercise(docSnap.id, { status: 'draft' }).toPromise();
+                });
+
+            await Promise.all(batchPromises);
+        }
     }
 }

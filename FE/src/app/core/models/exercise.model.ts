@@ -1,6 +1,6 @@
 // Exercise Types - Separated by category
 export type MathExerciseType = '3-math' | 'fill-blank' | 'sorting' | 'find-even-odd' | 'comparison';
-export type VietnameseExerciseType = 'simple-words' | 'spelling' | 'fill-in-blank';
+export type VietnameseExerciseType = 'simple-words' | 'spelling' | 'fill-in-blank' | 'alphabet' | 'sentence-builder';
 export type ExerciseType = MathExerciseType | VietnameseExerciseType;
 
 export type ExerciseCategory = 'math' | 'vietnamese';
@@ -65,6 +65,20 @@ export interface FillInBlankQuestion {
     fullText: string;
 }
 
+export interface AlphabetQuestion {
+    letter: string; // e.g., "A", "B", "C"
+    word: string; // Example word, e.g., "Quả Cam"
+    pronunciation: string; // e.g., "a"
+    iconEmoji?: string; // 🍊 🍌 etc - Visual representation
+}
+
+export interface SentenceBuilderQuestion {
+    sentence: string; // Complete sentence: "Con mèo đang ngủ"
+    words: string[]; // Words in CORRECT order: ["Con", "mèo", "đang", "ngủ"]
+    hint: string; // Hint/Question: "Con gì kêu meo meo?"
+    iconEmoji?: string; // 🐱 🌸 etc - Topic emoji
+}
+
 export type Question =
     | { type: '3-math'; data: MathQuestion }
     | { type: 'fill-blank'; data: MathQuestion }
@@ -73,7 +87,9 @@ export type Question =
     | { type: 'comparison'; data: ComparisonQuestion }
     | { type: 'simple-words'; data: SimpleWordQuestion }
     | { type: 'spelling'; data: SpellingQuestion }
-    | { type: 'fill-in-blank'; data: FillInBlankQuestion };
+    | { type: 'fill-in-blank'; data: FillInBlankQuestion }
+    | { type: 'alphabet'; data: AlphabetQuestion }
+    | { type: 'sentence-builder'; data: SentenceBuilderQuestion };
 
 export interface Exercise {
     id?: string;

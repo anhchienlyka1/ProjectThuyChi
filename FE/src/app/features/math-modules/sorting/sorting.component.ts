@@ -42,7 +42,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
-    
+
     /* Floating Elements */
     .floating-elements {
       position: absolute;
@@ -194,6 +194,7 @@ export class SortingComponent implements OnInit, OnDestroy {
         this.correctCount = 0;
         this.wrongCount = 0;
         this.isFinished = false;
+        this.showFeedback = false;
         this.showCompletionStats = false;
         this.startTime = Date.now();
         this.lessonTimer.startTimer('sorting');
@@ -292,6 +293,11 @@ export class SortingComponent implements OnInit, OnDestroy {
     }
 
     handleSuccess(roundFinished: boolean) {
+        if (roundFinished && this.currentQuestionIndex >= this.totalQuestions) {
+            this.finishGame();
+            return;
+        }
+
         this.isCorrect = true;
         this.showFeedback = true;
         const msgs = this.config.feedback?.correct || ['Đúng rồi!'];
@@ -302,7 +308,7 @@ export class SortingComponent implements OnInit, OnDestroy {
             if (roundFinished) {
                 this.generateNewRound();
             }
-        }, 2000);
+        }, 1000);
     }
 
     handleError() {
@@ -315,7 +321,7 @@ export class SortingComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
             this.showFeedback = false;
-        }, 2000);
+        }, 1000);
     }
 
     finishGame() {

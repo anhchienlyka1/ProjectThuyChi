@@ -26,7 +26,7 @@ export class ExerciseManagerComponent implements OnInit {
     searchQuery = '';
     selectedType: ExerciseType | 'all' = 'all';
     selectedDifficulty: ExerciseDifficulty | 'all' = 'all';
-    selectedStatus: ExerciseStatus | 'all' = 'all';
+
 
     // Pagination
     currentPage = 1;
@@ -57,9 +57,7 @@ export class ExerciseManagerComponent implements OnInit {
         if (this.selectedDifficulty !== 'all') {
             filters.difficulty = this.selectedDifficulty;
         }
-        if (this.selectedStatus !== 'all') {
-            filters.status = this.selectedStatus;
-        }
+
         if (this.searchQuery) {
             filters.searchQuery = this.searchQuery;
         }
@@ -138,20 +136,7 @@ export class ExerciseManagerComponent implements OnInit {
         console.log('Preview exercise:', exercise);
     }
 
-    toggleStatus(exercise: Exercise): void {
-        if (!exercise.id) return;
 
-        const newStatus: ExerciseStatus = exercise.status === 'published' ? 'draft' : 'published';
-        this.exerciseService.updateExercise(exercise.id, { status: newStatus }).subscribe({
-            next: () => {
-                this.loadExercises();
-            },
-            error: (error) => {
-                console.error('Error updating status:', error);
-                alert('Có lỗi xảy ra khi cập nhật trạng thái');
-            }
-        });
-    }
 
     getTypeLabel(type: ExerciseType): string {
         const labels: Record<ExerciseType, string> = {
@@ -164,7 +149,9 @@ export class ExerciseManagerComponent implements OnInit {
             // Vietnamese types
             'simple-words': 'Từ đơn giản',
             'spelling': 'Đánh vần',
-            'fill-in-blank': 'Điền Chữ'
+            'fill-in-blank': 'Điền Chữ',
+            'alphabet': 'Bảng Chữ Cái',
+            'sentence-builder': 'Tạo Câu'
         };
         return labels[type];
     }
@@ -180,7 +167,9 @@ export class ExerciseManagerComponent implements OnInit {
             // Vietnamese types
             'simple-words': '📝',
             'spelling': '✏️',
-            'fill-in-blank': '🧩'
+            'fill-in-blank': '🧩',
+            'alphabet': '🔤',
+            'sentence-builder': '🧩'
         };
         return icons[type];
     }

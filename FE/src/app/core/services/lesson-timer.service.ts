@@ -80,8 +80,17 @@ export class LessonTimerService {
     /**
      * Stop and clear the timer
      */
+    /**
+     * Stop and clear the timer
+     */
     stopTimer(): number {
-        const elapsed = this.elapsedSeconds();
+        let elapsed = this.elapsedSeconds();
+        const current = this.currentTimer();
+
+        // Calculate exact final time if running
+        if (current && current.isRunning) {
+            elapsed = Math.floor((Date.now() - current.startTime) / 1000);
+        }
 
         if (this.intervalId) {
             clearInterval(this.intervalId);

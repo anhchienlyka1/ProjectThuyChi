@@ -74,18 +74,34 @@ export class SimpleWordsComponent implements OnInit {
 
   loadExerciseData() {
     this.isLoading = true;
+    console.log('🔍 Loading exercises with filters:', { type: 'simple-words', status: 'published' });
+
     this.exerciseService.getExercises({ type: 'simple-words', status: 'published' }).subscribe({
       next: (exercises) => {
+        console.log('📦 Received exercises:', exercises.length);
+
+        if (exercises.length > 0) {
+          console.log('📄 First exercise:', {
+            id: exercises[0].id,
+            title: exercises[0].title,
+            questionCount: exercises[0].questionCount,
+            status: exercises[0].status
+          });
+        }
+
         let targetExercise = exercises[0];
 
         // FALLBACK
         if (!targetExercise) {
+          console.warn('⚠️ No exercise found in database, using mock data');
           const mock = MOCK_VIETNAMESE_EXERCISES.find((e: any) => e.type === 'simple-words');
           if (mock) targetExercise = mock as any;
         }
 
         if (targetExercise && targetExercise.questions && targetExercise.questions.length > 0) {
           const questionsToUse = targetExercise.questions.slice(0, 5); // Take 5
+          console.log('✅ Using', questionsToUse.length, 'questions from exercise');
+
           this.levels = questionsToUse
             .filter((q: any) => q.type === 'simple-words')
             .map((q: any) => {
@@ -170,7 +186,7 @@ export class SimpleWordsComponent implements OnInit {
   // If we have 2 'A' in word, and 1 'A' in usedSyllables -> first 'A' highlighted, second not.
   // We need to know WHICH index this syllable corresponds to in currentLevel.syllables.
   // But standard ngFor just gives syllable. We need index.
-  // Method signature needs updating in HTML to pass index if we want precise visual, 
+  // Method signature needs updating in HTML to pass index if we want precise visual,
   // but here I can use a simpler heuristic for the *ngClass binding:
   // "How many times does this syllable appear in range [0...currentIndex] of syllables list?" -> N
   // "Is count of this syllable in usedSyllables >= N?"
@@ -179,7 +195,7 @@ export class SimpleWordsComponent implements OnInit {
     // But for simple visualization, if I just return true if used count > 0, all 'A's might light up.
     // To fix duplicates, I need the index from the loop.
     // For now, I'll rely on a simple check: is it in usedSyllables?
-    // This will highlight ALL instances if one is picked -> acceptable for simple games, 
+    // This will highlight ALL instances if one is picked -> acceptable for simple games,
     // OR strictly: we need index.
 
     // Better: `isSyllableUsed(syllable)` returns true if fully filled? No.
@@ -193,7 +209,7 @@ export class SimpleWordsComponent implements OnInit {
     // Let's assume simpler logic: If user picked 'A', and word has 'A', 'A' -> highlight first 'A'.
     // This requires state in Template.
 
-    // Alternative: Just return true if count in usedSyllables > 0? 
+    // Alternative: Just return true if count in usedSyllables > 0?
     // No, if user picked 1 'A', only 1 slot should fill.
 
     // I will use a helper that I call in template with index.

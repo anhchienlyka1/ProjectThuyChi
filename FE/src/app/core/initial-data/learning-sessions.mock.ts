@@ -17,7 +17,7 @@ export let MOCK_LEARNING_SESSIONS: MockLearningSession[] = [
     {
         sessionId: 1,
         userId: '1',
-        levelId: 'math-1',
+        levelId: 'addition',
         levelName: 'Đếm Số',
         score: 10,
         totalQuestions: 10,
@@ -29,7 +29,7 @@ export let MOCK_LEARNING_SESSIONS: MockLearningSession[] = [
     {
         sessionId: 2,
         userId: '1',
-        levelId: 'math-2',
+        levelId: 'subtraction',
         levelName: 'Cộng Cơ Bản',
         score: 8,
         totalQuestions: 10,
@@ -41,7 +41,7 @@ export let MOCK_LEARNING_SESSIONS: MockLearningSession[] = [
     {
         sessionId: 3,
         userId: '1',
-        levelId: 'math-2',
+        levelId: 'subtraction',
         levelName: 'Cộng Cơ Bản',
         score: 10,
         totalQuestions: 10,

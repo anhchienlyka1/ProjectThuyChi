@@ -14,6 +14,7 @@ export interface User {
     level?: number;
     xp?: number;
     totalStars?: number;
+    completedLevels?: { [key: string]: number };
 }
 
 export interface LoginResponse {

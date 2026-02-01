@@ -42,7 +42,7 @@ import { LessonCompletionStatsComponent } from '../../../shared/components/lesso
       100% { transform: scale(1); opacity: 1; }
     }
     .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
-    
+
     /* Floating Elements */
     .floating-elements {
       position: absolute;
@@ -175,7 +175,7 @@ export class AdditionComponent implements OnInit, OnDestroy {
         this.additionService.getConfig().subscribe(config => {
             this.config = config;
             this.items = config.items;
-            this.totalQuestions = config.totalQuestions;
+            this.totalQuestions = config.totalQuestions || 10;
             this.startGame();
         });
     }
@@ -205,6 +205,7 @@ export class AdditionComponent implements OnInit, OnDestroy {
         this.wrongCount = 0;
         this.score = 0;
         this.isFinished = false;
+        this.showFeedback = false;
         this.startTime = Date.now();
         this.userAnswer = '';
 
@@ -275,25 +276,26 @@ export class AdditionComponent implements OnInit, OnDestroy {
             // Only count score if this is the first attempt (no errors in this round)
             if (!this.hasErrorInCurrentRound) {
                 this.score += (this.config.pointsPerQuestion || 10);
-                this.correctCount++;
             }
+            this.correctCount++;
+
+            if (this.currentQuestionIndex >= this.totalQuestions) {
+                this.finishGame();
+                return;
+            }
+
+            this.isCorrect = correct;
+            this.showFeedback = true;
 
             const msgs = this.config.feedback?.correct || ['Tuyệt vời!'];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
 
             setTimeout(() => {
                 this.showFeedback = false;
-                if (this.currentQuestionIndex < this.totalQuestions) {
-                    this.generateNewRound();
-                } else {
-                    this.finishGame();
-                }
-            }, 2000);
+                this.generateNewRound();
+            }, 1000); // Reduced delay
         } else {
-            // Mark this question as having an error - no score will be given even if retry succeeds
-            if (!this.hasErrorInCurrentRound) {
-                this.wrongCount++;
-            }
+            this.wrongCount++;
             this.hasErrorInCurrentRound = true;
 
             const msgs = this.config.feedback?.wrong || ['Sai rồi, bé thử lại nhé!'];
@@ -303,7 +305,7 @@ export class AdditionComponent implements OnInit, OnDestroy {
             setTimeout(() => {
                 this.showFeedback = false;
                 this.userAnswer = ''; // Clear answer so they can try again easily
-            }, 2000);
+            }, 1000); // Reduced delay
         }
     }
 
