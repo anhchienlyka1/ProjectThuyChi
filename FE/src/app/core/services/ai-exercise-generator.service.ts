@@ -15,7 +15,7 @@ export interface AIGenerationRequest {
   providedIn: 'root'
 })
 export class AiExerciseGeneratorService {
-  private readonly GEMINI_API_KEY = 'AIzaSyDcYeAEEktgCqSDqodqzbSXHOxwrQIONE8';
+  private readonly GEMINI_API_KEY = 'AIzaSyBTZ1cE3lvtuG65uusu1ox9ma_9nvnk9sQ';
   private readonly GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
   constructor(private http: HttpClient) { }

@@ -310,18 +310,24 @@
 </div>
 
 
-<!-- Full Screen Loading Overlay for AI Generation -->
-<div *ngIf="isGenerating"
+<!-- Full Screen Loading Overlay for AI Generation or Saving -->
+<div *ngIf="isGenerating || isSaving"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-blue-900/40 backdrop-blur-sm animate-fade-in">
     <div
         class="bg-white rounded-3xl p-10 shadow-2xl flex flex-col items-center gap-6 max-w-xs w-full border-4 border-blue-400">
         <div class="relative">
             <div class="w-20 h-20 border-8 border-blue-100 border-t-blue-500 rounded-full animate-spin"></div>
-            <span class="absolute inset-0 flex items-center justify-center text-3xl">✨</span>
+            <span class="absolute inset-0 flex items-center justify-center text-3xl" *ngIf="isGenerating">✨</span>
+            <span class="absolute inset-0 flex items-center justify-center text-3xl" *ngIf="isSaving">💾</span>
         </div>
         <div class="text-center">
-            <h3 class="text-2xl font-black text-blue-600 mb-2">Đang suy nghĩ...</h3>
-            <p class="text-gray-500 font-bold">AI đang tạo câu hỏi cực hay cho bé đây!</p>
+            <h3 class="text-2xl font-black text-blue-600 mb-2">
+                {{ isGenerating ? 'Đang suy nghĩ...' : 'Đang xử lý...' }}
+            </h3>
+            <p class="text-gray-500 font-bold">
+                {{ isGenerating ? 'AI đang tạo câu hỏi cực hay cho bé đây!' : 'Đang lưu bài tập, vui lòng chờ chút nhé!'
+                }}
+            </p>
         </div>
     </div>
 </div>

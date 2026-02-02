@@ -136,9 +136,6 @@ export class ExerciseService {
             }
         }
 
-        // Sắp xếp theo thời gian tạo mới nhất
-        constraints.push(orderBy('createdAt', 'desc'));
-
         const q = query(
             collection(this.firebaseService.firestore, this.COLLECTION_NAME),
             ...constraints
@@ -152,6 +149,13 @@ export class ExerciseService {
                     createdAt: doc.data()['createdAt']?.toDate(),
                     updatedAt: doc.data()['updatedAt']?.toDate()
                 } as Exercise));
+
+                // Client-side sorting (Newest first) to avoid Firestore Index requirement
+                exercises.sort((a, b) => {
+                    const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+                    const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+                    return timeB - timeA;
+                });
 
                 // Client-side search nếu có searchQuery
                 if (filters?.searchQuery) {

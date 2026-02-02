@@ -89,7 +89,24 @@ export class SimpleWordsComponent implements OnInit {
           });
         }
 
+        // SORT: Newest first to show the latest AI generated content
+        exercises.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+
+        // Pick the newest one
         let targetExercise = exercises[0];
+
+        if (targetExercise) {
+          console.log('✅ Selected NEWEST exercise:', {
+            id: targetExercise.id,
+            title: targetExercise.title,
+            createdAt: targetExercise.createdAt,
+            questions: targetExercise.questionCount
+          });
+        }
 
         // FALLBACK
         if (!targetExercise) {
